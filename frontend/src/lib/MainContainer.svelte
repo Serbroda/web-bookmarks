@@ -13,8 +13,8 @@
 
     onMount(async () => {
         await loadGroups();
-        version = await groupService.getVersion();
-        version = "1.0.1.0";
+        const response = await groupService.getVersion();
+        version = response;
     });
 
     const loadGroups = async () => {
@@ -56,9 +56,9 @@
     <div class="drawer drawer-mobile">
         <input id="main-menu" type="checkbox" class="drawer-toggle" />
         <main class="flex-grow block overflow-x-hidden bg-base-100 text-base-content drawer-content">
-            <!--<div
+            <div
                 id="nav"
-                class="inset-x-0 top-0 z-10 w-full transition duration-200 ease-in-out border-b border-base-100 bg-base-100 text-base-content sticky">
+                class="lg:hidden inset-x-0 top-0 z-10 w-full transition duration-200 ease-in-out border-b border-base-100 bg-base-100 text-base-content sticky">
                 <div class="mx-auto space-x-1 navbar max-w-none">
                     <div class="flex-none">
                         <label for="main-menu" class="btn btn-square btn-ghost drawer-button lg:hidden">
@@ -77,13 +77,13 @@
                     </div>
                     <div class="flex items-center flex-none lg:hidden">
                         <a href="/" class="px-2 flex-0 btn btn-ghost md:px-4 nuxt-link-active" aria-label="Homepage">
-                            <div class="inline-block text-3xl font-title text-primary">
-                                <span class="lowercase">web</span><span class="uppercase text-base-content">Group</span>
+                            <div class="inline-block text-3xl font-title text-primary flex">
+                                <img src={logo} class="w-9 h-9 mr-3" alt="Logo" />
+                                <span class="lowercase">rag</span><span class="uppercase text-base-content">bag</span>
                             </div>
                         </a>
                     </div>
-                    <div class="flex-1" />
-                    &lt;!&ndash;&ndash;&gt;
+                    <!--<div class="flex-1" />
                     <div title="Change Theme" class="dropdown dropdown-end">
                         <div tabindex="0" class="m-1 normal-case btn-ghost btn">
                             <svg
@@ -106,21 +106,6 @@
                                     d="M1395 736q0 13-10 23l-466 466q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l393 393 393-393q10-10 23-10t23 10l50 50q10 10 10 23z" />
                             </svg>
                         </div>
-                        <div
-                            class="mt-16 overflow-y-auto shadow-2xl top-px dropdown-content h-96 w-52 rounded-b-box bg-base-200 text-base-content">
-                            <ul class="p-4 menu compact">
-                                {#each themes as t}
-                                    <li>
-                                        <a
-                                            tabindex="0"
-                                            class={t.theme === activeTheme ? "active" : ""}
-                                            on:click={() => setTheme(t.theme)}>
-                                            {t.description}
-                                        </a>
-                                    </li>
-                                {/each}
-                            </ul>
-                        </div>
                     </div>
                     <div title="Github ↗︎" class="items-center flex-none">
                         <a
@@ -137,9 +122,9 @@
                                     d="M256,32C132.3,32,32,134.9,32,261.7c0,101.5,64.2,187.5,153.2,217.9a17.56,17.56,0,0,0,3.8.4c8.3,0,11.5-6.1,11.5-11.4,0-5.5-.2-19.9-.3-39.1a102.4,102.4,0,0,1-22.6,2.7c-43.1,0-52.9-33.5-52.9-33.5-10.2-26.5-24.9-33.6-24.9-33.6-19.5-13.7-.1-14.1,1.4-14.1h.1c22.5,2,34.3,23.8,34.3,23.8,11.2,19.6,26.2,25.1,39.6,25.1a63,63,0,0,0,25.6-6c2-14.8,7.8-24.9,14.2-30.7-49.7-5.8-102-25.5-102-113.5,0-25.1,8.7-45.6,23-61.6-2.3-5.8-10-29.2,2.2-60.8a18.64,18.64,0,0,1,5-.5c8.1,0,26.4,3.1,56.6,24.1a208.21,208.21,0,0,1,112.2,0c30.2-21,48.5-24.1,56.6-24.1a18.64,18.64,0,0,1,5,.5c12.2,31.6,4.5,55,2.2,60.8,14.3,16.1,23,36.6,23,61.6,0,88.2-52.4,107.6-102.3,113.3,8,7.1,15.2,21.1,15.2,42.5,0,30.7-.3,55.5-.3,63,0,5.4,3.1,11.5,11.4,11.5a19.35,19.35,0,0,0,4-.4C415.9,449.2,480,363.1,480,261.7,480,134.9,379.7,32,256,32Z" />
                             </svg>
                         </a>
-                    </div>
+                    </div>-->
                 </div>
-            </div>-->
+            </div>
             <div class="p-2 lg:p-4">
                 <slot />
             </div>
@@ -148,7 +133,7 @@
             <label for="main-menu" class="drawer-overlay" />
             <aside class="flex flex-col bg-base-200 text-base-content w-80">
                 <div
-                    class="sticky inset-x-0 top-0 z-10 hidden w-full py-1 transition duration-200 ease-in-out border-b lg:block border-base-200 bg-base-200">
+                    class="sticky inset-x-0 top-0 z-10 w-full py-1 transition duration-200 ease-in-out border-b border-base-200 bg-base-200">
                     <div class="mx-auto space-x-1 navbar max-w-none">
                         <div class="flex items-center flex-none">
                             <a
@@ -156,7 +141,7 @@
                                 class="px-2 flex-0 btn btn-ghost md:px-4 nuxt-link-active"
                                 aria-label="Homepage">
                                 <div class="inline-block text-3xl font-title text-primary flex">
-                                    <img src={logo} class="w-9 h-9 mr-3" />
+                                    <img src={logo} class="w-9 h-9 mr-3" alt="Logo" />
                                     <span class="lowercase">rag</span><span class="uppercase text-base-content"
                                         >bag</span>
                                 </div>
