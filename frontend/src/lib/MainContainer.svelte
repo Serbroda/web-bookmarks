@@ -6,7 +6,7 @@
     import { FlatToast, ToastContainer, toasts } from "svelte-toasts";
     import GroupModal from "./modals/GroupModal.svelte";
     import { groups } from "../stores/groups";
-    import logo from "$lib/assets/logo.png";
+    import logo from "../assets/logo.svg";
 
     let isGroupModalOpen: boolean = false;
     let version = "";
