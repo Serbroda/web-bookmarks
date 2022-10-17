@@ -1,0 +1,35 @@
+package database
+
+import (
+	"github.com/glebarez/sqlite"
+	"gorm.io/gorm"
+	"log"
+	"sync"
+	"webcrate/models"
+)
+
+var (
+	dbConnection *gorm.DB
+	once         sync.Once
+)
+
+type ConnectionOptions struct {
+	Name string
+}
+
+func Connect(options ConnectionOptions) *gorm.DB {
+	once.Do(func() {
+		db, err := gorm.Open(sqlite.Open(options.Name), &gorm.Config{})
+		if err != nil {
+			log.Fatalf("Failed to connect to database %s: %v", options.Name, err)
+			panic(err)
+		}
+		db.AutoMigrate(&models.User{}, &models.Group{}, &models.Link{})
+		dbConnection = db
+	})
+	return dbConnection
+}
+
+func GetConnection() *gorm.DB {
+	return dbConnection
+}

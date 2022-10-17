@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.invisble-hover-item {
+    visibility: hidden;
+}
+
+.invisble-hover-container:hover .invisble-hover-item {
+    visibility: visible;
+}
+
+img.favicon {
+    width: 20px;
+    height: 20px;
+}
+
+img.favicon.favicon-sm {
+    width: 16px;
+    height: 16px;
+}
