@@ -6,6 +6,7 @@
     import { FlatToast, ToastContainer, toasts } from "svelte-toasts";
     import GroupModal from "./modals/GroupModal.svelte";
     import { groups } from "../stores/groups";
+    import logo from "$lib/assets/logo.png";
 
     let isGroupModalOpen: boolean = false;
     let version = "";
@@ -155,7 +156,7 @@
                                 class="px-2 flex-0 btn btn-ghost md:px-4 nuxt-link-active"
                                 aria-label="Homepage">
                                 <div class="inline-block text-3xl font-title text-primary flex">
-                                    <img src="src/assets/logo.svg" class="w-9 h-9 mr-3" />
+                                    <img src={logo} class="w-9 h-9 mr-3" />
                                     <span class="lowercase">rag</span><span class="uppercase text-base-content"
                                         >bag</span>
                                 </div>
