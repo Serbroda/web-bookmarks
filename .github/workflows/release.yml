@@ -27,6 +27,7 @@ jobs:
               ref: "refs/tags/${{ env.BUILD_VERSION }}",
               sha: context.sha
             })
+      #https://localheinz.com/blog/2022/01/24/creating-releases-with-github-actions/
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"

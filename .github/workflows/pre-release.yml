@@ -16,8 +16,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: jq -r '"BUILD_VERSION=\(.version)"' pipeconf.json >> $GITHUB_ENV
+      - run: jq -r '"BUILD_VERSION=\(.version)"' pipeconf.json | sed "s/$/+$(date '+%s')/"  >> $GITHUB_ENV
       - run: make build BINARY_VERSION="${{ env.BUILD_VERSION }}"
+      - run: echo "${{ env.BUILD_VERSION }}"
       # - uses: actions/github-script@v6
       #   with:
       #     script: |
@@ -27,11 +28,11 @@ jobs:
       #         ref: "refs/tags/${{ env.BUILD_VERSION }}",
       #         sha: context.sha
       #       })
-      # - uses: "marvinpinto/action-automatic-releases@latest"
-      #   with:
-      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-      #     automatic_release_tag: "next"
-      #     prerelease: false
-      #     title: "${{ env.BUILD_VERSION }}"
-      #     files: |
-      #       build/**
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "next"
+          prerelease: true
+          title: "${{ env.BUILD_VERSION }}"
+          files: |
+            build/**
