@@ -18,8 +18,11 @@ func FindGroupById(id string) (models.Group, error) {
 	return entity, nil
 }
 
-func FindGroupsByOwnerId(ownerId uint) []models.Group {
+func FindGroupsByOwnerId(ownerId uint, order string, limit int) []models.Group {
 	var entities []models.Group
-	database.GetConnection().Where("owner_id = ?", ownerId).Find(&entities)
+	if order == "" {
+		order = "id"
+	}
+	database.GetConnection().Where("owner_id = ?", ownerId).Order(order).Limit(limit).Find(&entities)
 	return entities
 }

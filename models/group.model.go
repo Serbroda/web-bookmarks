@@ -19,7 +19,7 @@ type Group struct {
 }
 
 type CreateGroupDto struct {
-	Icon        string `json:"icon"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Icon        string `json:"icon" xml:"icon" form:"icon"`
+	Name        string `json:"name" xml:"name" form:"name"`
+	Description string `json:"description" xml:"description" form:"description"`
 }

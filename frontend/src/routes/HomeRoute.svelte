@@ -1,8 +1,18 @@
 <script lang="ts">
     import { authService } from "../services/Services.js";
+    import { onMount } from "svelte";
     import MainContainer from "../lib/MainContainer.svelte";
     import { replace } from "svelte-spa-router";
     import NavBar from "../lib/NavBar.svelte";
+    import { groupService } from "../services/Services";
+    import type { GroupDto } from "src/models/GroupDto.js";
+    import Card from "../lib/Card.svelte";
+
+    let groups: GroupDto[] = [];
+
+    onMount(async () => {
+        groups = await groupService.getGroups("created_at desc", "6");
+    });
 </script>
 
 <MainContainer>
@@ -15,24 +25,27 @@
     </NavBar>
 
     <div id="content" class="p-4">
-        <button
-            class="btn"
-            on:click={() => {
-                authService.logout();
-                replace("/login");
-            }}>
-            <svg
-                class="-ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            Logout
-        </button>
+        {#if groups}
+            <h2 class="text-xl font-bold opacity-60">Recently added Groups</h2>
+
+            <div class="flex flex-wrap mt-4">
+                {#each groups || [] as group}
+                    <Card
+                        onClick={async () => {
+                            await replace(`/groups/${group.id}`);
+                        }}>
+                        <div class="leading-none">
+                            <div class="font-bold flex">
+                                <div class="w-[30px]">{group?.icon}</div>
+                                <span class="line-clamp-1">{group?.name}</span>
+                            </div>
+                            <div class="text-sm flex leading-none mt-2">
+                                <div>{group.description}</div>
+                            </div>
+                        </div>
+                    </Card>
+                {/each}
+            </div>
+        {/if}
     </div>
 </MainContainer>

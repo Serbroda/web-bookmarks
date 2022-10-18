@@ -11,8 +11,8 @@ type Link struct {
 }
 
 type CreateLinkDto struct {
-	Name        string `json:"name"`
-	Url         string `json:"url"`
-	Description string `json:"description"`
-	GroupId     string `json:"groupId"`
+	Name        string `json:"name" xml:"name" form:"name"`
+	Url         string `json:"url" xml:"url" form:"url"`
+	Description string `json:"description" xml:"description" form:"description"`
+	GroupId     string `json:"groupId" xml:"groupId" form:"groupId"`
 }

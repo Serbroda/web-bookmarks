@@ -7,8 +7,15 @@ export class GroupService extends ApiService {
         super(baseUrl);
     }
 
-    async getGroups(): Promise<GroupDto[]> {
-        const response = await this.get(`/api/v1/groups`);
+    async getGroups(order?: string, limit?: string): Promise<GroupDto[]> {
+        let url = `/api/v1/groups`;
+        if (order || limit) {
+            url = `${url}?` + new URLSearchParams({
+                order: order, 
+                limit: limit
+            }).toString()
+        }
+        const response = await this.get(url);
         return response.json();
     }
 

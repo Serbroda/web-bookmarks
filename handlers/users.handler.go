@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"webcrate/database"
@@ -30,7 +29,6 @@ func GetUser(c *fiber.Ctx) error {
 }
 
 func GetMe(c *fiber.Ctx) error {
-	fmt.Println("Get me")
 	authentication := c.Locals("authentication").(middlewares.Authentication)
 
 	var user models.User

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"webcrate/database"
 	"webcrate/middlewares"
 	"webcrate/models"
@@ -11,8 +12,10 @@ import (
 )
 
 func GetGroups(c *fiber.Ctx) error {
+	order := c.Query("order")
+	limit, _ := strconv.ParseInt(c.Query("limit"), 10, 32)
 	authentication := c.Locals("authentication").(middlewares.Authentication)
-	return c.Status(fiber.StatusOK).JSON(services.FindGroupsByOwnerId(authentication.Id))
+	return c.Status(fiber.StatusOK).JSON(services.FindGroupsByOwnerId(authentication.Id, order, int(limit)))
 }
 
 func GetGroup(c *fiber.Ctx) error {
