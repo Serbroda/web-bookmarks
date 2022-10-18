@@ -319,3 +319,4 @@ package
 build
 .vscode
 __debug**
+ragbag.db
