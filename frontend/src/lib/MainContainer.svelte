@@ -6,6 +6,7 @@
     import { FlatToast, ToastContainer, toasts } from "svelte-toasts";
     import GroupModal from "./modals/GroupModal.svelte";
     import { groups } from "../stores/groups";
+    import { user } from "../stores/auth";
     import logo from "../assets/logo.svg";
     import Drawer from "./Drawer.svelte";
     import NavBar from "./NavBar.svelte";
@@ -14,9 +15,10 @@
     let version = "";
 
     onMount(async () => {
+        $user = await authService.getUser();
+        version = await groupService.getVersion();
+
         await loadGroups();
-        const response = await groupService.getVersion();
-        version = response;
     });
 
     const loadGroups = async () => {

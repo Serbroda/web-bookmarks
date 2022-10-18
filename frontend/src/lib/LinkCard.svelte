@@ -25,13 +25,13 @@
 {#if item}
     {@const host = hostname(item.url)}
     <div
-        class="card invisble-hover-container hover:border-primary border-2 border-transparent shadow cursor-pointer bg-base-100 grow w-full md:grow-0 md:w-80 m-2 bg-base-200"
+        class="card invisble-hover-container hover:border-primary border-2 border-transparent shadow cursor-pointer bg-base-200 grow w-full md:grow-0 md:w-80 m-2 bg-base-200"
         on:click={onCardClick}>
         <div class="card-body px-3 py-4">
             <div class="leading-none">
                 <span class="font-semibold line-clamp-2">{item.name}</span>
                 <div class="text-sm flex leading-none mt-2">
-                    <img class="favicon favicon-sm pr-1" src={faviconUrl(host)} alt="favicon"/>
+                    <img class="favicon favicon-sm pr-1" src={faviconUrl(host)} alt="favicon" />
                     <div>{host}</div>
                 </div>
                 <i class="text-xs text-gray-500">{moment(item.updatedAt).format("DD.MM.YYYYY, HH:mm")}</i>

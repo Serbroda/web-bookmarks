@@ -1,15 +1,19 @@
 import { TOKEN_KEY } from "./AuthService";
 import { HEADER_APPLICATION_JSON } from "../consts/rest";
 
+export interface RequestProps extends RequestInit {
+    ignoreAuth?: boolean;
+}
+
 export class ApiService {
     constructor(public readonly baseUrl: string, public readonly ignoreAuth: boolean = false) {
     }
 
-    get(url: string, init?: RequestInit): Promise<Response> {
+    get(url: string, init?: RequestProps): Promise<Response> {
         return this.fetch(url, init);
     }
 
-    post(url: string, body: any, init?: RequestInit): Promise<Response> {
+    post(url: string, body: any, init?: RequestProps): Promise<Response> {
         const ri = {
             ...{
                 method: "POST",
@@ -20,7 +24,7 @@ export class ApiService {
         return this.fetch(url, ri);
     }
 
-    put(url: string, body: any, init?: RequestInit): Promise<Response> {
+    put(url: string, body: any, init?: RequestProps): Promise<Response> {
         const ri = {
             ...{
                 method: "PUT",
@@ -31,7 +35,7 @@ export class ApiService {
         return this.fetch(url, ri);
     }
 
-    patch(url: string, body: any, init?: RequestInit): Promise<Response> {
+    patch(url: string, body: any, init?: RequestProps): Promise<Response> {
         const ri = {
             ...{
                 method: "PATCH",
@@ -42,7 +46,7 @@ export class ApiService {
         return this.fetch(url, ri);
     }
 
-    delete(url: string, init?: RequestInit): Promise<Response> {
+    delete(url: string, init?: RequestProps): Promise<Response> {
         const ri = {
             ...{
                 method: "DELETE",
@@ -52,8 +56,10 @@ export class ApiService {
         return this.fetch(url, ri);
     }
 
-    fetch(url: string, init?: RequestInit): Promise<Response> {
-        if (!this.ignoreAuth) {
+    fetch(url: string, init?: RequestProps): Promise<Response> {
+        const ignoreAuth = init?.ignoreAuth !== undefined ? init.ignoreAuth === true : this.ignoreAuth;
+
+        if (!ignoreAuth) {
             const token = localStorage.getItem(TOKEN_KEY);
             if (token) {
                 if (!init) {

@@ -65,6 +65,9 @@ func serveStatic(app *fiber.App) {
 func setupApiV1(app *fiber.App) {
 	api := app.Group("/api/v1")
 
+	usersGroup := api.Group("/users")
+	usersGroup.Get("/me", middlewares.JWTProtected(), handlers.GetMe)
+
 	groupsGroup := api.Group("/groups")
 	groupsGroup.Get("/", middlewares.JWTProtected(), handlers.GetGroups)
 	groupsGroup.Get("/:groupId", middlewares.JWTProtected(), handlers.GetGroup)

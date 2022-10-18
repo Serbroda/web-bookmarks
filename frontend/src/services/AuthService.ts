@@ -1,5 +1,6 @@
 import { ApiService } from "./ApiService";
 import { HEADER_APPLICATION_JSON, HEADER_APPLICATION_X_WWW_FORM_URLENCODED } from "../consts/rest";
+import type { UserDto } from "../models/UserDto";
 
 const TOKEN_KEY = "access_token";
 
@@ -57,6 +58,15 @@ export class AuthService extends ApiService {
         }
 
         return this.post(`/register`, data, {headers, body: data});
+    }
+
+    async getUser(): Promise<UserDto> {
+        const response = await this.get(`/api/v1/users/me`, {ignoreAuth: false});
+
+        if (response.status === 404) {
+            return undefined;
+        }
+        return response.json();
     }
 
     logout() {

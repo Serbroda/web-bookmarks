@@ -5,6 +5,8 @@
     import { groups } from "../stores/groups";
     import { Icon, Home } from "svelte-hero-icons";
     import { authService } from "../services/Services";
+    import { user } from "../stores/auth";
+    import { hashString } from "../utils/string";
 
     export let onCreateGroupClick: () => void;
     export let version = "";
@@ -83,7 +85,10 @@
             <div class="dropdown dropdown-top">
                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
                     <div class="w-10 rounded-full">
-                        <img src="https://source.boringavatars.com/beam/120/NAME?colors=264653,f4a261,e76f51" />
+                        <img
+                            src={`https://source.boringavatars.com/beam/120/${hashString(
+                                $user?.username.toLowerCase(),
+                            )}?colors=264653,f4a261,e76f51`} />
                     </div>
                 </label>
                 <ul
