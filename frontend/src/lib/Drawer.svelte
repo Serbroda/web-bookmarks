@@ -1,8 +1,10 @@
 <script lang="ts">
     import active from "svelte-spa-router/active";
+    import { replace } from "svelte-spa-router";
     import logo from "../assets/logo.svg";
-    import { routesItems } from "../consts/routes.js";
     import { groups } from "../stores/groups";
+    import { Icon, Home } from "svelte-hero-icons";
+    import { authService } from "../services/Services";
 
     export let onCreateGroupClick: () => void;
     export let version = "";
@@ -29,27 +31,15 @@
         </div>
         <div class=" h-full">
             <ul class="menu flex flex-col p-4 pt-2 compact">
-                {#each routesItems as r}
-                    <li>
-                        <a
-                            href={"/#" + r.route}
-                            class="capitalize active:bg-base-200 active:text-primary"
-                            use:active={{ path: r.route, className: "bg-base-300" }}>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                class="inline-block w-6 h-6 mr-2 stroke-current">
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
-                            </svg>
-                            {r.name}
-                        </a>
-                    </li>
-                {/each}
+                <li>
+                    <a
+                        href="/#/"
+                        class="capitalize active:bg-base-200 active:text-primary"
+                        use:active={{ path: "/", className: "bg-base-300" }}>
+                        <Icon src={Home} class="h-5 w-5" />
+                        Home
+                    </a>
+                </li>
             </ul>
 
             <ul class="menu flex flex-col p-4 pt-0 compact">
@@ -89,6 +79,31 @@
             </ul>
         </div>
 
-        <footer class="sticky inset-x-0 bottom-0 bg-base-200 border-t p-2" />
+        <footer class="sticky inset-x-0 bottom-0 bg-base-200 border-t p-2">
+            <div class="dropdown dropdown-top">
+                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                    <div class="w-10 rounded-full">
+                        <img src="https://source.boringavatars.com/beam/120/NAME?colors=264653,f4a261,e76f51" />
+                    </div>
+                </label>
+                <ul
+                    tabindex="0"
+                    class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
+                    <li>
+                        <a> Profile </a>
+                    </li>
+                    <li>
+                        <a>Settings</a>
+                    </li>
+                    <li>
+                        <button
+                            on:click={async () => {
+                                authService.logout();
+                                await replace("/login");
+                            }}>Logout</button>
+                    </li>
+                </ul>
+            </div>
+        </footer>
     </aside>
 </div>

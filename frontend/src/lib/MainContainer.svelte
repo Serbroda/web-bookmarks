@@ -58,9 +58,7 @@
     <div class="drawer drawer-mobile">
         <input id="main-menu" type="checkbox" class="drawer-toggle" />
         <main class="flex-grow block overflow-x-hidden bg-base-100 text-base-content drawer-content">
-            <NavBar />
-
-            <div id="main-content" class="p-2 lg:p-4">
+            <div id="main-content">
                 <slot />
             </div>
         </main>
