@@ -147,11 +147,9 @@
                                 </div>
                             </a>
                         </div>
-                        {#if version}
-                            <dd class="font-mono text-xs opacity-50">
-                                <span class="hidden lg:inline xl:ml-2">v</span>{version}
-                            </dd>
-                        {/if}
+                        <dd class="text-left font-mono opacity-50 linte-clamp-1" style="font-size: 0.6rem;">
+                            {version}
+                        </dd>
                     </div>
                 </div>
                 <div>
