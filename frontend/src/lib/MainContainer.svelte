@@ -129,9 +129,9 @@
                 <slot />
             </div>
         </main>
-        <div class="drawer-side">
+        <div class="drawer-side h-full">
             <label for="main-menu" class="drawer-overlay" />
-            <aside class="flex flex-col bg-base-200 text-base-content w-80">
+            <aside class="flex flex-col bg-base-200 text-base-content w-80 h-full">
                 <div
                     class="sticky inset-x-0 top-0 z-10 w-full py-1 transition duration-200 ease-in-out border-b border-base-200 bg-base-200">
                     <div class="mx-auto space-x-1 navbar max-w-none">
@@ -152,7 +152,7 @@
                         </dd>
                     </div>
                 </div>
-                <div>
+                <div class=" h-full">
                     <ul class="menu flex flex-col p-4 pt-2 compact">
                         {#each routesItems as r}
                             <li>
@@ -213,6 +213,8 @@
                         {/each}
                     </ul>
                 </div>
+
+                <footer class="sticky inset-x-0 bottom-0 bg-base-200 border-t p-2">test</footer>
             </aside>
         </div>
     </div>
