@@ -27,7 +27,7 @@ func FindGroupsByOwnerId(ownerId uint) []models.Group {
 
 func FindLatestGroups(ownerId uint, order string, limit int) []models.Group {
 	var entities []models.Group
-	sql := "select groups.* from groups left join links on links.group_id = groups.id where groups.deleted_at is null and groups.owner_id = ?"
+	sql := "select groups.* from groups left join (select distinct group_id, max(updated_at) as updated_at from links l group by group_id) links on links.group_id = groups.id where groups.deleted_at is null and groups.owner_id = ?"
 
 	if order != "" {
 		sql += " ORDER BY " + order + " "

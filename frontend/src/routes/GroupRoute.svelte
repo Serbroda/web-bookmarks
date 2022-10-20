@@ -78,9 +78,7 @@
 
                 const link = params.get("link");
                 if (link) {
-                    console.log(link);
                     const res = links.find((l) => l.id === link);
-                    console.log(res);
                     if (res) {
                         selectedItem = res;
                         isEditLinkModalOpen = true;
@@ -89,31 +87,6 @@
             });
         }
     });
-
-    /*params.subscribe(async (r) => {
-        if (r?.groupId) {
-            id = r.groupId;
-            await loadGroup();
-            await loadLinks();
-
-            querystring.subscribe(async (r) => {
-                if (r) {
-                    console.log(r);
-                    let params = new URLSearchParams(r);
-                    const link = params.get("link");
-                    if (link) {
-                        console.log(link);
-                        const res = links.find((l) => l.id === link);
-                        console.log(res);
-                        if (res) {
-                            selectedItem = res;
-                            isEditLinkModalOpen = true;
-                        }
-                    }
-                }
-            });
-        }
-    });*/
 </script>
 
 {#if group}
@@ -144,7 +117,6 @@
             if (selectedItem) {
                 const currentUrl = window.location.href;
                 const url = addQuery(currentUrl, "link", selectedItem.id);
-                console.log(url);
                 if (currentUrl !== url) {
                     pushHistoryState(url);
                 }
