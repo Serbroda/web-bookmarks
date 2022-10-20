@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"webcrate/database"
 	"webcrate/models"
 )
@@ -18,11 +19,22 @@ func FindGroupById(id string) (models.Group, error) {
 	return entity, nil
 }
 
-func FindGroupsByOwnerId(ownerId uint, order string, limit int) []models.Group {
+func FindGroupsByOwnerId(ownerId uint) []models.Group {
 	var entities []models.Group
-	if order == "" {
-		order = "id"
+	database.GetConnection().Where("owner_id = ?", ownerId).Find(&entities)
+	return entities
+}
+
+func FindLatestGroups(ownerId uint, order string, limit int) []models.Group {
+	var entities []models.Group
+	sql := "select groups.* from groups left join links on links.group_id = groups.id where groups.deleted_at is null and groups.owner_id = ?"
+
+	if order != "" {
+		sql += " ORDER BY " + order + " "
 	}
-	database.GetConnection().Where("owner_id = ?", ownerId).Order(order).Limit(limit).Find(&entities)
+	if limit > 0 {
+		sql += fmt.Sprint(" LIMIT ", limit)
+	}
+	database.GetConnection().Raw(sql, ownerId).Scan(&entities)
 	return entities
 }

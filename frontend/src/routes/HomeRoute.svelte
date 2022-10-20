@@ -7,11 +7,15 @@
     import { groupService } from "../services/Services";
     import type { GroupDto } from "src/models/GroupDto.js";
     import Card from "../lib/Card.svelte";
+    import type { LinkDto } from "src/models/LinkDto.js";
+    import LinkCard from "../lib/LinkCard.svelte";
 
     let groups: GroupDto[] = [];
+    let links: LinkDto[] = [];
 
     onMount(async () => {
-        groups = await groupService.getGroups("created_at desc", "6");
+        groups = await groupService.getLatestGroups("links.updated_at desc", "6");
+        links = await groupService.getLatestLinks("links.created_at desc", "6");
     });
 </script>
 
@@ -26,7 +30,7 @@
 
     <div id="content" class="p-4">
         {#if groups}
-            <h2 class="text-xl font-bold opacity-60">Recently added Groups</h2>
+            <h2 class="text-xl font-bold opacity-60">Recently used Groups</h2>
 
             <div class="flex flex-wrap mt-4">
                 {#each groups || [] as group}
@@ -44,6 +48,20 @@
                             </div>
                         </div>
                     </Card>
+                {/each}
+            </div>
+        {/if}
+
+        {#if links}
+            <h2 class="text-xl font-bold opacity-60">Recently added Links</h2>
+
+            <div class="flex flex-wrap mt-4">
+                {#each links || [] as link}
+                    <LinkCard
+                        item={link}
+                        onClick={async () => {
+                            await replace(`/groups/${link.groupId}`);
+                        }} />
                 {/each}
             </div>
         {/if}

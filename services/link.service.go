@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"webcrate/database"
 	"webcrate/models"
 )
@@ -8,6 +9,20 @@ import (
 func FindLinksByGroupId(groupId string) []models.Link {
 	var links []models.Link
 	database.GetConnection().Where("group_id = ?", groupId).Find(&links)
+	return links
+}
+
+func FindLinks(ownderId uint, order string, limit int) []models.Link {
+	var links []models.Link
+	sql := "select links.* from links inner join groups on groups.id = links.group_id where links.deleted_at is null and groups.owner_id = ?"
+
+	if order != "" {
+		sql += " ORDER BY " + order + " "
+	}
+	if limit > 0 {
+		sql += fmt.Sprint(" LIMIT ", limit)
+	}
+	database.GetConnection().Raw(sql, ownderId).Scan(&links)
 	return links
 }
 

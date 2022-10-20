@@ -70,6 +70,7 @@ func setupApiV1(app *fiber.App) {
 
 	groupsGroup := api.Group("/groups")
 	groupsGroup.Get("/", middlewares.JWTProtected(), handlers.GetGroups)
+	groupsGroup.Get("/latest", middlewares.JWTProtected(), handlers.GetLatestGroups)
 	groupsGroup.Get("/:groupId", middlewares.JWTProtected(), handlers.GetGroup)
 	groupsGroup.Post("/", middlewares.JWTProtected(), handlers.CreateGroup)
 	groupsGroup.Patch("/:groupId", middlewares.JWTProtected(), handlers.UpdateGroup)
@@ -79,6 +80,7 @@ func setupApiV1(app *fiber.App) {
 
 	linksGroup := api.Group("/links")
 	linksGroup.Get("/meta/:url", handlers.GetMetaInfo)
+	linksGroup.Get("/", middlewares.JWTProtected(), handlers.GetLatestLinks)
 	linksGroup.Get("/:linkId", middlewares.JWTProtected(), handlers.GetLink)
 	linksGroup.Patch("/:linkId", middlewares.JWTProtected(), handlers.UpdateLink)
 	linksGroup.Delete("/:linkId", middlewares.JWTProtected(), handlers.DeleteLink)

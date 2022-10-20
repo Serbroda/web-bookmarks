@@ -12,10 +12,15 @@ import (
 )
 
 func GetGroups(c *fiber.Ctx) error {
+	authentication := c.Locals("authentication").(middlewares.Authentication)
+	return c.Status(fiber.StatusOK).JSON(services.FindGroupsByOwnerId(authentication.Id))
+}
+
+func GetLatestGroups(c *fiber.Ctx) error {
 	order := c.Query("order")
 	limit, _ := strconv.ParseInt(c.Query("limit"), 10, 32)
 	authentication := c.Locals("authentication").(middlewares.Authentication)
-	return c.Status(fiber.StatusOK).JSON(services.FindGroupsByOwnerId(authentication.Id, order, int(limit)))
+	return c.Status(fiber.StatusOK).JSON(services.FindLatestGroups(authentication.Id, order, int(limit)))
 }
 
 func GetGroup(c *fiber.Ctx) error {

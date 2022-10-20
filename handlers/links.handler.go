@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"webcrate/database"
 	"webcrate/middlewares"
@@ -44,7 +45,19 @@ func GetLinks(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusForbidden)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(services.FindLinksByGroupId(groupId))
+	links := services.FindLinksByGroupId(groupId)
+
+	return c.Status(fiber.StatusOK).JSON(links)
+}
+
+func GetLatestLinks(c *fiber.Ctx) error {
+	order := c.Query("order")
+	limit, _ := strconv.ParseInt(c.Query("limit"), 10, 32)
+	authentication := c.Locals("authentication").(middlewares.Authentication)
+
+	links := services.FindLinks(authentication.Id, order, int(limit))
+
+	return c.Status(fiber.StatusOK).JSON(links)
 }
 
 func GetLink(c *fiber.Ctx) error {
