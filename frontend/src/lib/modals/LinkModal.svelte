@@ -17,6 +17,7 @@
     export let selectedGroup: GroupDto = undefined;
     export let linkId: string = "";
 
+    export let onShow: () => void;
     export let onClose: () => void;
     export let onSave: (link: LinkDto) => void;
     export let onDelete: () => void = undefined;
@@ -57,14 +58,17 @@
         }
     };
 
-    const onShow = () => {
+    const _onShow = () => {
         if (urlElement) {
             urlElement.focus();
+        }
+        if (onShow) {
+            onShow();
         }
     };
 </script>
 
-<Modal {isOpen} {onClose} {onShow}>
+<Modal {isOpen} {onClose} onShow={_onShow}>
     <div class="flex flex-col space-y-3 mt-2">
         <input
             bind:value={name}

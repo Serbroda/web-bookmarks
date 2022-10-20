@@ -11,4 +11,20 @@ const hashString = (str: string) => {
     return hash;
   }
 
-  export {hashString}
+const getSecondPart = (str: string, character: string): string | undefined => {
+  const parts = str.split(character);
+  if (parts && parts.length > 1) {
+    return parts[1];
+  }
+    return undefined;
+}
+
+const getFirstPart = (str: string, character: string) => {
+  const parts = str.split(character);
+  if (parts && parts.length > 0) {
+    return parts[0];
+  }
+    return undefined;
+}
+
+  export {hashString, getSecondPart, getFirstPart}

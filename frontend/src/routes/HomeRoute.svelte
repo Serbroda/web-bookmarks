@@ -60,7 +60,7 @@
                     <LinkCard
                         item={link}
                         onClick={async () => {
-                            await replace(`/groups/${link.groupId}`);
+                            await replace(`/groups/${link.groupId}?link=${link.id}`);
                         }} />
                 {/each}
             </div>
