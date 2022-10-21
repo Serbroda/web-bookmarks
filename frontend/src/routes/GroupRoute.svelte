@@ -14,6 +14,7 @@
     import { pushHistoryState, addQuery, removeQuery } from "../utils/url";
     import { getFirstPart, getSecondPart } from "../utils/string";
     import LoginRoute from "./LoginRoute.svelte";
+    import { onDestroy } from "svelte";
 
     let id;
 
@@ -66,14 +67,14 @@
         }
     };
 
-    params.subscribe(async (val) => {
+    const unsubscribeParams = params.subscribe(async (val) => {
         if (val?.groupId) {
             id = val.groupId;
 
             await loadGroup();
             await loadLinks();
 
-            querystring.subscribe((qs) => {
+            const unsubscribeQueryString = querystring.subscribe((qs) => {
                 let params = new URLSearchParams(qs);
 
                 const link = params.get("link");
@@ -84,7 +85,17 @@
                         isEditLinkModalOpen = true;
                     }
                 }
+
+                if (unsubscribeQueryString) {
+                    unsubscribeQueryString();
+                }
             });
+        }
+    });
+
+    onDestroy(() => {
+        if (unsubscribeParams) {
+            unsubscribeParams();
         }
     });
 </script>
