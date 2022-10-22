@@ -6,8 +6,7 @@ export interface RequestProps extends RequestInit {
 }
 
 export class ApiService {
-    constructor(public readonly baseUrl: string, public readonly ignoreAuth: boolean = false) {
-    }
+    constructor(public readonly baseUrl: string, public readonly ignoreAuth: boolean = false) {}
 
     get(url: string, init?: RequestProps): Promise<Response> {
         return this.fetch(url, init);
@@ -19,7 +18,8 @@ export class ApiService {
                 method: "POST",
                 headers: HEADER_APPLICATION_JSON,
                 body: JSON.stringify(body),
-            }, ...init,
+            },
+            ...init,
         };
         return this.fetch(url, ri);
     }
@@ -30,7 +30,8 @@ export class ApiService {
                 method: "PUT",
                 headers: HEADER_APPLICATION_JSON,
                 body: JSON.stringify(body),
-            }, ...init,
+            },
+            ...init,
         };
         return this.fetch(url, ri);
     }
@@ -41,7 +42,8 @@ export class ApiService {
                 method: "PATCH",
                 headers: HEADER_APPLICATION_JSON,
                 body: JSON.stringify(body),
-            }, ...init,
+            },
+            ...init,
         };
         return this.fetch(url, ri);
     }
@@ -51,7 +53,8 @@ export class ApiService {
             ...{
                 method: "DELETE",
                 headers: HEADER_APPLICATION_JSON,
-            }, ...init,
+            },
+            ...init,
         };
         return this.fetch(url, ri);
     }
@@ -73,7 +76,7 @@ export class ApiService {
 
         const baseUrl = this.baseUrl.replace(/\/\s*$/, "");
 
-        let absolute = new URL(`${baseUrl}${url}`, window.location.href)
+        let absolute = new URL(`${baseUrl}${url}`, window.location.href);
         return fetch(absolute.href, init).then(async (res) => {
             if (res.status === 401 && !this.ignoreAuth) {
                 localStorage.removeItem(TOKEN_KEY);
@@ -85,5 +88,4 @@ export class ApiService {
     isResponseOk(response: Response): boolean {
         return response.status >= 200 && response.status <= 299;
     }
-
 }

@@ -15,7 +15,7 @@ export class AuthService extends ApiService {
         let data;
         let headers;
 
-        if(typeof formDataOrUsername === "string") {
+        if (typeof formDataOrUsername === "string") {
             data = {
                 username: formDataOrUsername,
                 password,
@@ -27,10 +27,10 @@ export class AuthService extends ApiService {
             headers = HEADER_APPLICATION_X_WWW_FORM_URLENCODED;
         }
 
-        const response = await this.post(`/login`, data, {headers, body: data});
+        const response = await this.post(`/login`, data, { headers, body: data });
 
-        if(!this.isResponseOk(response)) {
-            throw new Error(`Login failed ${response.statusText}`)
+        if (!this.isResponseOk(response)) {
+            throw new Error(`Login failed ${response.statusText}`);
         }
 
         const token = await response.text();
@@ -44,7 +44,7 @@ export class AuthService extends ApiService {
         let data;
         let headers;
 
-        if(typeof formDataOrUsername === "string") {
+        if (typeof formDataOrUsername === "string") {
             data = {
                 username: formDataOrUsername,
                 email,
@@ -57,11 +57,11 @@ export class AuthService extends ApiService {
             headers = HEADER_APPLICATION_X_WWW_FORM_URLENCODED;
         }
 
-        return this.post(`/register`, data, {headers, body: data});
+        return this.post(`/register`, data, { headers, body: data });
     }
 
     async getUser(): Promise<UserDto> {
-        const response = await this.get(`/api/v1/users/me`, {ignoreAuth: false});
+        const response = await this.get(`/api/v1/users/me`, { ignoreAuth: false });
 
         if (response.status === 404) {
             return undefined;

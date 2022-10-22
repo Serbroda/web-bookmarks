@@ -11,15 +11,15 @@
 
             const response = await authService.register(formData);
 
-            if(authService.isResponseOk(response)) {
+            if (authService.isResponseOk(response)) {
                 await replace("/");
             } else if (response.status === 409) {
-                throw new Error(`The given email address already exists`)
+                throw new Error(`The given email address already exists`);
             } else {
-                throw new Error(response.statusText)
+                throw new Error(response.statusText);
             }
         } catch (err) {
-            error = err
+            error = err;
         }
     }
 </script>

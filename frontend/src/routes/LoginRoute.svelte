@@ -11,13 +11,13 @@
             const formData = new FormData(e.target);
             const response = await authService.login(formData);
 
-            if(authService.isResponseOk(response)) {
+            if (authService.isResponseOk(response)) {
                 await replace("/");
             } else {
-                throw new Error(response.statusText)
+                throw new Error(response.statusText);
             }
         } catch (err) {
-            error = `Sorry, that did not work. Make sure you are using the correct email address and password.`
+            error = `Sorry, that did not work. Make sure you are using the correct email address and password.`;
         }
     }
 </script>
@@ -44,7 +44,7 @@
                         name="username"
                         placeholder="Email address"
                         class="input input-bordered w-full"
-                        required/>
+                        required />
                 </div>
 
                 <div class="form-control w-full">
@@ -57,7 +57,7 @@
                         name="password"
                         placeholder="Password"
                         class="input input-bordered w-full"
-                        required/>
+                        required />
                 </div>
 
                 <!--                <div class="flex items-center justify-between">-->
@@ -82,7 +82,7 @@
                 <div>
                     <button type="submit" class="btn btn-primary w-full">Sign in</button>
                 </div>
-             </form>
+            </form>
 
             <!--            <div class="mt-6">-->
             <!--                <div class="relative">-->

@@ -15,10 +15,12 @@ export class GroupService extends ApiService {
     async getLatestGroups(order?: string, limit?: string): Promise<GroupDto[]> {
         let url = `/api/v1/groups/latest`;
         if (order || limit) {
-            url = `${url}?` + new URLSearchParams({
-                order: order, 
-                limit: limit
-            }).toString()
+            url =
+                `${url}?` +
+                new URLSearchParams({
+                    order: order,
+                    limit: limit,
+                }).toString();
         }
         const response = await this.get(url);
         return response.json();
@@ -49,10 +51,12 @@ export class GroupService extends ApiService {
     async getLinks(groupId: string, order?: string, limit?: string): Promise<LinkDto[]> {
         let url = `/api/v1/groups/${groupId}/links`;
         if (order || limit) {
-            url = `${url}?` + new URLSearchParams({
-                order: order, 
-                limit: limit
-            }).toString()
+            url =
+                `${url}?` +
+                new URLSearchParams({
+                    order: order,
+                    limit: limit,
+                }).toString();
         }
         const response = await this.get(url);
         return response.json();
@@ -61,15 +65,16 @@ export class GroupService extends ApiService {
     async getLatestLinks(order?: string, limit?: string): Promise<LinkDto[]> {
         let url = `/api/v1/links`;
         if (order || limit) {
-            url = `${url}?` + new URLSearchParams({
-                order: order, 
-                limit: limit
-            }).toString()
+            url =
+                `${url}?` +
+                new URLSearchParams({
+                    order: order,
+                    limit: limit,
+                }).toString();
         }
         const response = await this.get(url);
         return response.json();
     }
-
 
     async createLink(groupId: string, dto: CreateLinkDto): Promise<LinkDto> {
         const response = await this.post(`/api/v1/groups/${groupId}/links`, dto);

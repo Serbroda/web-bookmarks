@@ -35,16 +35,16 @@ const removeQuery = (url: string, param: string): string | undefined => {
             return `${first}`;
         }
     } else {
-        return `${first}`
+        return `${first}`;
     }
-}
+};
 
 const addQuery = (url: string, param: string, value: string): string => {
     const first = getFirstPart(url, "?");
     const second = getSecondPart(url, "?");
 
     const ps = new URLSearchParams(second);
-    if(ps.get(param)) {
+    if (ps.get(param)) {
         ps.set(param, value);
     } else {
         ps.append(param, value);
@@ -56,10 +56,10 @@ const addQuery = (url: string, param: string, value: string): string => {
     } else {
         return `${first}`;
     }
-}
+};
 
 const pushHistoryState = (url: string): void => {
     window.history.pushState({}, document.title, url);
-}
+};
 
 export { hostname, faviconUrl, removeQuery, addQuery, pushHistoryState };

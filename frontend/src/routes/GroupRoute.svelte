@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { replace, push, pop, location, params } from "svelte-spa-router";
+    import { replace, params } from "svelte-spa-router";
     import { toasts } from "svelte-toasts";
     import MainContainer from "../lib/MainContainer.svelte";
     import { groupService } from "../services/Services";
@@ -12,14 +12,12 @@
     import NavBar from "../lib/NavBar.svelte";
     import { querystring } from "svelte-spa-router";
     import { pushHistoryState, addQuery, removeQuery } from "../utils/url";
-    import { getFirstPart, getSecondPart } from "../utils/string";
-    import LoginRoute from "./LoginRoute.svelte";
-    import { onDestroy } from "svelte";
 
     let id;
 
     let group: GroupDto | undefined;
     let links: LinkDto[] = [];
+
     let isCreateLinkModalOpen: boolean = false;
     let isEditLinkModalOpen: boolean = false;
     let isGroupModalOpen: boolean = false;
@@ -30,13 +28,26 @@
     let selectedItem: LinkDto | undefined;
     let confirmModal: ConfirmModal;
 
-    const loadGroup = async () => {
-        group = await groupService.getGroup(id);
-    };
+    $: if ($params?.groupId) {
+        id = $params.groupId;
 
-    const loadLinks = async () => {
-        links = await groupService.getLinks(id);
-    };
+        Promise.all([groupService.getGroup(id), groupService.getLinks(id)]).then((data) => {
+            group = data[0];
+            links = data[1];
+        });
+    }
+
+    $: if (links && $querystring) {
+        let params = new URLSearchParams($querystring);
+        const linkParam = params.get("link");
+        if (linkParam) {
+            const res = links.find((l) => l.id === linkParam);
+            if (res) {
+                selectedItem = res;
+                isEditLinkModalOpen = true;
+            }
+        }
+    }
 
     const updateGroup = async (icon: string, name: string, description?: string) => {
         const response = await groupService.updateGroup(id, {
@@ -46,7 +57,8 @@
         });
         isGroupModalOpen = false;
         toasts.success("Group saved");
-        await loadGroup();
+
+        group = await groupService.getGroup(id);
     };
 
     const deleteGroup = async () => {
@@ -60,44 +72,20 @@
 
             const response = await groupService.deleteLink(link.id);
 
+            const currentUrl = window.location.href;
+            const url = removeQuery(currentUrl, "link");
+            if (currentUrl !== url) {
+                pushHistoryState(url);
+            }
+
             isEditLinkModalOpen = false;
-            await loadLinks();
+            toasts.success("Link deleted");
+
+            links = await groupService.getLinks(id);
         } finally {
             isLinkModalBusy = false;
         }
     };
-
-    const unsubscribeParams = params.subscribe(async (val) => {
-        if (val?.groupId) {
-            id = val.groupId;
-
-            await loadGroup();
-            await loadLinks();
-
-            const unsubscribeQueryString = querystring.subscribe((qs) => {
-                let params = new URLSearchParams(qs);
-
-                const link = params.get("link");
-                if (link) {
-                    const res = links.find((l) => l.id === link);
-                    if (res) {
-                        selectedItem = res;
-                        isEditLinkModalOpen = true;
-                    }
-                }
-
-                if (unsubscribeQueryString) {
-                    unsubscribeQueryString();
-                }
-            });
-        }
-    });
-
-    onDestroy(() => {
-        if (unsubscribeParams) {
-            unsubscribeParams();
-        }
-    });
 </script>
 
 {#if group}
@@ -112,7 +100,7 @@
         onClose={() => (isCreateLinkModalOpen = false)}
         onSave={async () => {
             isCreateLinkModalOpen = false;
-            await loadLinks();
+            links = await groupService.getLinks(id);
         }} />
 
     <LinkModal
@@ -144,7 +132,7 @@
         }}
         onSave={async () => {
             isEditLinkModalOpen = false;
-            await loadLinks();
+            links = await groupService.getLinks(id);
         }}
         onDelete={async () => {
             confirmModal.show({
@@ -155,10 +143,7 @@
                         content: "Delete Link",
                         onClick: async () => {
                             await deleteLink(selectedItem);
-
                             confirmModal.hide();
-                            isEditLinkModalOpen = false;
-                            toasts.success("Link deleted");
                         },
                         classes: "btn-error",
                     },
