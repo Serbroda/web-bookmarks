@@ -45,7 +45,9 @@
             const res = links.find((l) => l.id === linkParam);
             if (res) {
                 selectedItem = res;
-                isEditLinkModalOpen = true;
+                setTimeout(() => {
+                    isEditLinkModalOpen = true;
+                }, 200);
             }
         }
     }
