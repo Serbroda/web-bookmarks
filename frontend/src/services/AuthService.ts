@@ -60,6 +60,27 @@ export class AuthService extends ApiService {
         return this.post(`/register`, data, { headers, body: data });
     }
 
+    async changePassword(formData: FormData): Promise<Response>;
+    async changePassword(oldPassword: string, newPassword: string): Promise<Response>;
+    async changePassword(formDataOrOldPassword: FormData | string, newPassword?: string): Promise<Response> {
+        let data;
+        let headers;
+
+        if (typeof formDataOrOldPassword === "string") {
+            data = {
+                oldPassword: formDataOrOldPassword,
+                newPassword,
+            };
+            headers = HEADER_APPLICATION_JSON;
+        } else {
+            // @ts-ignore
+            data = new URLSearchParams(formDataOrOldPassword);
+            headers = HEADER_APPLICATION_X_WWW_FORM_URLENCODED;
+        }
+
+        return this.patch(`/api/v1/users/change_password`, data, { ignoreAuth: false, headers, body: data });
+    }
+
     async getUser(): Promise<UserDto> {
         const response = await this.get(`/api/v1/users/me`, { ignoreAuth: false });
 

@@ -5,3 +5,8 @@ export interface UserDto extends BaseDto<number> {
     name?: string;
     email?: string;
 }
+
+export interface ChangePasswordDto {
+    oldPassword: string;
+    newPassword: string;
+}

@@ -3,7 +3,7 @@
     import { replace } from "svelte-spa-router";
     import logo from "../assets/logo.svg";
     import { groups } from "../stores/groups";
-    import { Icon, Home } from "svelte-hero-icons";
+    import { Icon, Home, User } from "svelte-hero-icons";
     import { authService } from "../services/Services";
     import { toggleTheme } from "../App.svelte";
     import InfoDropdown from "./components/InfoDropdown.svelte";
@@ -44,6 +44,9 @@
                             </svg>
                         </label>
                         <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <li>
+                                <a href="/#/profile"><Icon src={User} class="w-5 h-5" /> Profile</a>
+                            </li>
                             <li>
                                 <button on:click={toggleTheme}
                                     ><svg

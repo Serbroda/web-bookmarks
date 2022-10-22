@@ -22,6 +22,7 @@
     import HomeRoute from "./routes/HomeRoute.svelte";
     import LoginRoute from "./routes/LoginRoute.svelte";
     import RegisterRoute from "./routes/RegisterRoute.svelte";
+    import ProfileRoute from "./routes/ProfileRoute.svelte";
 
     setTheme(activeTheme || "light");
 
@@ -52,6 +53,7 @@
         "/register": RegisterRoute,
         "/": wrapAuthenticated(HomeRoute),
         "/groups/:groupId": wrapAuthenticated(GroupRoute),
+        "/profile": wrapAuthenticated(ProfileRoute),
     };
 </script>
 

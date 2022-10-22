@@ -67,6 +67,7 @@ func setupApiV1(app *fiber.App) {
 
 	usersGroup := api.Group("/users")
 	usersGroup.Get("/me", middlewares.JWTProtected(), handlers.GetMe)
+	usersGroup.Patch("/change_password", middlewares.JWTProtected(), handlers.ChangePassword)
 
 	groupsGroup := api.Group("/groups")
 	groupsGroup.Get("/", middlewares.JWTProtected(), handlers.GetGroups)
