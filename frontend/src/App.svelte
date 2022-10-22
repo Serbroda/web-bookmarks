@@ -1,3 +1,19 @@
+<script lang="ts" context="module">
+    let activeTheme = localStorage.getItem("theme");
+
+    export const setTheme = (theme: string) => {
+        const htmlElement = document.querySelector("html");
+        htmlElement.dataset.theme = theme;
+
+        activeTheme = theme;
+        localStorage.setItem("theme", theme);
+    };
+
+    export const toggleTheme = () => {
+        setTheme(activeTheme === "light" ? "dark" : "light");
+    };
+</script>
+
 <script lang="ts">
     import { authService } from "./services/Services.js";
     import wrap from "svelte-spa-router/wrap";
@@ -6,16 +22,6 @@
     import HomeRoute from "./routes/HomeRoute.svelte";
     import LoginRoute from "./routes/LoginRoute.svelte";
     import RegisterRoute from "./routes/RegisterRoute.svelte";
-
-    let activeTheme = localStorage.getItem("theme");
-
-    const setTheme = (theme: string) => {
-        const htmlElement = document.querySelector("html");
-        htmlElement.dataset.theme = theme;
-
-        activeTheme = theme;
-        localStorage.setItem("theme", theme);
-    };
 
     setTheme(activeTheme || "light");
 

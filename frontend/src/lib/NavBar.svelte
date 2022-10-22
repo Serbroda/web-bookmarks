@@ -6,7 +6,7 @@
     export let classes: string = "";
 </script>
 
-<div class={classNames("navbar bg-base-100 shadow", classes)}>
+<div class={classNames("navbar bg-base-100 shadow sticky top-0 z-10 ", classes)}>
     <div class="navbar-start w-full">
         {#if showMenuToggle}
             <label for="main-menu" class="btn btn-ghost btn-circle lg:hidden">
