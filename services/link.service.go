@@ -14,7 +14,10 @@ func FindLinksByGroupId(groupId string) []models.Link {
 
 func FindLinks(ownderId uint, order string, limit int) []models.Link {
 	var links []models.Link
-	sql := "select links.* from links inner join groups on groups.id = links.group_id where links.deleted_at is null and groups.owner_id = ?"
+	sql := `select links.* 
+		from links 
+			inner join groups on groups.id = links.group_id 
+		where links.deleted_at is null and groups.owner_id = ?`
 
 	if order != "" {
 		sql += " ORDER BY " + order + " "

@@ -12,7 +12,10 @@
     import Modal from "./Modal.svelte";
     import type { ModalButton } from "./Modal.svelte";
 
-    export let props: ConfirmModalPros;
+    export let props: ConfirmModalPros = {
+        title: "",
+        message: "",
+    };
 
     let modal: Modal;
 

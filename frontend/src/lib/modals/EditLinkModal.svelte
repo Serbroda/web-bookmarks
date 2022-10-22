@@ -98,7 +98,7 @@
     <svelte:fragment slot="actions">
         <div class="flex mt-4">
             <div class="space-x-2">
-                <button on:click={onDelete && onDelete()} class="btn btn-error" disabled={isBusy}>
+                <button on:click={onDelete} class="btn btn-error" disabled={isBusy}>
                     <Icon src={Trash} class="h-5 w-5" /> Delete
                 </button>
             </div>
@@ -122,7 +122,7 @@
                     {/if}
                     Save
                 </button>
-                <button on:click={onClose && onClose()} class="btn gap-3">
+                <button on:click={onClose} class="btn gap-3">
                     <Icon src={X} class="h-5 w-5" /> Close
                 </button>
             </div>

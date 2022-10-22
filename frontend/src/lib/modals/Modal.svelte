@@ -116,8 +116,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .modal .modal-box {
-    }
-</style>

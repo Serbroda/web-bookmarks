@@ -1,9 +1,6 @@
 <script lang="ts">
-    import { hostname } from "../../utils/url";
     import Modal from "./Modal.svelte";
-    import { faviconUrl } from "../../utils/url.js";
-    import { Icon, Trash, X } from "svelte-hero-icons";
-    import { groups } from "../../stores/groups.js";
+    import { Icon, X } from "svelte-hero-icons";
     import { groupService } from "../../services/Services";
     import type { CreateLinkDto, LinkDto } from "src/models/LinkDto";
     import type { GroupDto } from "src/models/GroupDto";
@@ -109,7 +106,7 @@
                     {/if}
                     Save
                 </button>
-                <button on:click={onClose && onClose()} class="btn gap-3">
+                <button on:click={onClose} class="btn gap-3">
                     <Icon src={X} class="h-5 w-5" /> Close
                 </button>
             </div>

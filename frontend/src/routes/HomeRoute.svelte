@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { authService } from "../services/Services.js";
     import { onMount } from "svelte";
     import MainContainer from "../lib/MainContainer.svelte";
     import { replace } from "svelte-spa-router";

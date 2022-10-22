@@ -28,6 +28,7 @@
 
                 <div class="navbar-end">
                     <div class="dropdown dropdown-end">
+                        <!-- svelte-ignore a11y-label-has-associated-control -->
                         <label tabindex="0" class="btn btn-ghost btn-circle">
                             <svg
                                 class="w-6 h-6"
