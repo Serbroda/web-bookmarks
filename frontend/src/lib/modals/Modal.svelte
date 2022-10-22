@@ -70,7 +70,7 @@
 </script>
 
 <div id={containerId} class={classes}>
-    <div class="modal" class:modal-open={isOpen}>
+    <div class="modal items-start pt-[10%] lg:pt-[4%]" class:modal-open={isOpen}>
         <div class={classNames("modal-box overflow-visible", size === "normal" ? "w-11/12 max-w-5xl" : "")}>
             <button
                 class="btn btn-ghost btn-sm btn-circle absolute right-2 top-2"
@@ -116,3 +116,8 @@
         </div>
     </div>
 </div>
+
+<style>
+    .modal .modal-box {
+    }
+</style>
