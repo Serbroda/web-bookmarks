@@ -5,8 +5,8 @@
     import { groups } from "../stores/groups";
     import { Icon, Home } from "svelte-hero-icons";
     import { authService } from "../services/Services";
-    import { user } from "../stores/auth";
-    import { hashString } from "../utils/string";
+    import { toggleTheme } from "../App.svelte";
+    import InfoDropdown from "./components/InfoDropdown.svelte";
 
     export let onCreateGroupClick: () => void;
 </script>
@@ -44,23 +44,40 @@
                         </label>
                         <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
                             <li>
+                                <button on:click={toggleTheme}
+                                    ><svg
+                                        width="20"
+                                        height="20"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        class="h-5 w-5 stroke-current"
+                                        ><path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
+                                    Change theme</button>
+                            </li>
+                            <li>
                                 <button
                                     on:click={async () => {
                                         authService.logout();
                                         await replace("/login");
                                     }}>
                                     <svg
-                                        class="w-6 h-6 mr-2"
+                                        xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
-                                        stroke="currentColor"
                                         viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="w-5 h-5">
                                         <path
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                                     </svg>
+
                                     Logout
                                 </button>
                             </li>
@@ -118,7 +135,7 @@
                 {/each}
             </ul>
 
-            <ul class="menu flex flex-col p-4 pt-0 compact">
+            <!--<ul class="menu flex flex-col p-4 pt-0 compact">
                 <li class="menu-title -ml-2">
                     <span>
                         External Groups
@@ -153,30 +170,13 @@
                     </li>
                 {/each}
             </ul>
-        </div>
+        </div>-->
 
-        <!--<footer class="sticky inset-x-0 bottom-0 bg-base-200 border-t p-2">
-            <div class="dropdown dropdown-top">
-                <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-                    <div class="w-10 rounded-full">
-                        <img
-                            src={`https://source.boringavatars.com/beam/120/${hashString(
-                                $user?.username.toLowerCase(),
-                            )}?colors=264653,f4a261,e76f51`} />
-                    </div>
-                </label>
-                <ul
-                    tabindex="0"
-                    class="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
-                    <li>
-                        <button
-                            on:click={async () => {
-                                authService.logout();
-                                await replace("/login");
-                            }}>Logout</button>
-                    </li>
-                </ul>
-            </div>
-        </footer>-->
+            <footer class="sticky inset-x-0 bottom-0 bg-base-200 border-t border-base-100 p-2 lg:hidden">
+                <div class="dropdown dropdown-top">
+                    <InfoDropdown />
+                </div>
+            </footer>
+        </div>
     </aside>
 </div>

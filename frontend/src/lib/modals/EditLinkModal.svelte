@@ -11,57 +11,44 @@
     export let isOpen: boolean = false;
     export let isBusy: boolean = false;
 
-    export let url: string = "";
-    export let name: string = "";
-    export let description: string = "";
-    export let selectedGroup: GroupDto = undefined;
-    export let linkId: string = "";
+    export let link: LinkDto;
 
     export let onShow: () => void;
     export let onClose: () => void;
     export let onSave: (link: LinkDto) => void;
     export let onDelete: () => void = undefined;
-    export let mode: "Add" | "Edit" = "Add";
 
-    let urlElement: HTMLInputElement;
+    let selectedGroup: GroupDto;
 
     const handleSave = async () => {
         try {
             isBusy = true;
 
             const dto: CreateLinkDto = {
-                url,
-                name,
-                description,
+                url: link.url,
+                name: link.name,
+                description: link.description,
                 groupId: selectedGroup?.id,
             };
 
             let response: LinkDto;
-            if (mode === "Edit" && linkId) {
-                response = await groupService.updateLink(linkId, dto);
-            } else {
-                response = await groupService.createLink(selectedGroup.id, dto);
-            }
+            response = await groupService.updateLink(link.id, dto);
 
             if (onSave) {
                 onSave(response);
             }
-
-            url = "";
-            urlElement.value = "";
 
             isOpen = false;
         } catch (err) {
             console.error(err);
         } finally {
             isBusy = false;
+            selectedGroup = undefined;
         }
     };
 
     const _onShow = () => {
-        if (urlElement) {
-            urlElement.focus();
-        }
+        selectedGroup = $groups.find((g) => g.id === link.groupId);
         if (onShow) {
             onShow();
         }
@@ -70,27 +57,15 @@
 
 <Modal {isOpen} {onClose} onShow={_onShow}>
     <div class="flex flex-col space-y-3 mt-2">
-        <input
-            bind:value={name}
-            type="text"
-            placeholder="Link name (optional)"
-            class="input hover:input-bordered font-semibold text-xl" />
-        {#if mode === "Add"}
+        {#if link}
             <input
-                bind:this={urlElement}
-                bind:value={url}
-                on:keydown={async (e) => {
-                    if (e.key === "Enter") {
-                        await handleSave();
-                    }
-                }}
+                bind:value={link.name}
                 type="text"
-                placeholder="https://example.com"
-                class="input input-bordered" />
-        {:else}
-            <a class="link flex invisble-hover-container ml-4 hover:text-primary" target="_blank" href={url}>
-                <img class="favicon pr-1 pt-1" src={faviconUrl(hostname(url))} alt="favicon" />
-                {url}
+                placeholder="Link name (optional)"
+                class="input hover:input-bordered font-semibold text-xl" />
+            <a class="link flex invisble-hover-container ml-4 hover:text-primary" target="_blank" href={link.url}>
+                <img class="favicon pr-1 pt-1" src={faviconUrl(hostname(link.url))} alt="favicon" />
+                {link.url}
                 <svg
                     class="w-4 h-4 ml-1 invisble-hover-item"
                     fill="none"
@@ -108,26 +83,25 @@
             <div class="divider" />
             <select class="select select-bordered w-full max-w-xs" bind:value={selectedGroup}>
                 {#each $groups as group}
-                    <option value={group} selected={selectedGroup?.id === group.id}>{group.icon} {group.name}</option>
+                    <option value={group}>{group.icon} {group.name}</option>
                 {/each}
             </select>
+
+            <textarea
+                class="textarea textarea-bordered w-full mt-2 leading-5"
+                rows="3"
+                placeholder="Description (optional)"
+                bind:value={link.description} />
         {/if}
-        <textarea
-            class="textarea textarea-bordered w-full mt-2 leading-5"
-            rows="3"
-            placeholder="Description (optional)"
-            bind:value={description} />
     </div>
 
     <svelte:fragment slot="actions">
         <div class="flex mt-4">
-            {#if mode === "Edit"}
-                <div class="space-x-2">
-                    <button on:click={onDelete && onDelete()} class="btn btn-error" disabled={isBusy}>
-                        <Icon src={Trash} class="h-5 w-5" /> Delete
-                    </button>
-                </div>
-            {/if}
+            <div class="space-x-2">
+                <button on:click={onDelete && onDelete()} class="btn btn-error" disabled={isBusy}>
+                    <Icon src={Trash} class="h-5 w-5" /> Delete
+                </button>
+            </div>
             <div class="flex-1" />
             <div class="space-x-2">
                 <button on:click={handleSave} class="btn btn-primary gap-3" class:loading={isBusy} disabled={isBusy}>

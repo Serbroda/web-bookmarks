@@ -52,6 +52,7 @@
             </div>
         {/if}
 
+        <br />
         {#if links}
             <h2 class="text-xl font-bold opacity-60">Recently added Links</h2>
 

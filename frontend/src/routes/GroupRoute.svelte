@@ -5,13 +5,14 @@
     import { groupService } from "../services/Services";
     import type { GroupDto } from "../models/GroupDto";
     import GroupModal from "../lib/modals/GroupModal.svelte";
-    import LinkModal from "../lib/modals/LinkModal.svelte";
+    import CreateLinkModal from "../lib/modals/CreateLinkModal.svelte";
     import LinkCard from "../lib/LinkCard.svelte";
     import type { LinkDto } from "../models/LinkDto";
     import ConfirmModal from "../lib/modals/ConfirmModal.svelte";
     import NavBar from "../lib/NavBar.svelte";
     import { querystring } from "svelte-spa-router";
     import { pushHistoryState, addQuery, removeQuery } from "../utils/url";
+    import EditLinkModal from "../lib/modals/EditLinkModal.svelte";
 
     let id;
 
@@ -89,8 +90,7 @@
 </script>
 
 {#if group}
-    <LinkModal
-        mode="Add"
+    <CreateLinkModal
         url={inputUrl}
         name={inputName}
         description={inputDescription}
@@ -103,15 +103,10 @@
             links = await groupService.getLinks(id);
         }} />
 
-    <LinkModal
-        mode="Edit"
+    <EditLinkModal
         isOpen={isEditLinkModalOpen}
         isBusy={isLinkModalBusy}
-        url={selectedItem?.url}
-        name={selectedItem?.name}
-        description={selectedItem?.description}
-        linkId={selectedItem?.id}
-        selectedGroup={group}
+        link={selectedItem}
         onShow={() => {
             if (selectedItem) {
                 const currentUrl = window.location.href;
