@@ -2,11 +2,12 @@ package utils
 
 import (
 	"errors"
-	"golang.org/x/net/html"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"golang.org/x/net/html"
 )
 
 // https://gist.github.com/inotnako/c4a82f6723f6ccea5d83c5d3689373dd
@@ -152,7 +153,6 @@ func extract(resp io.Reader) *HTMLMeta {
 			}
 		}
 	}
-	return hm
 }
 
 func extractMetaProperty(t html.Token, prop string) (content string, ok bool) {

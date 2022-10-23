@@ -12,6 +12,7 @@ import (
 )
 
 var jwtSecretKey = utils.GetEnv("JWT_SECRET_KEY", "s3cr3t")
+var jwtExpirationHours = utils.MustParseInt64(utils.GetEnv("JWT_EXPIRE_HOURS", "72"))
 
 type LoginData struct {
 	Username string `json:"username" xml:"username" form:"username"`
@@ -50,7 +51,7 @@ func Login(c *fiber.Ctx) error {
 	claims := jwt.MapClaims{
 		"sub":    username,
 		"userid": user.ID,
-		"exp":    time.Now().Add(time.Hour * 72).Unix(),
+		"exp":    time.Now().Add(time.Hour * time.Duration(jwtExpirationHours)).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
