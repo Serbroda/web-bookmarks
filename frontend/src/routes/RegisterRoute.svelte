@@ -9,6 +9,11 @@
         try {
             const formData = new FormData(e.target);
 
+            if (formData.get("password") !== formData.get("passwordConfirm")) {
+                error = "The entered passwords are not equal";
+                return;
+            }
+
             const response = await authService.register(formData);
 
             if (authService.isResponseOk(response)) {
@@ -58,7 +63,9 @@
                             id="password"
                             name="password"
                             placeholder="Password"
-                            class="input input-bordered w-full" />
+                            class="input input-bordered w-full"
+                            pattern={"(?=.*d)(?=.*[a-Z]).{8,}"}
+                            title="Must contain at least one number and one uppercase or lowercase letter, and at least 8 or more characters" />
                     </div>
 
                     <div class="form-control w-full">
