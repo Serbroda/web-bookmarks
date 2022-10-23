@@ -65,7 +65,7 @@
                 class="input hover:input-bordered font-semibold text-xl" />
             <a class="link flex invisble-hover-container ml-4 hover:text-primary" target="_blank" href={link.url}>
                 <img class="favicon pr-1 pt-1" src={faviconUrl(hostname(link.url))} alt="favicon" />
-                {link.url}
+                <span class="break-all">{link.url}</span>
                 <svg
                     class="w-4 h-4 ml-1 invisble-hover-item"
                     fill="none"
