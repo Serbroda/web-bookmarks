@@ -23,3 +23,7 @@ type CreateGroupDto struct {
 	Name        string `json:"name" xml:"name" form:"name"`
 	Description string `json:"description" xml:"description" form:"description"`
 }
+
+type ChangeGroupVisibility struct {
+	Visibility Visibility `json:"visibility" xml:"visibility" form:"visibility"`
+}

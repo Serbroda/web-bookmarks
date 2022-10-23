@@ -24,6 +24,8 @@
     import RegisterRoute from "./routes/RegisterRoute.svelte";
     import ProfileRoute from "./routes/ProfileRoute.svelte";
     import { authenticated } from "./stores/auth";
+    import ExternalGroupRoute from "./routes/ExternalGroupRoute.svelte";
+    import PublicGroupRoute from "./routes/PublicGroupRoute.svelte";
 
     setTheme(activeTheme || "light");
 
@@ -32,14 +34,15 @@
     };
 
     const conditionsFailed = async (event) => {
+        console.log("Fuck");
         await replace("/login");
     };
 
-    authenticated.subscribe(async (val) => {
+    /*authenticated.subscribe(async (val) => {
         if (!val) {
             await replace("/login");
         }
-    });
+    });*/
 
     function routeLoaded(event) {
         const mainMenuElement: HTMLElement = document.getElementById("main-menu");
@@ -60,6 +63,8 @@
         "/register": RegisterRoute,
         "/": wrapAuthenticated(HomeRoute),
         "/groups/:groupId": wrapAuthenticated(GroupRoute),
+        "/public/groups/:groupId": wrapAuthenticated(PublicGroupRoute),
+        "/external/groups/:groupId": wrapAuthenticated(ExternalGroupRoute),
         "/profile": wrapAuthenticated(ProfileRoute),
     };
 </script>

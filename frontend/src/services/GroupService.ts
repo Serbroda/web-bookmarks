@@ -1,6 +1,7 @@
 import { ApiService } from "./ApiService";
-import type { GroupDto, CreateGroupDto } from "../models/GroupDto";
+import type { GroupDto, CreateGroupDto, GroupVisibility } from "../models/GroupDto";
 import type { CreateLinkDto, LinkDto } from "../models/LinkDto";
+import type { GroupSubscriptionDto } from "../models/GroupSubscriptionDto";
 
 export class GroupService extends ApiService {
     constructor(baseUrl: string) {
@@ -90,8 +91,24 @@ export class GroupService extends ApiService {
         return this.delete(`/api/v1/links/${id}`);
     }
 
-    async getVersion(): Promise<string> {
-        const response = await this.get(`/version`);
-        return response.text();
+    async changeGroupVisibility(id: string, visibility: GroupVisibility): Promise<Response> {
+        return this.put(`/api/v1/groups/${id}/visibility`, {
+            visibility
+        });
     }
+
+    async getGroupSubscriptions(): Promise<GroupSubscriptionDto[]> {
+        const response = await this.get(`/api/v1/groups/subscriptions`);
+        return response.json();
+    }
+
+    async createGroupSubscription(groupId: string): Promise<GroupSubscriptionDto> {
+        const response = await this.post(`/api/v1/groups/subscriptions/${groupId}`);
+        return response.json();
+    }
+
+    async deleteGroupSubscription(groupId: string): Promise<Response> {
+        return this.delete(`/api/v1/groups/subscriptions/${groupId}`);
+    }
+
 }

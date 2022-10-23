@@ -1,11 +1,12 @@
 package database
 
 import (
-	"github.com/glebarez/sqlite"
-	"gorm.io/gorm"
 	"log"
 	"sync"
 	"webcrate/models"
+
+	"github.com/glebarez/sqlite"
+	"gorm.io/gorm"
 )
 
 var (
@@ -24,7 +25,7 @@ func Connect(options ConnectionOptions) *gorm.DB {
 			log.Fatalf("Failed to connect to database %s: %v", options.Name, err)
 			panic(err)
 		}
-		db.AutoMigrate(&models.User{}, &models.Group{}, &models.Link{})
+		db.AutoMigrate(&models.User{}, &models.Group{}, &models.Link{}, &models.GroupSubscription{})
 		dbConnection = db
 	})
 	return dbConnection

@@ -13,7 +13,7 @@ export class ApiService {
         return this.fetch(url, init);
     }
 
-    post(url: string, body: any, init?: RequestProps): Promise<Response> {
+    post(url: string, body?: any, init?: RequestProps): Promise<Response> {
         const ri = {
             ...{
                 method: "POST",

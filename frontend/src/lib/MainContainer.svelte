@@ -3,14 +3,17 @@
     import { authService, groupService } from "../services/Services";
     import { FlatToast, ToastContainer, toasts } from "svelte-toasts";
     import GroupModal from "./modals/GroupModal.svelte";
-    import { groups } from "../stores/groups";
+    import CreateGroupSubscriptionModal from "./modals/CreateGroupSubscriptionModal.svelte";
+    import { groups, groupSubscriptions } from "../stores/groups";
     import Drawer from "./Drawer.svelte";
     import InfoDropdown from "./components/InfoDropdown.svelte";
 
     let isGroupModalOpen: boolean = false;
+    let isCreateGroupSubscriptionModalOpen: boolean = false;
 
     onMount(async () => {
         await loadGroups();
+        await loadGroupSubscriptions();
     });
 
     const loadGroups = async () => {
@@ -18,6 +21,13 @@
             return;
         }
         $groups = await groupService.getGroups();
+    };
+
+    const loadGroupSubscriptions = async () => {
+        if (!authService.isLoggedIn()) {
+            return;
+        }
+        $groupSubscriptions = await groupService.getGroupSubscriptions();
     };
 
     const createGroup = async (icon: string, name: string, description?: string) => {
@@ -48,6 +58,15 @@
         isGroupModalOpen = false;
     }} />
 
+<CreateGroupSubscriptionModal
+    isOpen={isCreateGroupSubscriptionModalOpen}
+    onClose={() => (isCreateGroupSubscriptionModalOpen = false)}
+    onSuccess={async (subscription) => {
+        await loadGroupSubscriptions();
+        toasts.success("Group subscribed");
+        isCreateGroupSubscriptionModalOpen = false;
+    }} />
+
 <main>
     <div class="drawer drawer-mobile">
         <input id="main-menu" type="checkbox" class="drawer-toggle" />
@@ -59,7 +78,9 @@
             </div>
         </main>
 
-        <Drawer onCreateGroupClick={() => (isGroupModalOpen = true)} />
+        <Drawer
+            onCreateGroupClick={() => (isGroupModalOpen = true)}
+            onCreateGroupSubscriptionClick={() => (isCreateGroupSubscriptionModalOpen = true)} />
     </div>
 
     <ToastContainer placement="bottom-right" let:data>

@@ -41,7 +41,7 @@ func GetLinks(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).SendString("Group not found")
 	} else if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
-	} else if group.OwnerId != authentication.Id {
+	} else if group.Visibility == models.Private && group.OwnerId != authentication.Id {
 		return c.SendStatus(fiber.StatusForbidden)
 	}
 

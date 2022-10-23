@@ -34,7 +34,7 @@ func GetGroup(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	if group.OwnerId != authentication.Id {
+	if group.Visibility != models.Public && group.OwnerId != authentication.Id {
 		return c.SendStatus(fiber.StatusForbidden)
 	}
 
@@ -115,5 +115,83 @@ func DeleteGroup(c *fiber.Ctx) error {
 	}
 
 	database.GetConnection().Delete(&group)
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func ChangeGroupVisibility(c *fiber.Ctx) error {
+	groupId := c.Params("groupId")
+	authentication := c.Locals("authentication").(middlewares.Authentication)
+
+	var dto models.ChangeGroupVisibility
+	if err := c.BodyParser(&dto); err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	group, err := services.FindGroupById(groupId)
+	if err != nil && err == services.ErrEntityNotFound {
+		return c.Status(fiber.StatusNotFound).SendString("Group not found")
+	} else if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	if group.OwnerId != authentication.Id {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+
+	group.Visibility = dto.Visibility
+	database.GetConnection().Save(&group)
+
+	return c.Status(fiber.StatusOK).JSON(group)
+}
+
+func GetGroupSubscriptions(c *fiber.Ctx) error {
+	authentication := c.Locals("authentication").(middlewares.Authentication)
+	return c.Status(fiber.StatusOK).JSON(services.FindGroupSubscriptions(authentication.Id))
+}
+
+func CreateGroupSubscription(c *fiber.Ctx) error {
+	groupId := c.Params("groupId")
+	authentication := c.Locals("authentication").(middlewares.Authentication)
+
+	group, err := services.FindGroupById(groupId)
+
+	if err != nil && err == services.ErrEntityNotFound {
+		return c.Status(fiber.StatusNotFound).SendString("Group not found")
+	} else if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	} else if group.Visibility != models.Public {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+
+	subscription, err := services.FindGroupSubscription(authentication.Id, groupId)
+	if err == nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Subscription already exists")
+	}
+
+	subscription = models.GroupSubscription{
+		GroupId: groupId,
+		UserId:  authentication.Id,
+	}
+
+	database.GetConnection().Create(&subscription)
+
+	return c.Status(http.StatusCreated).JSON(subscription)
+}
+
+func DeleteGroupSubscription(c *fiber.Ctx) error {
+	groupId := c.Params("groupId")
+	authentication := c.Locals("authentication").(middlewares.Authentication)
+
+	subscription, err := services.FindGroupSubscription(authentication.Id, groupId)
+
+	if err != nil && err == services.ErrEntityNotFound {
+		return c.Status(fiber.StatusNotFound).SendString("Group subscription not found")
+	} else if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	} else if subscription.UserId != authentication.Id {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+
+	database.GetConnection().Delete(&subscription)
 	return c.SendStatus(fiber.StatusOK)
 }

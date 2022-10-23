@@ -2,13 +2,14 @@
     import active from "svelte-spa-router/active";
     import { replace } from "svelte-spa-router";
     import logo from "../assets/logo.svg";
-    import { groups } from "../stores/groups";
+    import { groups, groupSubscriptions } from "../stores/groups";
     import { Icon, Home, User } from "svelte-hero-icons";
     import { authService } from "../services/Services";
     import { toggleTheme } from "../App.svelte";
     import InfoDropdown from "./components/InfoDropdown.svelte";
 
     export let onCreateGroupClick: () => void;
+    export let onCreateGroupSubscriptionClick: () => void;
 </script>
 
 <div class="drawer-side h-full">
@@ -139,13 +140,13 @@
                 {/each}
             </ul>
 
-            <!--<ul class="menu flex flex-col p-4 pt-0 compact">
+            <ul class="menu flex flex-col p-4 pt-0 compact">
                 <li class="menu-title -ml-2">
                     <span>
                         External Groups
 
-                        <div class="tooltip tooltip-left float-right" data-tip="Add Group">
-                            <button on:click={onCreateGroupClick} class="hover:text-primary"
+                        <div class="tooltip tooltip-left float-right" data-tip="Subscribe to Group">
+                            <button on:click={onCreateGroupSubscriptionClick} class="hover:text-primary"
                                 ><svg
                                     class="w-6 h-6"
                                     fill="none"
@@ -162,19 +163,21 @@
                     </span>
                 </li>
 
-                {#each $groups || [] as group}
+                {#each $groupSubscriptions || [] as groupSubscription}
                     <li>
                         <a
                             class="active:bg-base-200 active:text-primary"
-                            href={`/#/groups/${group.id}`}
-                            use:active={{ path: `/groups/${group.id}`, className: "bg-base-300" }}>
-                            <span style="min-width: 20px">{group.icon}</span>
-                            <span>{group.name}</span>
+                            href={`/#/external/groups/${groupSubscription.group.id}`}
+                            use:active={{
+                                path: `/external/groups/${groupSubscription.group.id}`,
+                                className: "bg-base-300",
+                            }}>
+                            <span style="min-width: 20px">{groupSubscription.group.icon}</span>
+                            <span>{groupSubscription.group.name}</span>
                         </a>
                     </li>
                 {/each}
             </ul>
-        </div>-->
 
             <footer class="sticky inset-x-0 bottom-0 bg-base-200 border-t border-base-100 p-2 lg:hidden">
                 <div class="dropdown dropdown-top">

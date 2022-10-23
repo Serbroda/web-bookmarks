@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+    export interface GroupModalResult {}
+</script>
+
 <script lang="ts">
     import EmojiChooser from "../EmojiChooser.svelte";
     import Modal from "./Modal.svelte";
@@ -43,23 +47,30 @@
         },
     ]}
     {onClose}>
-    <div class="flex">
-        <EmojiChooser
-            selected={selectedEmoji}
-            classes="mr-2"
-            onChange={(emoji) => {
-                selectedEmoji = emoji;
-            }} />
-        <input
-            bind:this={nameElement}
-            bind:value={name}
-            type="text"
-            placeholder="Group name"
-            class="input input-bordered grow" />
+    <div class="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-6">
+        <div class="sm:col-span-6">
+            <div class="flex space-x-4">
+                <EmojiChooser
+                    selected={selectedEmoji}
+                    onChange={(emoji) => {
+                        selectedEmoji = emoji;
+                    }} />
+                <input
+                    bind:this={nameElement}
+                    bind:value={name}
+                    type="text"
+                    placeholder="Group name"
+                    autocomplete="given-name"
+                    class="input input-bordered grow" />
+            </div>
+        </div>
+
+        <div class="sm:col-span-6">
+            <textarea
+                class="textarea textarea-bordered w-full"
+                rows="2"
+                placeholder="Description (optional)"
+                bind:value={description} />
+        </div>
     </div>
-    <textarea
-        class="textarea textarea-bordered w-full mt-2"
-        rows="2"
-        placeholder="Description (optional)"
-        bind:value={description} />
 </Modal>

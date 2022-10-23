@@ -45,3 +45,18 @@ func FindLatestGroups(ownerId uint, order string, limit int) []models.Group {
 	database.GetConnection().Raw(sql, ownerId).Scan(&entities)
 	return entities
 }
+
+func FindGroupSubscriptions(userId uint) []models.GroupSubscription {
+	var entities []models.GroupSubscription
+	database.GetConnection().Preload("Group").Where("user_id = ?", userId).Find(&entities)
+	return entities
+}
+
+func FindGroupSubscription(userId uint, groupId string) (models.GroupSubscription, error) {
+	var entity models.GroupSubscription
+	result := database.GetConnection().Where("user_id = ? and group_id = ?", userId, groupId).Find(&entity)
+	if result.RowsAffected == 0 {
+		return models.GroupSubscription{}, ErrEntityNotFound
+	}
+	return entity, nil
+}

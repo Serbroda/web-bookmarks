@@ -3,7 +3,7 @@
     import { toasts } from "svelte-toasts";
     import MainContainer from "../lib/MainContainer.svelte";
     import { groupService } from "../services/Services";
-    import type { GroupDto } from "../models/GroupDto";
+    import { GroupVisibility, type GroupDto } from "../models/GroupDto";
     import GroupModal from "../lib/modals/GroupModal.svelte";
     import CreateLinkModal from "../lib/modals/CreateLinkModal.svelte";
     import LinkCard from "../lib/LinkCard.svelte";
@@ -13,6 +13,8 @@
     import { querystring } from "svelte-spa-router";
     import { pushHistoryState, addQuery, removeQuery } from "../utils/url";
     import EditLinkModal from "../lib/modals/EditLinkModal.svelte";
+    import ShareModal from "../lib/modals/ShareModal.svelte";
+    import { Icon, Share, Eye, EyeOff } from "svelte-hero-icons";
 
     let id;
 
@@ -23,6 +25,8 @@
     let isEditLinkModalOpen: boolean = false;
     let isGroupModalOpen: boolean = false;
     let isLinkModalBusy: boolean = false;
+    let isGroupShareModalOpen: boolean = false;
+
     let inputName: string = "";
     let inputUrl: string = "";
     let inputDescription: string = "";
@@ -62,6 +66,16 @@
         toasts.success("Group saved");
 
         group = await groupService.getGroup(id);
+    };
+
+    const changeGroupVisibility = async (id: string, visibility: GroupVisibility) => {
+        const response = await groupService.changeGroupVisibility(id, visibility);
+        group = await groupService.getGroup(id);
+        toasts.success("Group saved");
+
+        if (visibility == "public") {
+            isGroupShareModalOpen = true;
+        }
     };
 
     const deleteGroup = async () => {
@@ -161,9 +175,16 @@
         description={group?.description}
         mode="Edit" />
 
+    <ShareModal
+        isOpen={isGroupShareModalOpen}
+        title={`Share Group "${group.icon} ${group.name}"`}
+        link={`${window.location.origin}${window.location.pathname}#/public/groups/${group.id}`}
+        onClose={() => (isGroupShareModalOpen = false)} />
+
     <ConfirmModal bind:this={confirmModal} />
 
     <MainContainer>
+        <!-- svelte-ignore a11y-label-has-associated-control -->
         <NavBar>
             <svelte:fragment slot="navbar-start">
                 <div class="flex flex-col ml-0 lg:ml-3">
@@ -191,6 +212,12 @@
                     </svg>
                     Add Link
                 </button>
+
+                {#if group.visibility === "public"}
+                    <button class="btn btn-ghost hidden md:flex" on:click={() => (isGroupShareModalOpen = true)}>
+                        <Icon src={Share} class="h-6 w-6" />
+                    </button>
+                {/if}
 
                 <div class="dropdown dropdown-end">
                     <label tabindex="0" class="btn btn-ghost btn-circle">
@@ -244,6 +271,32 @@
                                 Edit Group
                             </button>
                         </li>
+                        {#if group.visibility === "private"}
+                            <li>
+                                <button
+                                    on:click={async () =>
+                                        await changeGroupVisibility(group.id, GroupVisibility.PUBLIC)}>
+                                    <Icon src={Eye} class="h-6 w-6" />
+                                    Make public
+                                </button>
+                            </li>
+                        {/if}
+                        {#if group.visibility === "public"}
+                            <li>
+                                <button
+                                    on:click={async () =>
+                                        await changeGroupVisibility(group.id, GroupVisibility.PRIVATE)}>
+                                    <Icon src={EyeOff} class="h-6 w-6" />
+                                    Make private
+                                </button>
+                            </li>
+                            <li class="md:hidden">
+                                <button on:click={() => (isGroupShareModalOpen = true)}>
+                                    <Icon src={Share} class="h-6 w-6" />
+                                    Share Group
+                                </button>
+                            </li>
+                        {/if}
                         <li>
                             <button
                                 on:click={async () => {

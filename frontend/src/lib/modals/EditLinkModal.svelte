@@ -62,7 +62,7 @@
                 bind:value={link.name}
                 type="text"
                 placeholder="Link name (optional)"
-                class="input hover:input-bordered font-semibold text-xl" />
+                class="input input-ghost hover:input-bordered font-semibold text-xl" />
             <a class="link flex invisble-hover-container ml-4 hover:text-primary" target="_blank" href={link.url}>
                 <img class="favicon pr-1 pt-1" src={faviconUrl(hostname(link.url))} alt="favicon" />
                 <span class="break-all">{link.url}</span>
