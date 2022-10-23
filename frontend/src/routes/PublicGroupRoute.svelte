@@ -2,6 +2,7 @@
     import { params } from "svelte-spa-router";
     import { groupService } from "../services/Services";
     import LinkCard from "../lib/LinkCard.svelte";
+    import logo from "../assets/logo.svg";
     import type { LinkDto } from "../models/LinkDto";
     import NavBar from "../lib/NavBar.svelte";
     import { querystring } from "svelte-spa-router";
@@ -12,6 +13,7 @@
     import CreateGroupSubscriptionModal from "../lib/modals/CreateGroupSubscriptionModal.svelte";
     import { FlatToast, ToastContainer, toasts } from "svelte-toasts";
     import { Icon, PlusCircle } from "svelte-hero-icons";
+    import { classNames } from "../utils/dom";
 
     let id;
 
@@ -81,14 +83,25 @@
         }} />
 
     <!-- svelte-ignore a11y-label-has-associated-control -->
-    <NavBar>
+    <NavBar showMenuToggle={false}>
         <svelte:fragment slot="navbar-start">
-            <div class="flex flex-col ml-0 lg:ml-3">
-                <h2 class="text-xl lg:text-2xl font-bold flex">
-                    <div class="w-[30px] lg:w-[40px]">{group?.icon}</div>
-                    <span class="line-clamp-1">{group?.name}</span>
-                </h2>
-                <i class="text-xs leading-4 opacity-80 hidden lg:block ml-1">{group?.description}</i>
+            <div class="flex flex-col md:flex-row">
+                <a href="/" class="btn btn-ghost" aria-label="Homepage">
+                    <div class="inline-block text-2xl font-title text-primary flex">
+                        <img src={logo} class="w-8 h-8 mr-3" alt="Logo" />
+                        <span class="lowercase">rag</span><span class="uppercase text-base-content">bag</span>
+                    </div>
+                </a>
+
+                <div class="md:divider md:divider-horizontal hidden " />
+
+                <div class="ml-4 md:ml-0">
+                    <div class={classNames("text-xl lg:text-2xl font-bold flex", group?.description ? "" : "mt-2")}>
+                        <div class="w-[30px] lg:w-[40px]">{group?.icon}</div>
+                        <span class="line-clamp-1">{group?.name}</span>
+                    </div>
+                    <i class="text-xs leading-4 opacity-80 hidden lg:block ml-1">{group?.description}</i>
+                </div>
             </div>
         </svelte:fragment>
 
