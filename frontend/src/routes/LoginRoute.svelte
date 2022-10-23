@@ -3,9 +3,16 @@
     import { replace } from "svelte-spa-router";
 
     let error: string | undefined = undefined;
+    let isBusy: boolean = false;
 
     async function handleSubmit(e) {
+        if (isBusy) {
+            return;
+        }
+
         try {
+            isBusy = true;
+
             error = undefined;
 
             const formData = new FormData(e.target);
@@ -18,6 +25,8 @@
             }
         } catch (err) {
             error = `Sorry, that did not work. Make sure you are using the correct email address and password.`;
+        } finally {
+            isBusy = false;
         }
     }
 </script>
@@ -80,7 +89,8 @@
                 </div>
 
                 <div>
-                    <button type="submit" class="btn btn-primary w-full">Sign in</button>
+                    <button type="submit" class="btn btn-primary w-full" class:loading={isBusy} disabled={isBusy}
+                        >Sign in</button>
                 </div>
             </form>
 

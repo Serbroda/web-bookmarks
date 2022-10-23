@@ -4,9 +4,16 @@
     import { toasts } from "svelte-toasts";
 
     let error: string | undefined = undefined;
+    let isBusy: boolean = false;
 
     async function handleSubmit(e) {
+        if (isBusy) {
+            return;
+        }
+
         try {
+            isBusy = true;
+
             const formData = new FormData(e.target);
 
             if (formData.get("password") !== formData.get("passwordConfirm")) {
@@ -25,6 +32,8 @@
             }
         } catch (err) {
             error = err;
+        } finally {
+            isBusy = false;
         }
     }
 </script>
@@ -86,7 +95,8 @@
                     {/if}
 
                     <div>
-                        <button type="submit" class="btn btn-primary w-full">Sign up</button>
+                        <button type="submit" class="btn btn-primary w-full" class:loading={isBusy} disabled={isBusy}
+                            >Sign up</button>
                     </div>
                 </div>
             </form>
