@@ -6,6 +6,7 @@
 
     export let isOpen: boolean = false;
     export let value: string = "";
+    export let readonly: boolean = false;
     export let onClose: () => void;
     export let onSuccess: (subscription: GroupSubscriptionDto) => void;
 
@@ -30,7 +31,7 @@
 
 <Modal {isOpen} title="Subscribe to an external Group" {onClose}>
     <div class="form-control">
-        <input bind:value type="text" class="input input-bordered w-full" placeholder="Link or Group-Id" />
+        <input bind:value type="text" class="input input-bordered w-full" placeholder="Link or Group-Id" {readonly} />
     </div>
 
     <svelte:fragment slot="actions">
