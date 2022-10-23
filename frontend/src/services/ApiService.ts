@@ -1,5 +1,6 @@
 import { TOKEN_KEY } from "./AuthService";
 import { HEADER_APPLICATION_JSON } from "../consts/rest";
+import {token as tokenStore, authenticated as authenticatedStore} from "../stores/auth"
 
 export interface RequestProps extends RequestInit {
     ignoreAuth?: boolean;
@@ -80,6 +81,8 @@ export class ApiService {
         return fetch(absolute.href, init).then(async (res) => {
             if (res.status === 401 && !this.ignoreAuth) {
                 localStorage.removeItem(TOKEN_KEY);
+                tokenStore.set(undefined);
+                authenticatedStore.set(false);
             }
             return res;
         });

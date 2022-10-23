@@ -3,9 +3,20 @@ package utils
 import (
 	"os"
 	"strconv"
+	"sync"
+
+	"github.com/joho/godotenv"
+)
+
+var (
+	once sync.Once
 )
 
 func GetEnv(key, fallback string) string {
+	once.Do(func() {
+		godotenv.Load()
+	})
+
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}

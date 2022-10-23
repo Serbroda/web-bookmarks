@@ -23,6 +23,7 @@
     import LoginRoute from "./routes/LoginRoute.svelte";
     import RegisterRoute from "./routes/RegisterRoute.svelte";
     import ProfileRoute from "./routes/ProfileRoute.svelte";
+    import { authenticated } from "./stores/auth";
 
     setTheme(activeTheme || "light");
 
@@ -30,9 +31,15 @@
         return authService.isLoggedIn();
     };
 
-    function conditionsFailed(event) {
-        replace("/login");
-    }
+    const conditionsFailed = async (event) => {
+        await replace("/login");
+    };
+
+    authenticated.subscribe(async (val) => {
+        if (!val) {
+            await replace("/login");
+        }
+    });
 
     function routeLoaded(event) {
         const mainMenuElement: HTMLElement = document.getElementById("main-menu");

@@ -1,6 +1,7 @@
 import { ApiService } from "./ApiService";
 import { HEADER_APPLICATION_JSON, HEADER_APPLICATION_X_WWW_FORM_URLENCODED } from "../consts/rest";
 import type { UserDto } from "../models/UserDto";
+import {token as tokenStore, authenticated as authenticatedStore} from "../stores/auth"
 
 const TOKEN_KEY = "access_token";
 
@@ -34,7 +35,7 @@ export class AuthService extends ApiService {
         }
 
         const token = await response.text();
-        localStorage.setItem(TOKEN_KEY, token);
+        this.setToken(token);
         return response;
     }
 
@@ -92,10 +93,22 @@ export class AuthService extends ApiService {
 
     logout() {
         localStorage.removeItem(TOKEN_KEY);
+        tokenStore.set(undefined);
+        authenticatedStore.set(this.isLoggedIn())
+    }
+
+    getToken(): string | undefined {
+        return localStorage.getItem(TOKEN_KEY);
+    }
+
+    setToken(token: string) {
+        localStorage.setItem(TOKEN_KEY, token);
+        tokenStore.set(token);
+        authenticatedStore.set(this.isLoggedIn())
     }
 
     isLoggedIn(): boolean {
-        const token = localStorage.getItem(TOKEN_KEY);
+        const token = this.getToken();
         return token !== undefined && token !== null && token.trim() !== "";
     }
 }

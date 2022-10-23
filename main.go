@@ -13,7 +13,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/joho/godotenv"
 	"github.com/teris-io/shortid"
 )
 
@@ -26,8 +25,6 @@ var (
 
 func main() {
 	fmt.Println("version=", version)
-
-	godotenv.Load()
 
 	var dbName = utils.GetEnv("DB_NAME", "ragbag.db")
 	var serverAddress = utils.GetEnv("SERVER_URL", "0.0.0.0:8080")
