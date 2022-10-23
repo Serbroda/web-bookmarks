@@ -117,13 +117,13 @@
                                         message: "Do you really want to delete this Group Subscription?",
                                         buttons: [
                                             {
-                                                content: "Delete Group",
+                                                content: "Delete",
                                                 onClick: async () => {
                                                     confirmModal.hide();
 
                                                     await deleteGroupSubscription();
 
-                                                    toasts.success("Group Subscription deleted");
+                                                    toasts.success("Subscription deleted");
                                                 },
                                                 classes: "btn-error",
                                             },

@@ -305,7 +305,7 @@
                                         message: "Do you really want to delete this Group?",
                                         buttons: [
                                             {
-                                                content: "Delete Group",
+                                                content: "Delete",
                                                 onClick: async () => {
                                                     await deleteGroup();
 
