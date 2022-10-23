@@ -63,7 +63,7 @@
         "/register": RegisterRoute,
         "/": wrapAuthenticated(HomeRoute),
         "/groups/:groupId": wrapAuthenticated(GroupRoute),
-        "/public/groups/:groupId": wrapAuthenticated(PublicGroupRoute),
+        "/public/groups/:groupId": PublicGroupRoute,
         "/external/groups/:groupId": wrapAuthenticated(ExternalGroupRoute),
         "/profile": wrapAuthenticated(ProfileRoute),
     };

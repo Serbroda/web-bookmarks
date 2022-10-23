@@ -41,6 +41,23 @@ func GetGroup(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(group)
 }
 
+func GetGroupPublic(c *fiber.Ctx) error {
+	groupId := c.Params("groupId")
+
+	group, err := services.FindGroupById(groupId)
+	if err != nil && err == services.ErrEntityNotFound {
+		return c.Status(fiber.StatusNotFound).SendString("Group not found")
+	} else if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	if group.Visibility != models.Public {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(group)
+}
+
 func CreateGroup(c *fiber.Ctx) error {
 	authentication := c.Locals("authentication").(middlewares.Authentication)
 

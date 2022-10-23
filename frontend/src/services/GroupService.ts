@@ -111,4 +111,26 @@ export class GroupService extends ApiService {
         return this.delete(`/api/v1/groups/subscriptions/${groupId}`);
     }
 
+    async getGroupPublic(id: string): Promise<GroupDto | undefined> {
+        const response = await this.get(`/api/v1/groups/public/${id}`);
+        if (response.status === 404) {
+            return undefined;
+        }
+        return response.json();
+    }
+
+    async getLinksPublic(groupId: string, order?: string, limit?: string): Promise<LinkDto[]> {
+        let url = `/api/v1/groups/public/${groupId}/links`;
+        if (order || limit) {
+            url =
+                `${url}?` +
+                new URLSearchParams({
+                    order: order,
+                    limit: limit,
+                }).toString();
+        }
+        const response = await this.get(url);
+        return response.json();
+    }
+
 }

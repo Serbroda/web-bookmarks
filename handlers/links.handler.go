@@ -50,6 +50,24 @@ func GetLinks(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(links)
 }
 
+func GetLinksPublic(c *fiber.Ctx) error {
+	groupId := c.Params("groupId")
+
+	group, err := services.FindGroupById(groupId)
+
+	if err != nil && err == services.ErrEntityNotFound {
+		return c.Status(fiber.StatusNotFound).SendString("Group not found")
+	} else if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	} else if group.Visibility != models.Public {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
+
+	links := services.FindLinksByGroupId(groupId)
+
+	return c.Status(fiber.StatusOK).JSON(links)
+}
+
 func GetLatestLinks(c *fiber.Ctx) error {
 	order := c.Query("order")
 	limit, _ := strconv.ParseInt(c.Query("limit"), 10, 32)

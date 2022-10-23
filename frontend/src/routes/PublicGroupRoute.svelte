@@ -21,7 +21,7 @@
     $: if ($params?.groupId) {
         id = $params.groupId;
 
-        Promise.all([groupService.getGroup(id), groupService.getLinks(id)]).then((data) => {
+        Promise.all([groupService.getGroupPublic(id), groupService.getLinksPublic(id)]).then((data) => {
             group = data[0];
             links = data[1];
         });

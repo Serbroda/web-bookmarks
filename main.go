@@ -74,6 +74,9 @@ func setupApiV1(app *fiber.App) {
 	groupsGroup.Post("/subscriptions/:groupId", middlewares.JWTProtected(), handlers.CreateGroupSubscription)
 	groupsGroup.Delete("/subscriptions/:groupId", middlewares.JWTProtected(), handlers.DeleteGroupSubscription)
 
+	groupsGroup.Get("/public/:groupId", handlers.GetGroupPublic)
+	groupsGroup.Get("/public/:groupId/links", handlers.GetLinksPublic)
+
 	groupsGroup.Get("/:groupId", middlewares.JWTProtected(), handlers.GetGroup)
 	groupsGroup.Post("/", middlewares.JWTProtected(), handlers.CreateGroup)
 	groupsGroup.Patch("/:groupId", middlewares.JWTProtected(), handlers.UpdateGroup)
