@@ -58,6 +58,13 @@
         onSuccess={async (subscription) => {
             toasts.success("Group subscribed");
             isCreateGroupSubscriptionModalOpen = false;
+        }}
+        onError={(error) => {
+            console.log(error);
+            if (error.status === 409) {
+                toasts.warning("Already subscribed");
+                isCreateGroupSubscriptionModalOpen = false;
+            }
         }} />
 
     <ViewLinkModal

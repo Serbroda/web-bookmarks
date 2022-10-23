@@ -104,7 +104,11 @@ export class GroupService extends ApiService {
 
     async createGroupSubscription(groupId: string): Promise<GroupSubscriptionDto> {
         const response = await this.post(`/api/v1/groups/subscriptions/${groupId}`);
-        return response.json();
+        if(response.ok) {
+            return response.json();
+        } else {
+            throw response
+        }
     }
 
     async deleteGroupSubscription(groupId: string): Promise<Response> {

@@ -70,7 +70,7 @@ func CreateGroup(c *fiber.Ctx) error {
 	result := database.GetConnection().Where("name = ?", dto.Name).Find(&group)
 
 	if result.RowsAffected > 0 {
-		return c.Status(fiber.StatusBadRequest).SendString("Group " + group.Name + " already exists")
+		return c.Status(fiber.StatusConflict).SendString("Group " + group.Name + " already exists")
 	}
 
 	group = models.Group{
@@ -182,7 +182,7 @@ func CreateGroupSubscription(c *fiber.Ctx) error {
 
 	subscription, err := services.FindGroupSubscription(authentication.Id, groupId)
 	if err == nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Subscription already exists")
+		return c.Status(fiber.StatusConflict).SendString("Subscription already exists")
 	}
 
 	subscription = models.GroupSubscription{

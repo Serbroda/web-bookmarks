@@ -8,6 +8,7 @@
     export let value: string = "";
     export let readonly: boolean = false;
     export let onClose: () => void;
+    export let onError: (error: any) => void = undefined;
     export let onSuccess: (subscription: GroupSubscriptionDto) => void;
 
     const createGroupSubscription = async (linkOrId: string) => {
@@ -24,7 +25,9 @@
                 onSuccess(response);
             }
         } catch (error) {
-            console.error(error);
+            if (onError) {
+                onError(error);
+            }
         }
     };
 </script>
