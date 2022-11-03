@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"webcrate/database"
-	"webcrate/handlers"
-	"webcrate/middlewares"
-	"webcrate/utils"
+
+	"github.com/Serbroda/ragbag/database"
+	"github.com/Serbroda/ragbag/handlers"
+	"github.com/Serbroda/ragbag/middlewares"
+	"github.com/Serbroda/ragbag/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

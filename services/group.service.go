@@ -3,8 +3,9 @@ package services
 import (
 	"errors"
 	"fmt"
-	"webcrate/database"
-	"webcrate/models"
+
+	"github.com/Serbroda/ragbag/database"
+	"github.com/Serbroda/ragbag/models"
 )
 
 var ErrEntityNotFound = errors.New("can not find entity")

@@ -2,8 +2,9 @@ package services
 
 import (
 	"fmt"
-	"webcrate/database"
-	"webcrate/models"
+
+	"github.com/Serbroda/ragbag/database"
+	"github.com/Serbroda/ragbag/models"
 )
 
 func FindLinksByGroupId(groupId string) []models.Link {

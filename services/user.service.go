@@ -1,8 +1,8 @@
 package services
 
 import (
-	"webcrate/database"
-	"webcrate/models"
+	"github.com/Serbroda/ragbag/database"
+	"github.com/Serbroda/ragbag/models"
 )
 
 func FindUserById(id uint) (models.User, error) {

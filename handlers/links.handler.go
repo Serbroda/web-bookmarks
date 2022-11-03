@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"webcrate/database"
-	"webcrate/middlewares"
-	"webcrate/models"
-	"webcrate/services"
-	"webcrate/utils"
+
+	"github.com/Serbroda/ragbag/database"
+	"github.com/Serbroda/ragbag/middlewares"
+	"github.com/Serbroda/ragbag/models"
+	"github.com/Serbroda/ragbag/services"
+	"github.com/Serbroda/ragbag/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/tidwall/gjson"

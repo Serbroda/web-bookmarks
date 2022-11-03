@@ -1,4 +1,4 @@
-module webcrate
+module github.com/Serbroda/ragbag
 
 go 1.19
 

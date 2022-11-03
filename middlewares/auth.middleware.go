@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"webcrate/utils"
+	"github.com/Serbroda/ragbag/utils"
 
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"

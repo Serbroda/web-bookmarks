@@ -3,7 +3,8 @@ package database
 import (
 	"log"
 	"sync"
-	"webcrate/models"
+
+	"github.com/Serbroda/ragbag/models"
 
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"

@@ -3,9 +3,10 @@ package handlers
 import (
 	"strings"
 	"time"
-	"webcrate/database"
-	"webcrate/models"
-	"webcrate/utils"
+
+	"github.com/Serbroda/ragbag/database"
+	"github.com/Serbroda/ragbag/models"
+	"github.com/Serbroda/ragbag/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
