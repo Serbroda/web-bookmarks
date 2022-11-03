@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Serbroda/ragbag/database"
-	"github.com/Serbroda/ragbag/middlewares"
-	"github.com/Serbroda/ragbag/models"
-	"github.com/Serbroda/ragbag/services"
-
+	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/middlewares"
+	"github.com/Serbroda/ragbag/pkg/models"
+	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/gofiber/fiber/v2"
 )
 

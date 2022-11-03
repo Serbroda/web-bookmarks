@@ -6,12 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Serbroda/ragbag/database"
-	"github.com/Serbroda/ragbag/middlewares"
-	"github.com/Serbroda/ragbag/models"
-	"github.com/Serbroda/ragbag/services"
-	"github.com/Serbroda/ragbag/utils"
-
+	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/middlewares"
+	"github.com/Serbroda/ragbag/pkg/models"
+	"github.com/Serbroda/ragbag/pkg/services"
+	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/tidwall/gjson"
 )

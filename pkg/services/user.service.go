@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/Serbroda/ragbag/database"
-	"github.com/Serbroda/ragbag/models"
+	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/models"
 )
 
 func FindUserById(id uint) (models.User, error) {

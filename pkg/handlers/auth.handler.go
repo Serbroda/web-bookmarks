@@ -4,10 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Serbroda/ragbag/database"
-	"github.com/Serbroda/ragbag/models"
-	"github.com/Serbroda/ragbag/utils"
-
+	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/models"
+	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )

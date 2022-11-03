@@ -4,8 +4,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/Serbroda/ragbag/models"
-
+	"github.com/Serbroda/ragbag/pkg/models"
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )

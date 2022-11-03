@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Serbroda/ragbag/database"
-	"github.com/Serbroda/ragbag/models"
+	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/models"
 )
 
 var ErrEntityNotFound = errors.New("can not find entity")

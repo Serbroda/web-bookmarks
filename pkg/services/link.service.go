@@ -3,8 +3,8 @@ package services
 import (
 	"fmt"
 
-	"github.com/Serbroda/ragbag/database"
-	"github.com/Serbroda/ragbag/models"
+	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/models"
 )
 
 func FindLinksByGroupId(groupId string) []models.Link {

@@ -1,8 +1,7 @@
 package middlewares
 
 import (
-	"github.com/Serbroda/ragbag/utils"
-
+	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/golang-jwt/jwt/v4"

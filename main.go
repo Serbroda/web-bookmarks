@@ -6,11 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Serbroda/ragbag/database"
-	"github.com/Serbroda/ragbag/handlers"
-	"github.com/Serbroda/ragbag/middlewares"
-	"github.com/Serbroda/ragbag/utils"
-
+	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/handlers"
+	"github.com/Serbroda/ragbag/pkg/middlewares"
+	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
