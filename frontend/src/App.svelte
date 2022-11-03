@@ -10,7 +10,7 @@
     };
 
     export const toggleTheme = () => {
-        setTheme(activeTheme === "light" ? "dark" : "light");
+        setTheme(activeTheme === "ragbaglight" ? "ragbagdark" : "ragbaglight");
     };
 </script>
 
