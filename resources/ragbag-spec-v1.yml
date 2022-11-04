@@ -1,0 +1,112 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+
+servers:
+  - url: http://petstore.swagger.io/v1
+
+paths:
+  /groups:
+    get:
+      summary: List all all groups
+      operationId: getGroups
+      tags:
+        - groups
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: A paged array of pets
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupDto"
+
+components:
+  schemas:
+
+    IdInt64:
+      type: integer
+      format: int64
+      example: 123
+
+    IdString:
+      type: string
+      example: ZHbMDG-aM
+
+    UserDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdInt64"
+        username:
+          type: string
+
+    SpaceVisibility:
+      type: string
+      enum: 
+        - PRIVATE
+        - PUBLIC
+
+    SpaceDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdString"
+        ownerId:
+          $ref: "#/components/schemas/IdInt64"
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          $ref: "#/components/schemas/SpaceVisibility"
+
+    GroupVisibility:
+      type: string
+      enum: 
+        - PRIVATE
+        - PUBLIC
+
+    GroupDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdString"
+        spaceId:
+          $ref: "#/components/schemas/IdString"
+        ownerId:
+          $ref: "#/components/schemas/IdInt64"
+        icon:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          $ref: "#/components/schemas/GroupVisibility"
+
+    LinkDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdString"
+        groupid:
+          $ref: "#/components/schemas/IdString"
+        name:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
