@@ -17,37 +17,6 @@ export const loader = async () => {
   };
 };
 
-const navItems: NavItemData[] = [
-  { href: "/", label: "Home", active: false, children: [], icon: <HomeIcon /> },
-  {
-    href: "#",
-    label: "Groups",
-    active: false,
-    children: [
-      { href: "groups/1", label: "All posts", active: false, children: [] },
-      { href: "groups/2", label: "Add new", active: false, children: [] },
-      { href: "groups/3", label: "Categories", active: false, children: [] },
-    ],
-    icon: <NewspaperIcon />,
-  },
-  {
-    href: "#",
-    label: "Media",
-    active: false,
-    children: [
-      { href: "#", label: "Library", active: false, children: [] },
-      {
-        href: "#",
-        label: "Add new",
-        active: false,
-        children: [
-          { href: "#", label: "Third level", active: true, children: [] },
-        ],
-      },
-    ],
-  },
-];
-
 const Root = () => {
   const { groups } = useLoaderData() as { groups: GroupDto[] };
   console.log(groups);

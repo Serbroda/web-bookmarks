@@ -19,43 +19,45 @@ const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
     return hasActiveItems(item.children);
   };
 
+  const createLink = (item: NavItemData) => {
+    return (
+      <Link
+        to={item.href}
+        className={`${
+          item.active
+            ? "text-gray-800 font-semibold"
+            : "text-gray-600 font-medium"
+        } group flex w-full items-center py-2 px-3 text-sm font-medium mr-2 hover:bg-gray-100 rounded-md`}
+        key={item.label}
+      >
+        {item.icon ? (
+          <span
+            className={`${
+              item.active
+                ? "text-gray-800 font-semibold"
+                : "text-gray-600 font-medium"
+            } w-6 h-6 shrink-0 group-hover:text-gray-600 mr-2`}
+          >
+            {item.icon}
+          </span>
+        ) : (
+          <></>
+        )}
+        <span>{item.label}</span>
+      </Link>
+    );
+  };
+
   return (
     <>
-      {item.children.length == 0 ? (
-        <Link
-          to={item.href}
-          className={`${
-            item.active
-              ? "text-gray-800 font-semibold"
-              : "text-gray-600 font-medium"
-          } group flex w-full items-center py-2 px-3 text-sm font-medium mr-2 hover:bg-gray-100 rounded-md`}
-          key={item.label}
-        >
-          {item.icon ? (
-            <span
-              className={`${
-                item.active
-                  ? "text-gray-800 font-semibold"
-                  : "text-gray-600 font-medium"
-              } w-6 h-6 shrink-0 group-hover:text-gray-600 mr-2`}
-            >
-              {item.icon}
-            </span>
-          ) : (
-            <></>
-          )}
-          <span>{item.label}</span>
-        </Link>
-      ) : (
-        <></>
-      )}
+      {item.children.length == 0 ? createLink(item) : <></>}
 
       {item.children.length > 0 ? (
         <Disclosure defaultOpen={hasActiveChild()}>
           {({ open }) => (
             <>
               <div className="flex w-full items-center py-2 px-3 text-sm font-medium text-gray-600 mr-2 hover:bg-gray-100 rounded-md text-left">
-                <a href={item.href} className="group flex flex-1">
+                <Link to={item.href} className="group flex flex-1">
                   {item.icon ? (
                     <span className="w-6 h-6 text-gray-400 group-hover:text-gray-700 mr-2">
                       {item.icon}
@@ -63,10 +65,10 @@ const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
                   ) : (
                     <></>
                   )}
-                  <span className="group-hover:text-purple-700">
+                  <span className="group-hover:text-gray-800">
                     {item.label}
                   </span>
-                </a>
+                </Link>
 
                 <Disclosure.Button className="rounded-md hover:bg-gray-200">
                   <ChevronUpIcon

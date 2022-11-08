@@ -49,13 +49,13 @@ const ResizableContainer: FC<ResizableContainerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`${conatinerClassName} flex`}
+      className={`flex ${conatinerClassName}`}
       style={{ width: sidebarWidth }}
       onMouseDown={(e) => e.preventDefault()}
     >
       <div className="flex-1">{children}</div>
       <div
-        className={`${resizerClassName} __resizer`}
+        className={`__resizer ${resizerClassName}`}
         onMouseDown={startResizing}
       />
     </div>
