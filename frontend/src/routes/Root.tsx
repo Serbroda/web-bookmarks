@@ -1,6 +1,7 @@
 import { Outlet, useLoaderData } from "react-router-dom";
 import NavItem, { NavItemData } from "../components/NavItem";
 import { HomeIcon, NewspaperIcon } from "@heroicons/react/20/solid";
+import SideBar from "../components/SideBar";
 
 export interface GroupDto {
   id: number;
@@ -54,19 +55,7 @@ const Root = () => {
   return (
     <div className="App">
       <div className="flex min-h-screen">
-        <div className="w-64 shring-0 bg-gray-50 border-r border-gray-200 py-4">
-          <div className="px-4">
-            <a href="#" className="inline-block">
-              Logo
-            </a>
-          </div>
-
-          <nav className="mt-2 px-2">
-            {navItems.map((item) => (
-              <NavItem item={item} />
-            ))}
-          </nav>
-        </div>
+        <SideBar />
 
         <main className="p-4">
           <Outlet />
