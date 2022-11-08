@@ -13,7 +13,7 @@ const ResizableContainer: FC<ResizableContainerProps> = ({
   conatinerClassName = "",
   resizerClassName = "bg-gray-100 hover:bg-gray-200 w-[2px]",
 }) => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(width);
 
@@ -27,7 +27,7 @@ const ResizableContainer: FC<ResizableContainerProps> = ({
 
   const resize = useCallback(
     (mouseMoveEvent: any) => {
-      if (isResizing) {
+      if (containerRef?.current && isResizing) {
         setSidebarWidth(
           mouseMoveEvent.clientX -
             containerRef.current.getBoundingClientRect().left

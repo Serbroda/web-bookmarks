@@ -10,7 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import ResizableContainer from "./ResizableContainer";
 import Tippy from "@tippyjs/react";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import Logo from "../assets/logo.svg";
 
 const navItems: NavItemData[] = [
@@ -78,7 +78,9 @@ const bottomSideDideBarItems: SideSideBarItem[] = [
 ];
 
 const SideBar = () => {
-  const sideSideBarItem = (item: SideSideBarItem) => {
+  const [isOpen, setOpen] = useState<boolean>(true);
+
+  const createSideBarItem = (item: SideSideBarItem) => {
     const btn = (
       <button
         className={`${
@@ -101,17 +103,15 @@ const SideBar = () => {
       </>
     );
   };
-  return (
-    <ResizableContainer
-      width={312}
-      conatinerClassName="shrink-0 bg-gray-50 min-w-[256px] max-w-[80%]"
-    >
-      <div className="flex h-full">
+
+  const content = () => {
+    return (
+      <div className="flex h-full w-full">
         <div className="flex flex-col gap-0.5 justify-items-center border-r border-gray-200 overflow-x-hidden overflow-y-auto">
           <div />
-          {topSideDideBarItems.map((item) => sideSideBarItem(item))}
+          {topSideDideBarItems.map((item) => createSideBarItem(item))}
           <div className="flex-1" />
-          {bottomSideDideBarItems.map((item) => sideSideBarItem(item))}
+          {bottomSideDideBarItems.map((item) => createSideBarItem(item))}
           <div />
         </div>
 
@@ -152,7 +152,7 @@ const SideBar = () => {
             </div>
           </nav>
 
-          <footer className="sticky inset-x-0 bottom-0 bg-base-200 border-t border-base-100 py-1">
+          <footer className="sticky inset-x-0 bottom-0 border-t py-1">
             <div className="flex gap-0.5 justify-center">
               <Tippy content="New Group" placement="bottom">
                 <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-7 w-7 cursor-default">
@@ -169,7 +169,26 @@ const SideBar = () => {
           </footer>
         </div>
       </div>
-    </ResizableContainer>
+    );
+  };
+
+  return (
+    <>
+      <ResizableContainer
+        width={312}
+        conatinerClassName="shrink-0 bg-gray-50 min-w-[256px] max-w-[80%] hidden md:flex"
+      >
+        {content()}
+      </ResizableContainer>
+      <button onClick={() => setOpen(!isOpen)}>test</button>
+      <div
+        className={`${
+          isOpen ? "" : "hidden"
+        } flex md:hidden border-r border-gray-300 min-w-[312px] __drawer`}
+      >
+        {content()}
+      </div>
+    </>
   );
 };
 
