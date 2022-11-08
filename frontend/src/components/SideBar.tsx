@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import NavItem, { NavItemData } from "./NavItem";
 import {
   HomeIcon,
@@ -7,11 +8,13 @@ import {
   PencilSquareIcon,
   FolderPlusIcon,
   PlusIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import ResizableContainer from "./ResizableContainer";
 import Tippy from "@tippyjs/react";
 import { ReactNode, useState } from "react";
 import Logo from "../assets/logo.svg";
+import { Dialog, Transition } from "@headlessui/react";
 
 const navItems: NavItemData[] = [
   {
@@ -54,12 +57,12 @@ interface SideSideBarItem {
 const topSideDideBarItems: SideSideBarItem[] = [
   {
     tooltip: "Home",
-    content: <HomeIcon className="w-5 h-5 m-1 text-gray-700" />,
+    content: <HomeIcon className="w-6 h-6 text-gray-700" />,
     active: true,
   },
   {
     tooltip: "New Space",
-    content: <PlusIcon className="w-5 h-5 m-1 text-purple-700" />,
+    content: <PlusIcon className="w-6 h-6 text-purple-700" />,
     active: false,
   },
 ];
@@ -67,25 +70,25 @@ const topSideDideBarItems: SideSideBarItem[] = [
 const bottomSideDideBarItems: SideSideBarItem[] = [
   {
     tooltip: "Help",
-    content: <QuestionMarkCircleIcon className="w-5 h-5 m-1 text-gray-700" />,
+    content: <QuestionMarkCircleIcon className="w-6 h-6 text-gray-700" />,
     active: false,
   },
   {
     tooltip: "Settings",
-    content: <Cog6ToothIcon className="w-5 h-5 m-1 text-gray-700" />,
+    content: <Cog6ToothIcon className="w-6 h-6 text-gray-700" />,
     active: false,
   },
 ];
 
 const SideBar = () => {
-  const [isOpen, setOpen] = useState<boolean>(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(true);
 
   const createSideBarItem = (item: SideSideBarItem) => {
     const btn = (
       <button
         className={`${
           item.active ? "bg-gray-200" : ""
-        } rounded-full flex justify-center items-center mx-1 hover:bg-gray-200 h-7 w-7 cursor-default`}
+        } rounded-full flex justify-center items-center mx-2 hover:bg-gray-200 h-8 w-8 cursor-default`}
       >
         {item.content}
       </button>
@@ -155,14 +158,14 @@ const SideBar = () => {
           <footer className="sticky inset-x-0 bottom-0 border-t py-1">
             <div className="flex gap-0.5 justify-center">
               <Tippy content="New Group" placement="bottom">
-                <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-7 w-7 cursor-default">
-                  <FolderPlusIcon className="w-5 h-5 m-1 text-gray-700" />
+                <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
+                  <FolderPlusIcon className="w-6 h-6 m-1 text-gray-700" />
                 </button>
               </Tippy>
 
               <Tippy content="New Link" placement="bottom">
-                <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-7 w-7 cursor-default">
-                  <PencilSquareIcon className="w-5 h-5 m-1 text-gray-700" />
+                <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
+                  <PencilSquareIcon className="w-6 h-6 m-1 text-gray-700" />
                 </button>
               </Tippy>
             </div>
@@ -174,20 +177,76 @@ const SideBar = () => {
 
   return (
     <>
+      {/* Menu for mobile */}
+      <Transition.Root show={mobileMenuOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-40 md:hidden"
+          onClose={setMobileMenuOpen}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-40 flex">
+            <Transition.Child
+              as={Fragment}
+              enter="transition ease-in-out duration-300 transform"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transition ease-in-out duration-300 transform"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full"
+            >
+              <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white focus:outline-none">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-in-out duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="ease-in-out duration-300"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <div className="absolute top-0 right-0 -mr-12 pt-4">
+                    <button
+                      type="button"
+                      className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <span className="sr-only">Close sidebar</span>
+                      <XMarkIcon
+                        className="h-6 w-6 text-white"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </div>
+                </Transition.Child>
+                {content()}
+              </Dialog.Panel>
+            </Transition.Child>
+            <div className="w-14 flex-shrink-0" aria-hidden="true">
+              {/* Force sidebar to shrink to fit close icon */}
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      {/* Static and resizable menu for desktop */}
       <ResizableContainer
         width={312}
-        conatinerClassName="shrink-0 bg-gray-50 min-w-[256px] max-w-[80%] hidden md:flex"
+        conatinerClassName="shrink-0 bg-gray-50 min-w-[256px] max-w-[80%] hidden md:flex md:lex-shrink-0"
       >
         {content()}
       </ResizableContainer>
-      <button onClick={() => setOpen(!isOpen)}>test</button>
-      <div
-        className={`${
-          isOpen ? "" : "hidden"
-        } flex md:hidden border-r border-gray-300 min-w-[312px] __drawer`}
-      >
-        {content()}
-      </div>
     </>
   );
 };
