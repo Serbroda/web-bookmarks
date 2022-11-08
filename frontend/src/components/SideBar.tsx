@@ -15,6 +15,7 @@ import Tippy from "@tippyjs/react";
 import { ReactNode, useState } from "react";
 import Logo from "../assets/logo.svg";
 import { Dialog, Transition } from "@headlessui/react";
+import useMobileNavbar from "../stores/navigation";
 
 const navItems: NavItemData[] = [
   {
@@ -81,7 +82,7 @@ const bottomSideDideBarItems: SideSideBarItem[] = [
 ];
 
 const SideBar = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(true);
+  const { isOpen, setOpen } = useMobileNavbar();
 
   const createSideBarItem = (item: SideSideBarItem) => {
     const btn = (
@@ -178,12 +179,8 @@ const SideBar = () => {
   return (
     <>
       {/* Menu for mobile */}
-      <Transition.Root show={mobileMenuOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-40 md:hidden"
-          onClose={setMobileMenuOpen}
-        >
+      <Transition.Root show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-40 md:hidden" onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -220,7 +217,7 @@ const SideBar = () => {
                     <button
                       type="button"
                       className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => setOpen(false)}
                     >
                       <span className="sr-only">Close sidebar</span>
                       <XMarkIcon
