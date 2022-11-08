@@ -1,5 +1,5 @@
 import { Outlet, useLoaderData } from "react-router-dom";
-import SideBar from "../components/SideBar";
+import SideNav from "../components/side-nav/SideNav";
 
 export interface GroupDto {
   id: number;
@@ -22,7 +22,7 @@ const Root = () => {
   return (
     <div className="App">
       <div className="flex h-screen">
-        <SideBar />
+        <SideNav />
 
         <main className="p-4 h-screen w-full overflow-auto">
           <Outlet />

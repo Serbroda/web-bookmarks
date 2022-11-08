@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import NavItem, { NavItemData } from "./NavItem";
+import SideNavMenuItem, { SideNavMenuItemData } from "./SideNavMenuItem";
 import {
   HomeIcon,
   Cog6ToothIcon,
@@ -10,14 +10,14 @@ import {
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import ResizableContainer from "./ResizableContainer";
+import ResizableContainer from "../ResizableContainer";
 import Tippy from "@tippyjs/react";
-import { ReactNode, useState } from "react";
-import Logo from "../assets/logo.svg";
+import { ReactNode } from "react";
+import Logo from "../../assets/logo.svg";
 import { Dialog, Transition } from "@headlessui/react";
-import useMobileNavbar from "../stores/navigation";
+import useSideNav from "../../stores/useSideNav";
 
-const navItems: NavItemData[] = [
+const navItems: SideNavMenuItemData[] = [
   {
     href: "groups/0",
     label: "Groups",
@@ -81,8 +81,8 @@ const bottomSideDideBarItems: SideSideBarItem[] = [
   },
 ];
 
-const SideBar = () => {
-  const { isOpen, setOpen } = useMobileNavbar();
+const SideNav = () => {
+  const { isOpen, setOpen } = useSideNav();
 
   const createSideBarItem = (item: SideSideBarItem) => {
     const btn = (
@@ -136,7 +136,7 @@ const SideBar = () => {
 
           <nav className="flex flex-col mt-2 px-2 h-full overflow-x-hidden overflow-y-auto">
             <div>
-              <NavItem
+              <SideNavMenuItem
                 item={{
                   href: "/",
                   label: "Home",
@@ -151,7 +151,7 @@ const SideBar = () => {
               </h2>
 
               {navItems.map((item) => (
-                <NavItem item={item} />
+                <SideNavMenuItem item={item} />
               ))}
             </div>
           </nav>
@@ -248,4 +248,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default SideNav;

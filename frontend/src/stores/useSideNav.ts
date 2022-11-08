@@ -5,9 +5,9 @@ export interface UseMovileNavbarState {
     setOpen: (value: boolean) => void;
 }
 
-const useMobileNavbar = create<UseMovileNavbarState>((set) => ({
+const useSideNav = create<UseMovileNavbarState>((set) => ({
     isOpen: true,
     setOpen: (value: boolean) => set({isOpen: value}),
   }));
 
-export default useMobileNavbar;
+export default useSideNav;

@@ -3,23 +3,23 @@ import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
 
-export interface NavItemData {
+export interface SideNavMenuItemData {
   href: string;
   label: string;
   active: boolean;
-  children: NavItemData[];
+  children: SideNavMenuItemData[];
   icon?: ReactElement;
 }
 
-const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
+const SideNavMenuItem: FC<{ item: SideNavMenuItemData }> = ({ item }) => {
   const hasActiveChild = (): boolean => {
-    const hasActiveItems = (items: NavItemData[]): boolean => {
+    const hasActiveItems = (items: SideNavMenuItemData[]): boolean => {
       return items.some((item) => item.active || hasActiveItems(item.children));
     };
     return hasActiveItems(item.children);
   };
 
-  const createLink = (item: NavItemData) => {
+  const createLink = (item: SideNavMenuItemData) => {
     return (
       <Link
         to={item.href}
@@ -83,7 +83,7 @@ const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
 
               <Disclosure.Panel className="ml-4">
                 {item.children.map((child) => (
-                  <NavItem item={child} key={item.label} />
+                  <SideNavMenuItem item={child} key={item.label} />
                 ))}
               </Disclosure.Panel>
             </>
@@ -96,4 +96,4 @@ const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
   );
 };
 
-export default NavItem;
+export default SideNavMenuItem;
