@@ -1,11 +1,8 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import reactLogo from "../assets/react.svg";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const HomePage = () => {
   return (
-    <div className="App">
+    <>
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src="/vite.svg" className="logo" alt="Vite logo" />
@@ -17,8 +14,8 @@ function App() {
       <h1 className="text-3xl font-bold underline text-red-600">
         Simple React Typescript Tailwind Sample
       </h1>
-    </div>
+    </>
   );
-}
+};
 
-export default App;
+export default HomePage;
