@@ -6,6 +6,7 @@ import ErrorPage from "./routes/ErrorPage";
 import GroupPage from "./routes/GroupPage";
 import HomePage from "./routes/HomePage";
 import Root, { loader as rootLoader } from "./routes/Root";
+import "tippy.js/dist/tippy.css";
 
 const router = createBrowserRouter([
   {

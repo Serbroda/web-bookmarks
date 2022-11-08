@@ -36,7 +36,7 @@ const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
               item.active
                 ? "text-gray-800 font-semibold"
                 : "text-gray-600 font-medium"
-            } w-6 h-6 shrink-0 group-hover:text-gray-600 mr-2`}
+            } w-5 h-5 shrink-0 group-hover:text-gray-600 mr-2`}
           >
             {item.icon}
           </span>
@@ -59,7 +59,7 @@ const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
               <div className="flex w-full items-center py-2 px-3 text-sm font-medium text-gray-600 mr-2 hover:bg-gray-100 rounded-md text-left">
                 <Link to={item.href} className="group flex flex-1">
                   {item.icon ? (
-                    <span className="w-6 h-6 text-gray-400 group-hover:text-gray-700 mr-2">
+                    <span className="w-5 h-5 text-gray-400 group-hover:text-gray-700 mr-2">
                       {item.icon}
                     </span>
                   ) : (
@@ -74,8 +74,8 @@ const NavItem: FC<{ item: NavItemData }> = ({ item }) => {
                   <ChevronUpIcon
                     className={`${
                       open
-                        ? "-rotate-180 transform text-gray-600"
-                        : "text-gray-400"
+                        ? "transform text-gray-600"
+                        : "rotate-180 text-gray-400"
                     } h-6 w-6`}
                   />
                 </Disclosure.Button>
