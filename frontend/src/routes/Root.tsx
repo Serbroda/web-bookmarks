@@ -1,6 +1,4 @@
 import { Outlet, useLoaderData } from "react-router-dom";
-import NavItem, { NavItemData } from "../components/NavItem";
-import { HomeIcon, NewspaperIcon } from "@heroicons/react/20/solid";
 import SideBar from "../components/SideBar";
 
 export interface GroupDto {
@@ -23,10 +21,10 @@ const Root = () => {
 
   return (
     <div className="App">
-      <div className="flex min-h-screen">
+      <div className="flex h-screen">
         <SideBar />
 
-        <main className="p-4">
+        <main className="p-4 h-screen w-full overflow-auto">
           <Outlet />
         </main>
       </div>
