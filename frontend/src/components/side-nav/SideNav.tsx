@@ -110,7 +110,7 @@ const SideNav = () => {
 
   const content = () => {
     return (
-      <div className="flex h-full w-full">
+      <div className="flex h-full w-full bg-white">
         <div className="flex flex-col gap-0.5 justify-items-center border-r border-gray-200 overflow-x-hidden overflow-y-auto">
           <div />
           {topSideDideBarItems.map((item) => createSideBarItem(item))}
