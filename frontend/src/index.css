@@ -7,3 +7,7 @@ div.__resizer {
   cursor: col-resize;
   resize: horizontal;
 }
+
+.__dialog-content-max-height {
+  max-height: calc(100vh - 200px) !important;
+}
