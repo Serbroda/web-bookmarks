@@ -1,5 +1,12 @@
-import { Outlet, useLoaderData } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  Outlet,
+  useLoaderData,
+  useLocation,
+  useNavigation,
+} from "react-router-dom";
 import SideNav from "../components/side-nav/SideNav";
+import useSideNav from "../stores/useSideNav";
 
 export interface GroupDto {
   id: number;
@@ -17,7 +24,15 @@ export const loader = async () => {
 
 const Root = () => {
   const { groups } = useLoaderData() as { groups: GroupDto[] };
-  console.log(groups);
+
+  const location = useLocation();
+  const { isOpen, setOpen } = useSideNav();
+
+  useEffect(() => {
+    if (isOpen) {
+      setOpen(false);
+    }
+  }, [location]);
 
   return (
     <div className="App">
