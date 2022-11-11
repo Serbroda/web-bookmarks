@@ -11,3 +11,71 @@ div.__resizer {
 .__dialog-content-max-height {
   max-height: calc(100vh - 200px) !important;
 }
+
+@layer components {
+  /* buttons */
+  .btn {
+    @apply inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700;
+  }
+
+  .btn-secondary {
+    @apply border-transparent bg-indigo-100 text-indigo-700 hover:bg-indigo-200;
+  }
+
+  .btn-success {
+    @apply border-transparent bg-emerald-600 text-white hover:bg-emerald-700;
+  }
+
+  .btn-warning {
+    @apply border-transparent bg-yellow-500 text-white hover:bg-yellow-600;
+  }
+
+  .btn-danger {
+    @apply border-transparent bg-red-500 text-white hover:bg-red-600;
+  }
+
+  .btn-ghost {
+    @apply border-transparent bg-transparent shadow-none;
+  }
+
+  .btn-xs {
+    @apply px-2.5 py-1.5 text-xs;
+  }
+
+  .btn-sm {
+    @apply px-3 py-2 text-sm leading-4;
+  }
+
+  .btn-md {
+    @apply text-base;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* button groups */
+  .btn-group {
+    @apply isolate inline-flex rounded-md shadow-sm;
+  }
+
+  .btn-group button {
+    @apply focus:ring-1 focus:ring-offset-0;
+  }
+
+  .btn-group button:first-of-type {
+    @apply rounded-none rounded-l-md;
+  }
+
+  .btn-group button:not(:first-of-type):not(:last-of-type) {
+    @apply rounded-none;
+  }
+
+  .btn-group button:last-of-type {
+    @apply rounded-none rounded-r-md;
+  }
+}
