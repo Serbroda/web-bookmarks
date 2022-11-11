@@ -6,6 +6,7 @@ import {
   useNavigation,
 } from "react-router-dom";
 import SideNav from "../components/side-nav/SideNav";
+import usePreferences from "../stores/usePreferences";
 import useSideNav from "../stores/useSideNav";
 
 export interface GroupDto {
@@ -24,9 +25,14 @@ export const loader = async () => {
 
 const Root = () => {
   const { groups } = useLoaderData() as { groups: GroupDto[] };
+  const { init } = usePreferences();
 
   const location = useLocation();
   const { isOpen, setOpen } = useSideNav();
+
+  useEffect(() => {
+    init();
+  }, [init]);
 
   useEffect(() => {
     if (isOpen) {
@@ -35,7 +41,7 @@ const Root = () => {
   }, [location]);
 
   return (
-    <div className="App">
+    <div className="App bg-gray-50 dark:bg-gray-800">
       <div className="flex h-screen">
         <SideNav />
 

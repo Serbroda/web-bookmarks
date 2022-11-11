@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { FC, Fragment, ReactNode, useState } from "react";
+import useModal from "../../stores/useModal";
 
 export interface ModalProps {
   children: ReactNode;
@@ -18,18 +19,18 @@ const Modal: FC<ModalProps> = ({
   postition = "center",
   padding = true,
 }) => {
-  let [isOpen, setIsOpen] = useState(show);
+  let { isOpen, setOpen } = useModal();
 
   const closeModal = () => {
-    setIsOpen(false);
+    setOpen(false);
   };
 
   const openModal = () => {
-    setIsOpen(true);
+    setOpen(true);
   };
 
   return (
-    <Transition appear show={show !== undefined ? show : isOpen} as={Fragment}>
+    <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
         <Transition.Child
           as={Fragment}
