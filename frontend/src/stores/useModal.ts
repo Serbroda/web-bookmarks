@@ -1,6 +1,6 @@
 import create from 'zustand'
 
-export interface UseModalState {
+export type UseModalState = {
     isOpen: boolean;
     setOpen: (value: boolean) => void;
 }

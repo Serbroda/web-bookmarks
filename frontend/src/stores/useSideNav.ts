@@ -1,6 +1,6 @@
 import create from 'zustand'
 
-export interface UseMovileNavbarState {
+export type UseMovileNavbarState = {
     isOpen: boolean;
     setOpen: (value: boolean) => void;
 }
