@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 div.__resizer {
   cursor: col-resize;
   resize: horizontal;
@@ -15,31 +14,31 @@ div.__resizer {
 @layer components {
   /* buttons */
   .btn {
-    @apply inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+    @apply inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm;
   }
 
   .btn-primary {
-    @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700;
+    @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
   }
 
   .btn-secondary {
-    @apply border-transparent bg-indigo-100 text-indigo-700 hover:bg-indigo-200;
+    @apply border-transparent bg-indigo-100 text-indigo-700 hover:bg-indigo-200 focus:ring-indigo-500;
   }
 
   .btn-success {
-    @apply border-transparent bg-emerald-600 text-white hover:bg-emerald-700;
+    @apply border-transparent bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500;
   }
 
   .btn-warning {
-    @apply border-transparent bg-yellow-500 text-white hover:bg-yellow-600;
+    @apply border-transparent bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-400;
   }
 
   .btn-danger {
-    @apply border-transparent bg-red-500 text-white hover:bg-red-600;
+    @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
   }
 
   .btn-ghost {
-    @apply border-transparent bg-transparent shadow-none;
+    @apply border-transparent bg-transparent shadow-none focus:ring-0;
   }
 
   .btn-xs {

@@ -1,13 +1,9 @@
 import { useEffect } from "react";
-import {
-  Outlet,
-  useLoaderData,
-  useLocation,
-  useNavigation,
-} from "react-router-dom";
+import { Outlet, useLoaderData, useLocation } from "react-router-dom";
 import SideNav from "../components/side-nav/SideNav";
 import usePreferences from "../stores/usePreferences";
 import useSideNav from "../stores/useSideNav";
+import AlertModal from "../components/modals/AlertModal";
 
 export interface GroupDto {
   id: number;
@@ -41,15 +37,19 @@ const Root = () => {
   }, [location]);
 
   return (
-    <div className="App bg-gray-50 dark:bg-gray-800">
-      <div className="flex h-screen">
-        <SideNav />
+    <>
+      <div className="App bg-gray-50 dark:bg-gray-800">
+        <div className="flex h-screen">
+          <SideNav />
 
-        <main className="p-4 h-screen w-full overflow-auto">
-          <Outlet />
-        </main>
+          <main className="p-4 h-screen w-full overflow-auto">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+
+      <AlertModal />
+    </>
   );
 };
 
