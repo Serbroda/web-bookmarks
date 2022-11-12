@@ -1,3 +1,4 @@
+import LinkCard from "../components/LinkCard";
 import GroupModal from "../components/modals/GroupModal";
 import LinkModal from "../components/modals/LinkModal";
 import useAlertModal from "../stores/modals/useAlertModal";
@@ -46,20 +47,6 @@ const GroupPage = () => {
         Add group
       </button>
 
-      <button
-        className="btn btn-primary"
-        onClick={() =>
-          openLinkModal({
-            mode: "edit",
-            onSave: () => {
-              console.log("Link saved");
-            },
-          })
-        }
-      >
-        Add Link
-      </button>
-
       <br />
       <span className="btn-group">
         <button className="btn btn-xs">xs</button>
@@ -70,6 +57,60 @@ const GroupPage = () => {
       <br />
       <input type="text" className="input" />
       <input type="text" className="input input-error" />
+
+      <div className="flex flex-wrap gap-4">
+        <LinkCard
+          onClick={() => {
+            openLinkModal({
+              mode: "edit",
+              onSave: () => {
+                console.log("Link saved");
+              },
+            });
+          }}
+        />
+        <LinkCard
+          onClick={() => {
+            openLinkModal({
+              mode: "edit",
+              onSave: () => {
+                console.log("Link saved");
+              },
+            });
+          }}
+        />
+
+        <LinkCard
+          onClick={() => {
+            openLinkModal({
+              mode: "edit",
+              onSave: () => {
+                console.log("Link saved");
+              },
+            });
+          }}
+        />
+        <LinkCard
+          onClick={() => {
+            openLinkModal({
+              mode: "edit",
+              onSave: () => {
+                console.log("Link saved");
+              },
+            });
+          }}
+        />
+        <LinkCard
+          onClick={() => {
+            openLinkModal({
+              mode: "edit",
+              onSave: () => {
+                console.log("Link saved");
+              },
+            });
+          }}
+        />
+      </div>
 
       <GroupModal />
       <LinkModal />

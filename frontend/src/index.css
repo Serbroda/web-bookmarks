@@ -11,6 +11,14 @@ div.__resizer {
   max-height: calc(100vh - 230px) !important;
 }
 
+.invisble-hover-item {
+  visibility: hidden;
+}
+
+.invisble-hover-container:hover .invisble-hover-item {
+  visibility: visible;
+}
+
 @layer components {
   /* buttons */
   .btn {
@@ -18,23 +26,23 @@ div.__resizer {
   }
 
   .btn-primary {
-    @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+    @apply border-indigo-700 bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
   }
 
   .btn-secondary {
-    @apply border-transparent bg-indigo-100 text-indigo-700 hover:bg-indigo-200 focus:ring-indigo-500;
+    @apply border-indigo-200 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 focus:ring-indigo-500;
   }
 
   .btn-success {
-    @apply border-transparent bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500;
+    @apply border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500;
   }
 
   .btn-warning {
-    @apply border-transparent bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-400;
+    @apply border-yellow-600 bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-400;
   }
 
   .btn-danger {
-    @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    @apply border-red-700 bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
   }
 
   .btn-ghost {
@@ -98,5 +106,10 @@ div.__resizer {
   textarea.input-ghost,
   select.input-ghost {
     @apply border-transparent shadow-none;
+  }
+
+  /* card */
+  .card {
+    @apply border-2 border-transparent shadow-md rounded-xl p-2;
   }
 }
