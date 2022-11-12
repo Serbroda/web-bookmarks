@@ -9,7 +9,7 @@ const GroupModal = () => {
   return (
     <Modal show={isOpen} onClose={() => setOpen(false)} width="medium">
       <div className="sm:flex sm:items-start w-full">
-        <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+        <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
           <Dialog.Title
             as="h3"
             className="text-lg font-medium leading-6 text-gray-900"

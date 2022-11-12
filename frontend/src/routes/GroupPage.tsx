@@ -1,12 +1,15 @@
 import GroupModal from "../components/modals/GroupModal";
+import LinkModal from "../components/modals/LinkModal";
 import useAlertModal from "../stores/modals/useAlertModal";
 import useGroupModal from "../stores/modals/useGroupModal";
+import useLinkModal from "../stores/modals/useLinkModal";
 import useSideNav from "../stores/useSideNav";
 
 const GroupPage = () => {
   const { isOpen, setOpen } = useSideNav();
   const { openModal: openAlertModal } = useAlertModal();
   const { openModal: openGroupModal } = useGroupModal();
+  const { openModal: openLinkModal } = useLinkModal();
 
   return (
     <>
@@ -43,6 +46,20 @@ const GroupPage = () => {
         Add group
       </button>
 
+      <button
+        className="btn btn-primary"
+        onClick={() =>
+          openLinkModal({
+            mode: "edit",
+            onSave: () => {
+              console.log("Link saved");
+            },
+          })
+        }
+      >
+        Add Link
+      </button>
+
       <br />
       <span className="btn-group">
         <button className="btn btn-xs">xs</button>
@@ -55,6 +72,7 @@ const GroupPage = () => {
       <input type="text" className="input input-error" />
 
       <GroupModal />
+      <LinkModal />
     </>
   );
 };

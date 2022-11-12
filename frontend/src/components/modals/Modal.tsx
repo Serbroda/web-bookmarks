@@ -6,6 +6,7 @@ export interface ModalProps {
   children: ReactNode;
   show: boolean;
   width?: "small" | "medium" | "big";
+  overflow?: "hidden" | "visible";
   onClose?: () => void;
   onCloseButtonClick?: () => void;
   onOutsideClick?: () => void;
@@ -15,6 +16,7 @@ const Modal: FC<ModalProps> = ({
   children,
   show = false,
   width = "small",
+  overflow = "hidden",
   onClose,
   onCloseButtonClick,
   onOutsideClick,
@@ -59,13 +61,13 @@ const Modal: FC<ModalProps> = ({
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
-                className={`relative w-full transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:p-6 ${
+                className={`relative w-full transform rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:p-6 ${
                   width == "small"
                     ? "max-w-lg"
                     : width == "medium"
                     ? "max-w-4xl"
                     : "max-w-7xl"
-                }`}
+                } overflow-${overflow}`}
               >
                 <div className="absolute top-0 right-0 pt-4 pr-4 sm:block">
                   <button

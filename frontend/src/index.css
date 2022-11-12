@@ -81,11 +81,22 @@ div.__resizer {
   /* input */
   input.input,
   textarea.input {
-    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+    @apply block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+  }
+
+  select.input {
+    @apply block rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm;
   }
 
   input.input-error,
-  textarea.input-error {
+  textarea.input-error,
+  select.input-error {
     @apply border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:outline-none focus:ring-red-500;
+  }
+
+  input.input-ghost,
+  textarea.input-ghost,
+  select.input-ghost {
+    @apply border-transparent shadow-none;
   }
 }
