@@ -15,6 +15,7 @@ import { ReactNode } from "react";
 import Logo from "../../assets/logo.svg";
 import { Dialog, Transition } from "@headlessui/react";
 import useSideNav from "../../stores/useSideNav";
+import TopNav from "../TopNav";
 
 const navItems: SideNavMenuItemData[] = [
   {
@@ -114,67 +115,69 @@ const SideNav = () => {
 
   const content = () => {
     return (
-      <div className="flex h-full w-full bg-white">
-        <div className="flex flex-col gap-0.5 justify-items-center border-r border-gray-200 overflow-x-hidden overflow-y-auto">
-          <div />
-          {topSideDideBarItems.map((item) => createSideBarItem(item))}
-          <div className="flex-1" />
-          {bottomSideDideBarItems.map((item) => createSideBarItem(item))}
-          <div />
-        </div>
+      <div className="flex flex-col w-full h-full">
+        <TopNav containerClassNames="px-2">
+          <a
+            href="/"
+            className="px-2 py-2 flex-0 inline-flex items-center"
+            aria-label="Homepage"
+          >
+            <div className="flex text-2xl font-semibold">
+              <img src={Logo} className="w-8 h-8 mr-3" alt="Logo" />{" "}
+              <span className="lowercase text-red-700">rag</span>
+              <span className="uppercase text-gray-700">bag</span>
+            </div>
+          </a>
+        </TopNav>
 
-        <div className="flex flex-col h-full w-full">
-          <div className="px-4 sticky">
-            <a
-              href="/"
-              className="px-2 flex-0 btn btn-ghost md:px-4"
-              aria-label="Homepage"
-            >
-              <div className="flex text-3xl font-semibold">
-                <img src={Logo} className="w-9 h-9 mr-3" alt="Logo" />{" "}
-                <span className="lowercase  text-red-700">rag</span>
-                <span className="uppercase text-gray-700">bag</span>
-              </div>
-            </a>
+        <div className="flex h-full w-full bg-white border-r border-r-gray-200">
+          <div className="flex flex-col gap-1 justify-items-center border-r border-gray-200 overflow-x-hidden overflow-y-auto">
+            <div />
+            {topSideDideBarItems.map((item) => createSideBarItem(item))}
+            <div className="flex-1" />
+            {bottomSideDideBarItems.map((item) => createSideBarItem(item))}
+            <div />
           </div>
 
-          <nav className="flex flex-col mt-2 px-2 h-full overflow-x-hidden overflow-y-auto">
-            <div>
-              <SideNavMenuItem
-                item={{
-                  href: "/",
-                  label: "Home",
-                  active: true,
-                  children: [],
-                  icon: <HomeIcon />,
-                }}
-              />
+          <div className="flex flex-col h-full w-full overflow-x-hidden overflow-y-auto">
+            <nav className="flex flex-col mt-8 px-2 h-full">
+              <div>
+                <SideNavMenuItem
+                  item={{
+                    href: "/",
+                    label: "Home",
+                    active: true,
+                    children: [],
+                    icon: <HomeIcon />,
+                  }}
+                />
 
-              <h2 className="w-full py-4 px-1 text-sm font-semibold text-gray-400">
-                My Groups
-              </h2>
+                <h2 className="w-full py-4 px-1 text-sm font-semibold text-gray-400">
+                  My Groups
+                </h2>
 
-              {navItems.map((item) => (
-                <SideNavMenuItem item={item} />
-              ))}
-            </div>
-          </nav>
+                {navItems.map((item) => (
+                  <SideNavMenuItem item={item} />
+                ))}
+              </div>
+            </nav>
 
-          <footer className="sticky inset-x-0 bottom-0 border-t py-1">
-            <div className="flex gap-0.5 justify-center">
-              <Tippy content="New Group" placement="bottom">
-                <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
-                  <FolderPlusIcon className="w-6 h-6 m-1 text-gray-700" />
-                </button>
-              </Tippy>
+            <footer className="sticky inset-x-0 bottom-0 border-t py-1">
+              <div className="flex gap-0.5 justify-center">
+                <Tippy content="New Group" placement="bottom">
+                  <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
+                    <FolderPlusIcon className="w-6 h-6 m-1 text-gray-700" />
+                  </button>
+                </Tippy>
 
-              <Tippy content="New Link" placement="bottom">
-                <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
-                  <PencilSquareIcon className="w-6 h-6 m-1 text-gray-700" />
-                </button>
-              </Tippy>
-            </div>
-          </footer>
+                <Tippy content="New Link" placement="bottom">
+                  <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
+                    <PencilSquareIcon className="w-6 h-6 m-1 text-gray-700" />
+                  </button>
+                </Tippy>
+              </div>
+            </footer>
+          </div>
         </div>
       </div>
     );
@@ -242,7 +245,7 @@ const SideNav = () => {
       </Transition.Root>
 
       {/* Static and resizable menu for desktop */}
-      <div className="shrink-0 bg-gray-50 min-w-min w-80 hidden md:flex md:lex-shrink-0 border-r border-r-gray-200">
+      <div className="bg-gray-50 min-w-min w-96 hidden md:flex md:lex-shrink-0 ">
         {content()}
       </div>
     </>
