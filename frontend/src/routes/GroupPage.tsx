@@ -33,6 +33,10 @@ const GroupPage = () => {
         <button className="btn btn-primary btn-xs">xs</button>
         <button className="btn btn-primary btn-xs">xs</button>
       </span>
+
+      <br />
+      <input type="text" className="input" />
+      <input type="text" className="input input-error" />
     </>
   );
 };
