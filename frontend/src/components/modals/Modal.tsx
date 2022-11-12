@@ -1,37 +1,44 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { FC, Fragment, ReactNode, useState } from "react";
-import useModal from "../../stores/useModal";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 export interface ModalProps {
   children: ReactNode;
-  title?: string;
-  show?: boolean;
+  show: boolean;
   width?: "small" | "medium" | "big";
   postition?: "top" | "center";
   padding?: boolean;
+  showCloseButton?: boolean;
+  onClose?: () => void;
+  onCloseButtonClick?: () => void;
+  onOutsideClick?: () => void;
 }
 
 const Modal: FC<ModalProps> = ({
   children,
-  title,
   show = false,
   width = "small",
   postition = "center",
   padding = true,
+  showCloseButton = true,
+  onClose,
+  onCloseButtonClick,
+  onOutsideClick,
 }) => {
-  let { isOpen, setOpen } = useModal();
-
-  const closeModal = () => {
-    setOpen(false);
-  };
-
-  const openModal = () => {
-    setOpen(true);
-  };
-
   return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={closeModal}>
+    <Transition appear show={show} as={Fragment}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => {
+          if (onOutsideClick) {
+            onOutsideClick();
+          }
+          if (onClose) {
+            onClose();
+          }
+        }}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -70,15 +77,25 @@ const Modal: FC<ModalProps> = ({
                   padding ? "p-6" : "p-1"
                 } w-full max-h-screen transform rounded-2xl bg-white text-left align-middle shadow-xl transition-all`}
               >
-                {title && (
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 mb-2"
-                  >
-                    {title}
-                  </Dialog.Title>
+                {showCloseButton && (
+                  <div className="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                    <button
+                      type="button"
+                      className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                      onClick={() => {
+                        if (onCloseButtonClick) {
+                          onCloseButtonClick();
+                        }
+                        if (onClose) {
+                          onClose();
+                        }
+                      }}
+                    >
+                      <span className="sr-only">Close</span>
+                      <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                    </button>
+                  </div>
                 )}
-
                 {children}
               </Dialog.Panel>
             </Transition.Child>
