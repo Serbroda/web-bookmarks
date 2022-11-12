@@ -1,8 +1,10 @@
-import MyModal from "../components/modals/MyModal";
+import MyModal from "../components/modals/AlertModal";
+import useAlertModal from "../stores/modals/useAlertModal";
 import useSideNav from "../stores/useSideNav";
 
 const GroupPage = () => {
   const { isOpen, setOpen } = useSideNav();
+  const { openModal: openAlertModal } = useAlertModal();
 
   return (
     <>
@@ -12,6 +14,23 @@ const GroupPage = () => {
 
       <MyModal />
 
+      <button
+        className="btn btn-danger"
+        onClick={() =>
+          openAlertModal({
+            title: "Delete Account",
+            message: "Do you really want to delete this account?",
+            confirmButtonMessage: "Yes, delete account",
+            onConfirm: () => {
+              console.log("Confirmed account deletion");
+            },
+          })
+        }
+      >
+        Delete
+      </button>
+
+      <br />
       <span className="btn-group">
         <button className="btn btn-xs">xs</button>
         <button className="btn btn-primary btn-xs">xs</button>

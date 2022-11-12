@@ -2,12 +2,15 @@ import { Dialog, Transition } from "@headlessui/react";
 import { FC, Fragment, ReactNode, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
-export interface ModalProps {
-  children: ReactNode;
-  show: boolean;
+export interface ModalBaseProps {
   width?: "small" | "medium" | "big";
   postition?: "top" | "center";
   padding?: boolean;
+}
+
+export interface ModalProps extends ModalBaseProps {
+  children: ReactNode;
+  show: boolean;
   showCloseButton?: boolean;
   onClose?: () => void;
   onCloseButtonClick?: () => void;
@@ -54,7 +57,9 @@ const Modal: FC<ModalProps> = ({
         <div className="fixed inset-0">
           <div
             className={`flex min-h-full justify-center p-4 text-center ${
-              postition === "center" ? "items-center" : "items-start"
+              postition === "center"
+                ? "items-center"
+                : "items-center md:items-start md:mt-16"
             }`}
           >
             <Transition.Child
