@@ -76,7 +76,7 @@ const Modal: FC<ModalProps> = ({
                   width == "small"
                     ? "max-w-md"
                     : width == "medium"
-                    ? "max-w-[80%]"
+                    ? "max-w-4xl"
                     : "max-w-full"
                 } ${
                   padding ? "p-6" : "p-1"

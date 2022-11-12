@@ -10,7 +10,6 @@ import {
   PlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import ResizableContainer from "../ResizableContainer";
 import Tippy from "@tippyjs/react";
 import { ReactNode } from "react";
 import Logo from "../../assets/logo.svg";
@@ -40,7 +39,12 @@ const navItems: SideNavMenuItemData[] = [
         label: "Add new",
         active: false,
         children: [
-          { href: "#", label: "Third level", active: false, children: [] },
+          {
+            href: "#",
+            label: "Third level dsadsa dsa dsa dsa dsa dsa dsa dsa",
+            active: false,
+            children: [],
+          },
         ],
       },
     ],
@@ -126,7 +130,7 @@ const SideNav = () => {
               className="px-2 flex-0 btn btn-ghost md:px-4"
               aria-label="Homepage"
             >
-              <div className="flex inline-block text-3xl font-semibold">
+              <div className="flex text-3xl font-semibold">
                 <img src={Logo} className="w-9 h-9 mr-3" alt="Logo" />{" "}
                 <span className="lowercase  text-red-700">rag</span>
                 <span className="uppercase text-gray-700">bag</span>
@@ -238,12 +242,9 @@ const SideNav = () => {
       </Transition.Root>
 
       {/* Static and resizable menu for desktop */}
-      <ResizableContainer
-        width={312}
-        conatinerClassName="shrink-0 bg-gray-50 min-w-[256px] max-w-[80%] hidden md:flex md:lex-shrink-0"
-      >
+      <div className="shrink-0 bg-gray-50 min-w-min w-80 hidden md:flex md:lex-shrink-0 border-r border-r-gray-200">
         {content()}
-      </ResizableContainer>
+      </div>
     </>
   );
 };

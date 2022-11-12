@@ -1,9 +1,12 @@
+import GroupModal from "../components/modals/GroupModal";
 import useAlertModal from "../stores/modals/useAlertModal";
+import useGroupModal from "../stores/modals/useGroupModal";
 import useSideNav from "../stores/useSideNav";
 
 const GroupPage = () => {
   const { isOpen, setOpen } = useSideNav();
   const { openModal: openAlertModal } = useAlertModal();
+  const { openModal: openGroupModal } = useGroupModal();
 
   return (
     <>
@@ -27,6 +30,19 @@ const GroupPage = () => {
         Delete
       </button>
 
+      <button
+        className="btn btn-primary"
+        onClick={() =>
+          openGroupModal({
+            onSave: () => {
+              console.log("Saved");
+            },
+          })
+        }
+      >
+        Add group
+      </button>
+
       <br />
       <span className="btn-group">
         <button className="btn btn-xs">xs</button>
@@ -37,6 +53,8 @@ const GroupPage = () => {
       <br />
       <input type="text" className="input" />
       <input type="text" className="input input-error" />
+
+      <GroupModal />
     </>
   );
 };
