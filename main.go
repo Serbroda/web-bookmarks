@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
-	"log"
+	"io/fs"
 	"net/http"
 
 	"github.com/Serbroda/ragbag/pkg/database"
@@ -11,8 +11,8 @@ import (
 	"github.com/Serbroda/ragbag/pkg/middlewares"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"github.com/labstack/echo/v4"
 	"github.com/teris-io/shortid"
 )
 
@@ -34,7 +34,7 @@ func main() {
 
 	database.Connect(database.ConnectionOptions{Name: dbName})
 
-	app := fiber.New(fiber.Config{
+	/*app := fiber.New(fiber.Config{
 		DisableKeepalive: true,
 	})
 
@@ -49,7 +49,25 @@ func main() {
 	app.Post("/register", handlers.Register)
 	setupApiV1(app)
 
-	log.Fatal(app.Listen(serverAddress))
+	log.Fatal(app.Listen(serverAddress))*/
+
+	var myApi handlers.ServerInterfaceImpl // This implements the pet store interface
+	e := echo.New()
+	assetHandler := http.FileServer(getFileSystem())
+	e.GET("/", echo.WrapHandler(assetHandler))
+	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/", assetHandler)))
+
+	handlers.RegisterHandlers(e, &myApi)
+
+	e.Logger.Fatal(e.Start(serverAddress))
+}
+
+func getFileSystem() http.FileSystem {
+	fsys, err := fs.Sub(reactApp, "frontend/dist")
+	if err != nil {
+		panic(err)
+	}
+	return http.FS(fsys)
 }
 
 func serveStatic(app *fiber.App) {
