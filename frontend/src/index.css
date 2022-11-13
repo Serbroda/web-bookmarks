@@ -114,6 +114,6 @@ div.__resizer {
 
   /* card */
   .card {
-    @apply border-2 border-transparent shadow-md rounded-xl p-2;
+    @apply border-2 border-transparent drop-shadow rounded-xl p-2;
   }
 }

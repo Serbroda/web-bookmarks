@@ -12,7 +12,7 @@ export interface TopNavProps {
 const TopNav: FC<TopNavProps> = ({
   children,
   showMenuButton = true,
-  navClassNames = "bg-white border-b border-gray-300 text-white",
+  navClassNames = "bg-white border-b border-gray-300",
   containerClassNames = "px-2 sm:px-6 lg:px-8",
 }) => {
   const { toggle } = useSideNav();

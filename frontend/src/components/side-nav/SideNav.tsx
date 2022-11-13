@@ -9,6 +9,7 @@ import {
   FolderPlusIcon,
   PlusIcon,
   XMarkIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 import Tippy from "@tippyjs/react";
 import { ReactNode } from "react";
@@ -67,8 +68,13 @@ const topSideDideBarItems: SideSideBarItem[] = [
     active: true,
   },
   {
+    tooltip: "Home",
+    content: <HomeIcon className="w-6 h-6 text-gray-700" />,
+    active: false,
+  },
+  {
     tooltip: "New Space",
-    content: <PlusIcon className="w-6 h-6 text-purple-700" />,
+    content: <PlusIcon className="w-6 h-6 text-indigo-700" />,
     active: false,
   },
 ];
@@ -91,13 +97,20 @@ const SideNav = () => {
 
   const createSideBarItem = (item: SideSideBarItem) => {
     const btn = (
-      <button
-        className={`${
-          item.active ? "bg-gray-200" : ""
-        } rounded-full flex justify-center items-center mx-2 hover:bg-gray-200 h-8 w-8 cursor-default`}
-      >
-        {item.content}
-      </button>
+      <div className="flex items-center">
+        <div
+          className={`w-1 h-7 mr-1 rounded-r-md ${
+            item.active ? "bg-indigo-700" : ""
+          }`}
+        />
+        <button
+          className={`${
+            item.active ? "" : ""
+          } rounded-full h-9 w-11 mr-2 flex justify-center items-center hover:bg-gray-300`}
+        >
+          {item.content}
+        </button>
+      </div>
     );
 
     return (
@@ -116,7 +129,7 @@ const SideNav = () => {
   const content = () => {
     return (
       <div className="flex flex-col w-full h-full">
-        <TopNav containerClassNames="px-2">
+        <TopNav containerClassNames="px-2" showMenuButton={false}>
           <a
             href="/"
             className="px-2 py-2 flex-0 inline-flex items-center"
@@ -162,17 +175,25 @@ const SideNav = () => {
               </div>
             </nav>
 
-            <footer className="sticky inset-x-0 bottom-0 border-t py-1">
-              <div className="flex gap-0.5 justify-center">
+            <footer className="sticky inset-x-0 bottom-0 border-t py-1 px-2">
+              <div className="flex space-x-0.5 justify-center">
+                <div className="flex-1" />
                 <Tippy content="New Group" placement="bottom">
-                  <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
+                  <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8">
                     <FolderPlusIcon className="w-6 h-6 m-1 text-gray-700" />
                   </button>
                 </Tippy>
 
                 <Tippy content="New Link" placement="bottom">
-                  <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8 cursor-default">
+                  <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8">
                     <PencilSquareIcon className="w-6 h-6 m-1 text-gray-700" />
+                  </button>
+                </Tippy>
+
+                <div className="flex-1" />
+                <Tippy content="Edit Space" placement="bottom">
+                  <button className="rounded-md flex justify-center items-center hover:bg-gray-200 h-8 w-8">
+                    <WrenchScrewdriverIcon className="w-6 h-6 m-1 text-gray-700" />
                   </button>
                 </Tippy>
               </div>
