@@ -3,21 +3,24 @@ package main
 import (
 	"embed"
 	"fmt"
-	"io/fs"
-	"net/http"
 
 	"github.com/Serbroda/ragbag/pkg/database"
 	"github.com/Serbroda/ragbag/pkg/handlers"
 	"github.com/Serbroda/ragbag/pkg/middlewares"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/labstack/echo/v4"
 	"github.com/teris-io/shortid"
 )
 
-//go:embed frontend/dist
-var reactApp embed.FS
+var (
+	//go:embed all:frontend/dist
+	dist embed.FS
+	//go:embed frontend/dist/index.html
+	indexHTML     embed.FS
+	distDirFS     = echo.MustSubFS(dist, "frontend/dist")
+	distIndexHtml = echo.MustSubFS(indexHTML, "frontend/dist")
+)
 
 var (
 	version string
@@ -53,28 +56,12 @@ func main() {
 
 	var myApi handlers.ServerInterfaceImpl // This implements the pet store interface
 	e := echo.New()
-	assetHandler := http.FileServer(getFileSystem())
-	e.GET("/", echo.WrapHandler(assetHandler))
-	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/", assetHandler)))
+	e.StaticFS("/", distDirFS)
+	e.FileFS("/", "index.html", distIndexHtml)
 
 	handlers.RegisterHandlers(e, &myApi)
 
 	e.Logger.Fatal(e.Start(serverAddress))
-}
-
-func getFileSystem() http.FileSystem {
-	fsys, err := fs.Sub(reactApp, "frontend/dist")
-	if err != nil {
-		panic(err)
-	}
-	return http.FS(fsys)
-}
-
-func serveStatic(app *fiber.App) {
-	app.Use("/", filesystem.New(filesystem.Config{
-		Root:       http.FS(reactApp),
-		PathPrefix: "frontend/dist",
-	}))
 }
 
 func setupApiV1(app *fiber.App) {
