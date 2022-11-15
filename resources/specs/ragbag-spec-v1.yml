@@ -8,6 +8,15 @@ info:
 servers:
   - url: http://petstore.swagger.io/v1
 
+tags:
+  - name: spaces
+    description: Spaces
+  - name: groups
+    description: Groups
+  - name: links
+    description: Links
+  
+
 paths:
   /spaces:
     get:
@@ -15,7 +24,7 @@ paths:
       description: List all spaces
       operationId: getSpaces
       tags:
-        - api
+        - spaces
       responses:
         '200':
           description: Ok
@@ -45,7 +54,7 @@ paths:
       description: Get a space
       operationId: getSpace
       tags:
-        - api
+        - spaces
       parameters:
         - name: spaceId
           in: path
@@ -66,7 +75,7 @@ paths:
       description: Update a space
       operationId: updateSpace
       tags:
-        - api
+        - spaces
       parameters:
         - name: spaceId
           in: path
@@ -87,7 +96,7 @@ paths:
       description: Delete a space
       operationId: deleteSpace
       tags:
-        - api
+        - spaces
       parameters:
         - name: spaceId
           in: path
@@ -104,7 +113,7 @@ paths:
       description: List groups of a space
       operationId: getGroups
       tags:
-        - api
+        - groups
       parameters:
         - name: spaceId
           in: path
@@ -125,7 +134,7 @@ paths:
       description: Create a group
       operationId: createGroup
       tags:
-        - api
+        - groups
       parameters:
         - name: spaceId
           in: path
@@ -152,7 +161,7 @@ paths:
       description: Get a group
       operationId: getGroup
       tags:
-        - api
+        - groups
       parameters:
         - name: groupId
           in: path
@@ -173,7 +182,7 @@ paths:
       description: Update a group
       operationId: updateGroup
       tags:
-        - api
+        - groups
       parameters:
         - name: groupId
           in: path
@@ -194,7 +203,7 @@ paths:
       description: Delete a space
       operationId: deleteGroup
       tags:
-        - api
+        - groups
       parameters:
         - name: groupId
           in: path
@@ -211,7 +220,7 @@ paths:
       description: List links of a group
       operationId: getLinks
       tags:
-        - api
+        - links
       parameters:
         - name: groupId
           in: path
@@ -232,7 +241,7 @@ paths:
       description: Create a link
       operationId: createLink
       tags:
-        - api
+        - links
       parameters:
         - name: groupId
           in: path
@@ -261,7 +270,7 @@ paths:
       description: Get a link
       operationId: getLink
       tags:
-        - api
+        - links
       parameters:
         - name: linkId
           in: path
@@ -282,7 +291,7 @@ paths:
       description: Update a link
       operationId: updateLink
       tags:
-        - api
+        - links
       parameters:
         - name: linkId
           in: path
@@ -303,7 +312,7 @@ paths:
       description: Delete a link
       operationId: deleteLink
       tags:
-        - api
+        - links
       parameters:
         - name: linkId
           in: path

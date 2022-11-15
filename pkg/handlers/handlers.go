@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/Serbroda/ragbag/gen"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -59,6 +62,11 @@ func (si *ServerInterfaceImpl) UpdateLink(ctx echo.Context, linkId gen.IdString)
 // List all spaces
 // (GET /spaces)
 func (si *ServerInterfaceImpl) GetSpaces(ctx echo.Context) error {
+	user := ctx.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JwtCustomClaims)
+	name := claims.Subject
+	fmt.Println(name)
+
 	panic("not implemented") // TODO: Implement
 }
 
