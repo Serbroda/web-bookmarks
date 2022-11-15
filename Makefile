@@ -1,6 +1,6 @@
 BINARY_NAME=ragbag
 BINARY_VERSION=next
-SPEC_FILE_LOCATION=./resources/ragbag-spec-v1.yml
+SPEC_FILE_LOCATION=./resources/specs/ragbag-spec-v1.yml
 
 build: clean
 	cd frontend && yarn install && yarn build && cd ..
@@ -21,4 +21,5 @@ generate:
 	rm -rf ./frontend/src/gen && mkdir ./frontend/src/gen && docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
 		-i "/local/${SPEC_FILE_LOCATION}" \
 		-g typescript-fetch \
+		--additional-properties=typescriptThreePlus=true \
 		-o "/local/frontend/src/gen"

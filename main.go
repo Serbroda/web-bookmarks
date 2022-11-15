@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 
+	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/pkg/database"
 	"github.com/Serbroda/ragbag/pkg/handlers"
 	"github.com/Serbroda/ragbag/pkg/middlewares"
@@ -59,7 +60,7 @@ func main() {
 	e.StaticFS("/", distDirFS)
 	e.FileFS("/", "index.html", distIndexHtml)
 
-	handlers.RegisterHandlers(e, &myApi)
+	gen.RegisterHandlersWithBaseURL(e, &myApi, "/api/v1")
 
 	e.Logger.Fatal(e.Start(serverAddress))
 }

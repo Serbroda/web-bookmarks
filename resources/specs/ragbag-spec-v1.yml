@@ -1,0 +1,459 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  license:
+    name: MIT
+
+servers:
+  - url: http://petstore.swagger.io/v1
+
+paths:
+  /spaces:
+    get:
+      summary: List all spaces
+      description: List all spaces
+      operationId: getSpaces
+      tags:
+        - api
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpaceDto"
+    post:
+      summary: Create a space
+      description: Create a space
+      operationId: createSpace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSpaceDto'
+      responses:
+        '203':
+          $ref: '#/components/responses/Created'
+
+  /spaces/{spaceId}:
+    get:
+      summary: Get a space
+      description: Get a space
+      operationId: getSpace
+      tags:
+        - api
+      parameters:
+        - name: spaceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpaceDto"
+    patch:
+      summary: Update a space
+      description: Update a space
+      operationId: updateSpace
+      tags:
+        - api
+      parameters:
+        - name: spaceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSpaceDto'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+    delete:
+      summary: Delete a space
+      description: Delete a space
+      operationId: deleteSpace
+      tags:
+        - api
+      parameters:
+        - name: spaceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+  
+  /spaces/{spaceId}/groups:
+    get:
+      summary: List groups of a space
+      description: List groups of a space
+      operationId: getGroups
+      tags:
+        - api
+      parameters:
+        - name: spaceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupDto"
+    post:
+      summary: Create a group
+      description: Create a group
+      operationId: createGroup
+      tags:
+        - api
+      parameters:
+        - name: spaceId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/GroupDto"
+  
+  /groups/{groupId}:
+    get:
+      summary: Get a group
+      description: Get a group
+      operationId: getGroup
+      tags:
+        - api
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupDto"
+    patch:
+      summary: Update a group
+      description: Update a group
+      operationId: updateGroup
+      tags:
+        - api
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupDto'
+      responses:
+        '200':
+          description: Ok
+    delete:
+      summary: Delete a space
+      description: Delete a space
+      operationId: deleteGroup
+      tags:
+        - api
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
+  /groups/{groupId}/links:
+    get:
+      summary: List links of a group
+      description: List links of a group
+      operationId: getLinks
+      tags:
+        - api
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LinkDto"
+    post:
+      summary: Create a link
+      description: Create a link
+      operationId: createLink
+      tags:
+        - api
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLinkDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LinkDto"
+
+  /links/{linkId}:
+    get:
+      summary: Get a link
+      description: Get a link
+      operationId: getLink
+      tags:
+        - api
+      parameters:
+        - name: linkId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LinkDto"
+    patch:
+      summary: Update a link
+      description: Update a link
+      operationId: updateLink
+      tags:
+        - api
+      parameters:
+        - name: linkId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLinkDto'
+      responses:
+        '200':
+          description: Ok
+    delete:
+      summary: Delete a link
+      description: Delete a link
+      operationId: deleteLink
+      tags:
+        - api
+      parameters:
+        - name: linkId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/IdString'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
+components:
+
+  responses:
+    Ok: # 200
+      description: Ok
+    Created: # 203
+      description: Created
+    NoContent: # 204
+      description: No Content
+    BadRequest: # 400
+      description: Bad Request
+    Unauthorized: # 401
+      description: Unauthorized
+    Forbidden: # 403
+      description: Forbidden
+    NotFound: # 404
+      description: Not Found
+    MethodNotAllowed: # 405
+      description: Method Not Allowed
+    Conflict: # 409
+      description: Conflict
+    InternalServerError: # 500
+      description: Internal Server Error
+
+  schemas:
+
+    IdInt64:
+      type: integer
+      format: int64
+      example: 123
+
+    IdString:
+      type: string
+      example: ZHbMDG-aM
+
+    #UserDto:
+    #  type: object
+    #  properties:
+    #    id:
+    #      $ref: "#/components/schemas/IdInt64"
+    #    username:
+    #      type: string
+
+    SpaceVisibility:
+      type: string
+      enum: 
+        - PRIVATE
+        - PUBLIC
+
+    SpaceDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdString"
+        ownerId:
+          $ref: "#/components/schemas/IdInt64"
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          $ref: "#/components/schemas/SpaceVisibility"
+
+    CreateSpaceDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          $ref: "#/components/schemas/SpaceVisibility"
+      required:
+        - name
+
+    GroupVisibility:
+      type: string
+      enum: 
+        - PRIVATE
+        - PUBLIC
+
+    GroupDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdString"
+        spaceId:
+          $ref: "#/components/schemas/IdString"
+        ownerId:
+          $ref: "#/components/schemas/IdInt64"
+        icon:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          $ref: "#/components/schemas/GroupVisibility"
+
+    CreateGroupDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        visibility:
+          $ref: "#/components/schemas/GroupVisibility"
+      required:
+        - name
+
+    LinkDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdString"
+        groupId:
+          $ref: "#/components/schemas/IdString"
+        name:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+
+    CreateLinkDto:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+
+security:
+  - bearerAuth: []
