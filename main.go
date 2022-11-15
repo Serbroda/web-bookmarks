@@ -58,10 +58,12 @@ func registerStaticHandlers(e *echo.Echo) {
 }
 
 func registerApiHandlers(e *echo.Echo) {
-	var publicApi handlers.PublicServerInterfaceImpl
-	public.RegisterHandlersWithBaseURL(e, &publicApi, "/api")
+	baseUrl := "/api/v1"
 
-	api := e.Group("/api/v1")
+	var publicApi handlers.PublicServerInterfaceImpl
+	public.RegisterHandlersWithBaseURL(e, &publicApi, baseUrl)
+
+	api := e.Group(baseUrl)
 	config := middleware.JWTConfig{
 		Claims:     &handlers.JwtCustomClaims{},
 		SigningKey: []byte("secret"),

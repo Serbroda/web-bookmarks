@@ -6,7 +6,7 @@ info:
     name: MIT
 
 servers:
-  - url: http://petstore.swagger.io/v1
+  - url: http://ragbag.dev/api/v1
 
 tags:
   - name: auth
