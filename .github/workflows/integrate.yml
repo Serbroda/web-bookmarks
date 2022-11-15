@@ -18,4 +18,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - uses: docker-practice/actions-setup-docker@master
+      - run: go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
       - run: make build
