@@ -4,7 +4,8 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/Serbroda/ragbag/gen"
+	"github.com/Serbroda/ragbag/gen/public"
+	gen "github.com/Serbroda/ragbag/gen/restricted"
 	"github.com/Serbroda/ragbag/pkg/database"
 	"github.com/Serbroda/ragbag/pkg/handlers"
 	"github.com/Serbroda/ragbag/pkg/utils"
@@ -57,8 +58,8 @@ func registerStaticHandlers(e *echo.Echo) {
 }
 
 func registerApiHandlers(e *echo.Echo) {
-	e.POST("/api/login", handlers.Login)
-	e.POST("/api/register", handlers.Register)
+	var publicApi handlers.PublicServerInterfaceImpl
+	public.RegisterHandlersWithBaseURL(e, &publicApi, "/api")
 
 	api := e.Group("/api/v1")
 	config := middleware.JWTConfig{
@@ -67,6 +68,6 @@ func registerApiHandlers(e *echo.Echo) {
 	}
 	api.Use(middleware.JWTWithConfig(config))
 
-	var myApi handlers.ServerInterfaceImpl
-	gen.RegisterHandlers(api, &myApi)
+	var restrictedApi handlers.RestrictedServerInterfaceImpl
+	gen.RegisterHandlers(api, &restrictedApi)
 }

@@ -9,6 +9,8 @@ servers:
   - url: http://petstore.swagger.io/v1
 
 tags:
+  - name: auth
+    description: Authentication
   - name: spaces
     description: Spaces
   - name: groups
@@ -16,8 +18,49 @@ tags:
   - name: links
     description: Links
   
-
 paths:
+  /login:
+    post:
+      summary: Log in
+      description: Log in
+      operationId: login
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                type: string
+
+  /register:
+    post:
+      summary: Register
+      description: Register
+      operationId: register
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationDto'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                $ref: '#/components/schemas/UserDto'
+
   /spaces:
     get:
       summary: List all spaces
@@ -25,6 +68,8 @@ paths:
       operationId: getSpaces
       tags:
         - spaces
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Ok
@@ -38,6 +83,10 @@ paths:
       summary: Create a space
       description: Create a space
       operationId: createSpace
+      tags:
+        - spaces
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -55,6 +104,8 @@ paths:
       operationId: getSpace
       tags:
         - spaces
+      security:
+        - bearerAuth: []
       parameters:
         - name: spaceId
           in: path
@@ -76,6 +127,8 @@ paths:
       operationId: updateSpace
       tags:
         - spaces
+      security:
+        - bearerAuth: []
       parameters:
         - name: spaceId
           in: path
@@ -97,6 +150,8 @@ paths:
       operationId: deleteSpace
       tags:
         - spaces
+      security:
+        - bearerAuth: []
       parameters:
         - name: spaceId
           in: path
@@ -114,6 +169,8 @@ paths:
       operationId: getGroups
       tags:
         - groups
+      security:
+        - bearerAuth: []
       parameters:
         - name: spaceId
           in: path
@@ -135,6 +192,8 @@ paths:
       operationId: createGroup
       tags:
         - groups
+      security:
+        - bearerAuth: []
       parameters:
         - name: spaceId
           in: path
@@ -162,6 +221,8 @@ paths:
       operationId: getGroup
       tags:
         - groups
+      security:
+        - bearerAuth: []
       parameters:
         - name: groupId
           in: path
@@ -183,6 +244,8 @@ paths:
       operationId: updateGroup
       tags:
         - groups
+      security:
+        - bearerAuth: []
       parameters:
         - name: groupId
           in: path
@@ -204,6 +267,8 @@ paths:
       operationId: deleteGroup
       tags:
         - groups
+      security:
+        - bearerAuth: []
       parameters:
         - name: groupId
           in: path
@@ -221,6 +286,8 @@ paths:
       operationId: getLinks
       tags:
         - links
+      security:
+        - bearerAuth: []
       parameters:
         - name: groupId
           in: path
@@ -242,6 +309,8 @@ paths:
       operationId: createLink
       tags:
         - links
+      security:
+        - bearerAuth: []
       parameters:
         - name: groupId
           in: path
@@ -271,6 +340,8 @@ paths:
       operationId: getLink
       tags:
         - links
+      security:
+        - bearerAuth: []
       parameters:
         - name: linkId
           in: path
@@ -292,6 +363,8 @@ paths:
       operationId: updateLink
       tags:
         - links
+      security:
+        - bearerAuth: []
       parameters:
         - name: linkId
           in: path
@@ -313,6 +386,8 @@ paths:
       operationId: deleteLink
       tags:
         - links
+      security:
+        - bearerAuth: []
       parameters:
         - name: linkId
           in: path
@@ -358,13 +433,31 @@ components:
       type: string
       example: ZHbMDG-aM
 
-    #UserDto:
-    #  type: object
-    #  properties:
-    #    id:
-    #      $ref: "#/components/schemas/IdInt64"
-    #    username:
-    #      type: string
+    LoginDto:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    RegistrationDto:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    UserDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/IdInt64"
+        username:
+          type: string
 
     SpaceVisibility:
       type: string
@@ -463,6 +556,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT 
-
-security:
-  - bearerAuth: []

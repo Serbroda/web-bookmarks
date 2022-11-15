@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Serbroda/ragbag/gen/public"
 	"github.com/Serbroda/ragbag/pkg/database"
 	"github.com/Serbroda/ragbag/pkg/models"
 	"github.com/Serbroda/ragbag/pkg/utils"
@@ -15,35 +16,27 @@ import (
 var jwtSecretKey = utils.GetEnv("JWT_SECRET_KEY", "s3cr3t")
 var jwtExpirationHours = utils.MustParseInt64(utils.GetEnv("JWT_EXPIRE_HOURS", "72"))
 
+type PublicServerInterfaceImpl struct {
+}
+
 type JwtCustomClaims struct {
 	Subject string `json:"sub"`
 	UserId  uint   `json:"userid"`
 	jwt.StandardClaims
 }
 
-type LoginData struct {
-	Username string `param:"username" query:"username" json:"username" xml:"username" form:"username"`
-	Password string `param:"password" query:"password" json:"password" xml:"password" form:"password"`
-}
-
-type Registration struct {
-	Username string `param:"username" query:"username" json:"username" xml:"username" form:"username"`
-	Password string `param:"password" query:"password" json:"password" xml:"password" form:"password"`
-	Email    string `param:"email" query:"email" json:"email" xml:"email" form:"email"`
-}
-
-func Login(c echo.Context) error {
-	var payload LoginData
+func (si *PublicServerInterfaceImpl) Login(c echo.Context) error {
+	var payload public.LoginDto
 	err := c.Bind(&payload)
 	if err != nil {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
-	if payload.Username == "" || payload.Password == "" {
+	if payload.Username == nil || payload.Password == nil {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
 
-	username := strings.ToLower(payload.Username)
+	username := strings.ToLower(*payload.Username)
 
 	var user models.User
 	result := database.GetConnection().Where("lower(username) = ?", username).Find(&user)
@@ -52,7 +45,7 @@ func Login(c echo.Context) error {
 		return c.String(http.StatusNotFound, "User not found")
 	}
 
-	if !utils.CheckPasswordHash(payload.Password, user.Password) {
+	if !utils.CheckPasswordHash(*payload.Password, user.Password) {
 		return c.String(http.StatusForbidden, "Wrong email or password")
 	}
 
@@ -74,33 +67,33 @@ func Login(c echo.Context) error {
 	return c.String(http.StatusOK, t)
 }
 
-func Register(c echo.Context) error {
-	var payload Registration
-	err := c.Bind(&payload)
+func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
+	var payload public.RegistrationDto
+	err := ctx.Bind(&payload)
 	if err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return ctx.String(http.StatusBadRequest, "bad request")
 	}
-	if payload.Username == "" || payload.Password == "" {
-		return c.String(http.StatusBadRequest, "bad request")
+	if payload.Username == nil || payload.Password == nil {
+		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	username := strings.ToLower(payload.Username)
+	username := strings.ToLower(*payload.Username)
 
 	var user models.User
 	result := database.GetConnection().Where("lower(username) = ?", username).Find(&user)
 
 	if result.RowsAffected > 0 {
-		return c.String(http.StatusConflict, "User already exists")
+		return ctx.String(http.StatusConflict, "User already exists")
 	}
 
-	hashedPassword, _ := utils.HashPassword(payload.Password)
+	hashedPassword, _ := utils.HashPassword(*payload.Password)
 
 	user = models.User{
 		Username: username,
 		Password: hashedPassword,
-		Email:    payload.Email,
+		Email:    *payload.Email,
 	}
 	database.GetConnection().Create(&user)
 
-	return c.JSON(http.StatusCreated, user)
+	return ctx.JSON(http.StatusCreated, user)
 }

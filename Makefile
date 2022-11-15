@@ -15,10 +15,13 @@ clean:
 	rm -rf build/
 
 generate:
+	rm -rf ./gen && mkdir -p ./gen/public && mkdir -p ./gen/restricted
+	rm -rf ./frontend/src/gen && mkdir -p ./frontend/src/gen
 	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate \
 		-i "/local/${SPEC_FILE_LOCATION}"
-	rm -rf ./gen && mkdir ./gen && oapi-codegen -generate types,server -package gen ${SPEC_FILE_LOCATION} > ./gen/ragbag.gen.go
-	rm -rf ./frontend/src/gen && mkdir ./frontend/src/gen && docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
+	oapi-codegen -generate types,server -exclude-tags="auth" -package gen ${SPEC_FILE_LOCATION} > ./gen/restricted/ragbag.gen.go
+	oapi-codegen -generate types,server -include-tags="auth" -package public ${SPEC_FILE_LOCATION} > ./gen/public/public.gen.go
+	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
 		-i "/local/${SPEC_FILE_LOCATION}" \
 		-g typescript-fetch \
 		--additional-properties=typescriptThreePlus=true \
