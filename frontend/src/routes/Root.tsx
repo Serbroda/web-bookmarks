@@ -5,6 +5,7 @@ import usePreferences from "../stores/usePreferences";
 import useSideNav from "../stores/useSideNav";
 import AlertModal from "../components/modals/AlertModal";
 import TopNav from "../components/TopNav";
+import { authApi } from "../services/api.service";
 
 export interface GroupDto {
   id: number;
@@ -26,6 +27,15 @@ const Root = () => {
 
   const location = useLocation();
   const { isOpen, setOpen } = useSideNav();
+
+  useEffect(() => {
+    authApi
+      .login({
+        loginDto: { username: "danny@rottstegge.net", password: "mekahesh9*" },
+      })
+      .then((r) => console.log(r))
+      .catch((e) => console.error(e));
+  }, []);
 
   useEffect(() => {
     init();
