@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/deepmap/oapi-codegen v1.12.2
+	github.com/glebarez/go-sqlite v1.19.1
 	github.com/glebarez/sqlite v1.5.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.2
@@ -18,11 +19,9 @@ require (
 
 require (
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
-	github.com/glebarez/go-sqlite v1.19.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect

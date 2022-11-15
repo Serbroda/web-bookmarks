@@ -9,10 +9,8 @@ import (
 	"github.com/Serbroda/ragbag/pkg/database"
 	"github.com/Serbroda/ragbag/pkg/handlers"
 	"github.com/Serbroda/ragbag/pkg/utils"
-	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/pressly/goose/v3"
 	"github.com/teris-io/shortid"
 
 	_ "github.com/glebarez/go-sqlite"
@@ -40,25 +38,14 @@ func main() {
 	var dbName = utils.GetEnv("DB_NAME", "ragbag.db")
 	var serverAddress = utils.GetEnv("SERVER_URL", "0.0.0.0:8080")
 
-	db, err := sqlx.Connect("sqlite", dbName)
-	if err != nil {
-		panic(err)
-	}
-
-	goose.SetBaseFS(migrations)
-
-	if err := goose.SetDialect("sqlite3"); err != nil {
-		panic(err)
-	}
-
-	if err := goose.Up(db.DB, "resources/db/migrations"); err != nil {
-		panic(err)
-	}
-
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)
 
-	database.Connect(database.ConnectionOptions{Name: dbName})
+	database.Connect(database.ConnectionOptions{
+		Name:          dbName,
+		Migrations:    migrations,
+		MigrationsDir: "resources/db/migrations",
+	})
 
 	e := echo.New()
 	e.Use(middleware.Logger())

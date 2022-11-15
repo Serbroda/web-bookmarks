@@ -11,6 +11,8 @@ type Group struct {
 	Base
 	OwnerId     uint       `json:"ownerId"`
 	Owner       User       `json:"-"`
+	SpaceId     uint       `json:"spaceId"`
+	Space       Space      `json:"-"`
 	Icon        string     `json:"icon"`
 	Name        string     `json:"name"`
 	Description string     `json:"description"`
