@@ -5,48 +5,46 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/gen/public"
 	"github.com/Serbroda/ragbag/pkg/database"
-	"github.com/Serbroda/ragbag/pkg/models"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
-var jwtSecretKey = utils.GetEnv("JWT_SECRET_KEY", "s3cr3t")
-var jwtExpirationHours = utils.MustParseInt64(utils.GetEnv("JWT_EXPIRE_HOURS", "72"))
+var jwtSecretKey = utils.GetEnvFallback("JWT_SECRET_KEY", "s3cr3t")
+var jwtExpirationHours = utils.MustParseInt64(utils.GetEnvFallback("JWT_EXPIRE_HOURS", "72"))
 
 type PublicServerInterfaceImpl struct {
 }
 
 type JwtCustomClaims struct {
 	Subject string `json:"sub"`
-	UserId  uint   `json:"userid"`
+	UserId  int64  `json:"userid"`
 	jwt.StandardClaims
 }
 
-func (si *PublicServerInterfaceImpl) Login(c echo.Context) error {
+func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 	var payload public.LoginDto
-	err := c.Bind(&payload)
+	err := ctx.Bind(&payload)
 	if err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
 	if payload.Username == nil || payload.Password == nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
 	username := strings.ToLower(*payload.Username)
 
-	var user models.User
-	result := database.GetConnection().Where("lower(username) = ?", username).Find(&user)
-
-	if result.RowsAffected == 0 {
-		return c.String(http.StatusNotFound, "User not found")
+	user, err := database.Queries.GetUserByUsername(ctx.Request().Context(), *payload.Username)
+	if err == nil {
+		return ctx.String(http.StatusNotFound, "User not found")
 	}
 
 	if !utils.CheckPasswordHash(*payload.Password, user.Password) {
-		return c.String(http.StatusForbidden, "Wrong email or password")
+		return ctx.String(http.StatusForbidden, "Wrong email or password")
 	}
 
 	claims := &JwtCustomClaims{
@@ -61,10 +59,10 @@ func (si *PublicServerInterfaceImpl) Login(c echo.Context) error {
 
 	t, err := token.SignedString([]byte(jwtSecretKey))
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Internal Server Error")
+		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	return c.String(http.StatusOK, t)
+	return ctx.String(http.StatusOK, t)
 }
 
 func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
@@ -79,21 +77,31 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 
 	username := strings.ToLower(*payload.Username)
 
-	var user models.User
-	result := database.GetConnection().Where("lower(username) = ?", username).Find(&user)
-
-	if result.RowsAffected > 0 {
-		return ctx.String(http.StatusConflict, "User already exists")
+	user, err := database.Queries.GetUserByUsername(ctx.Request().Context(), *payload.Username)
+	if err == nil {
+		return ctx.String(http.StatusNotFound, "User not found")
 	}
 
 	hashedPassword, _ := utils.HashPassword(*payload.Password)
 
-	user = models.User{
+	params := gen.CreateUserParams{
 		Username: username,
 		Password: hashedPassword,
 		Email:    *payload.Email,
 	}
-	database.GetConnection().Create(&user)
 
+	res, err := database.Queries.CreateUser(ctx.Request().Context(), params)
+	if err != nil {
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+	user, err = database.Queries.GetUser(ctx.Request().Context(), id)
+	if err != nil {
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
 	return ctx.JSON(http.StatusCreated, user)
 }

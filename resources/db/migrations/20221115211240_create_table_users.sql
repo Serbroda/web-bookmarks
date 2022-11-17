@@ -7,9 +7,9 @@ CREATE TABLE users (
     updated_at timestamp,
     deleted_at timestamp,
     username varchar(120) NOT NULL,
-    password varchar(120),
+    password varchar(120) NOT NULL,
     name varchar(120),
-    email varchar(120),
+    email varchar(120) NOT NULL,
     CONSTRAINT PK_users PRIMARY KEY (id),
     CONSTRAINT UC_users_username UNIQUE (username)
 );

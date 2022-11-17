@@ -20,4 +20,5 @@ jobs:
           node-version: 16
       - uses: docker-practice/actions-setup-docker@master
       - run: go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
+      - run: go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
       - run: make build

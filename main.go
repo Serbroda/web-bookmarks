@@ -5,15 +5,13 @@ import (
 	"fmt"
 
 	"github.com/Serbroda/ragbag/gen/public"
-	gen "github.com/Serbroda/ragbag/gen/restricted"
+	"github.com/Serbroda/ragbag/gen/restricted"
 	"github.com/Serbroda/ragbag/pkg/database"
 	"github.com/Serbroda/ragbag/pkg/handlers"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/teris-io/shortid"
-
-	_ "github.com/glebarez/go-sqlite"
 )
 
 var (
@@ -29,25 +27,21 @@ var (
 )
 
 var (
-	version string
+	version       string
+	serverAddress string = utils.GetEnvFallback("SERVER_URL", "0.0.0.0:8080")
+	dbAddress     string = utils.MustGetEnv("DB_ADDRESS")
+	dbName        string = utils.GetEnvFallback("DB_NAME", "ragbag")
+	dbUser        string = utils.GetEnvFallback("DB_USER", "ragbag")
+	dbPassword    string = utils.MustGetEnv("DB_PASSWORD")
 )
 
 func main() {
 	fmt.Println("version=", version)
 
-	var serverAddress = utils.GetEnv("SERVER_URL", "0.0.0.0:8080")
+	database.OpenAndConfigure("mysql", getDsn(dbUser, dbPassword, dbAddress, dbName), migrations, "resources/db/migrations")
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)
-
-	database.Connect(database.ConnectionOptions{
-		DbAddress:     utils.GetEnv("DB_ADDRESS", "localhost:3306"),
-		DbName:        utils.GetEnv("DB_NAME", "ragbag"),
-		DbUser:        utils.GetEnv("DB_USER", "ragbag"),
-		DbPassword:    utils.GetEnv("DB_PASSWORD", "Durchl@uf-Gefängn1$j@hr-Kern$tütze-5"),
-		Migrations:    migrations,
-		MigrationsDir: "resources/db/migrations",
-	})
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -83,5 +77,9 @@ func registerApiHandlers(e *echo.Echo) {
 	api.Use(middleware.JWTWithConfig(config))
 
 	var restrictedApi handlers.RestrictedServerInterfaceImpl
-	gen.RegisterHandlers(api, &restrictedApi)
+	restricted.RegisterHandlers(api, &restrictedApi)
+}
+
+func getDsn(user, password, address, database string) string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, address, database)
 }

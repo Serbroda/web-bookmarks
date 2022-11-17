@@ -17,6 +17,7 @@ clean:
 generate:
 	rm -rf ./gen && mkdir -p ./gen/public && mkdir -p ./gen/restricted
 	rm -rf ./frontend/src/gen && mkdir -p ./frontend/src/gen
+	cd ./resources/db && sqlc generate && cd ../..
 	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate \
 		-i "/local/${SPEC_FILE_LOCATION}"
 	oapi-codegen -generate types,server -include-tags="auth" -package public ${SPEC_FILE_LOCATION} > ./gen/public/public.gen.go
