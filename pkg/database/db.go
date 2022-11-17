@@ -3,13 +3,16 @@ package database
 import (
 	"database/sql"
 	"embed"
+	"fmt"
 	"log"
 	"sync"
 
 	"github.com/Serbroda/ragbag/pkg/models"
-	"github.com/glebarez/sqlite"
 	"github.com/pressly/goose/v3"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
@@ -19,20 +22,30 @@ var (
 )
 
 type ConnectionOptions struct {
-	Name          string
+	DbAddress     string
+	DbName        string
+	DbUser        string
+	DbPassword    string
 	Migrations    embed.FS
 	MigrationsDir string
 }
 
+func getDsn(options ConnectionOptions) string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s", options.DbUser, options.DbPassword, options.DbAddress, options.DbName)
+}
+
 func Connect(options ConnectionOptions) *gorm.DB {
 	once.Do(func() {
-		gormDb, err := gorm.Open(sqlite.Open(options.Name), &gorm.Config{})
+		migrateGoose(options)
+
+		dsn := getDsn(options)
+		gormDb, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
-			log.Fatalf("Failed to connect to database %s: %v", options.Name, err)
+			log.Fatalf("Failed to connect to database %s: %v", dsn, err)
 			panic(err)
 		}
 
-		migrateGorm(gormDb)
+		//migrateGorm(gormDb)
 		dbConnection = gormDb
 	})
 	return dbConnection
@@ -43,14 +56,14 @@ func GetConnection() *gorm.DB {
 }
 
 func migrateGoose(options ConnectionOptions) {
-	db, err := sql.Open("sqlite", options.Name)
+	db, err := sql.Open("mysql", getDsn(options))
 	if err != nil {
 		panic(err)
 	}
 
 	goose.SetBaseFS(options.Migrations)
 
-	if err := goose.SetDialect("sqlite3"); err != nil {
+	if err := goose.SetDialect("mysql"); err != nil {
 		panic(err)
 	}
 
