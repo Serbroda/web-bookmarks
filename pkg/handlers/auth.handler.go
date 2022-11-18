@@ -39,7 +39,7 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 	username := strings.ToLower(*payload.Username)
 
 	user, err := database.Queries.GetUserByUsername(ctx.Request().Context(), *payload.Username)
-	if err == nil {
+	if err != nil {
 		return ctx.String(http.StatusNotFound, "User not found")
 	}
 
@@ -79,7 +79,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 
 	user, err := database.Queries.GetUserByUsername(ctx.Request().Context(), *payload.Username)
 	if err == nil {
-		return ctx.String(http.StatusNotFound, "User not found")
+		return ctx.String(http.StatusConflict, "User already exists")
 	}
 
 	hashedPassword, _ := utils.HashPassword(*payload.Password)
@@ -99,5 +99,8 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusCreated, user)
+	return ctx.JSON(http.StatusCreated, &public.UserDto{
+		Id:       &user.ID,
+		Username: &user.Username,
+	})
 }

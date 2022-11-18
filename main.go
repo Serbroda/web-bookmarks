@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"fmt"
 
@@ -39,6 +40,7 @@ func main() {
 	fmt.Println("version=", version)
 
 	database.OpenAndConfigure("mysql", getDsn(dbUser, dbPassword, dbAddress, dbName), migrations, "resources/db/migrations")
+	database.InitializeAdmin(context.Background(), database.Queries)
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)

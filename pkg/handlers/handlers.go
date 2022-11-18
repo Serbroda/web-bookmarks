@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/Serbroda/ragbag/gen/restricted"
 	"github.com/golang-jwt/jwt"
@@ -67,7 +68,7 @@ func (si *RestrictedServerInterfaceImpl) GetSpaces(ctx echo.Context) error {
 	name := claims.Subject
 	fmt.Println(name)
 
-	panic("not implemented") // TODO: Implement
+	return ctx.JSON(http.StatusOK, claims) // TODO: Implement
 }
 
 // Create a space

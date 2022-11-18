@@ -8,6 +8,10 @@ SELECT *
 FROM users
 WHERE lower(username) = lower(?)
 LIMIT 1;
+-- name: ExistsUser :one
+SELECT count(*)
+FROM users
+WHERE lower(username) = lower(?);
 -- name: CreateUser :execlastid
 INSERT INTO users (
         created_at,
@@ -29,8 +33,10 @@ SET updated_at = CURRENT_TIMESTAMP,
     password = ?,
     name = ?,
     email = ?
-WHERE id = ?;
+WHERE id = ?
+    AND deleted_at IS NULL;
 -- name: DeleteUser :exec
 UPDATE users
 SET deleted_at = CURRENT_TIMESTAMP
-WHERE id = ?;
+WHERE id = ?
+    AND deleted_at IS NULL;
