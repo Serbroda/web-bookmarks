@@ -90,15 +90,11 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		Email:    *payload.Email,
 	}
 
-	res, err := database.Queries.CreateUser(ctx.Request().Context(), params)
+	id, err := database.Queries.CreateUser(ctx.Request().Context(), params)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	id, err := res.LastInsertId()
-	if err != nil {
-		return ctx.String(http.StatusInternalServerError, err.Error())
-	}
 	user, err = database.Queries.GetUser(ctx.Request().Context(), id)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())

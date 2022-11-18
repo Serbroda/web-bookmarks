@@ -1,7 +1,12 @@
-version: 1
-packages:
-  - path: "../../gen"
-    name: "gen"
-    engine: "mysql"
-    schema: "./migrations"
-    queries: "./queries"
+version: 2
+sql:
+- schema: "./migrations"
+  queries: "./queries"
+  engine: "mysql"
+  gen:
+    go: 
+      package: "gen"
+      out: "../../gen"
+      emit_db_tags: true
+      emit_json_tags: true
+      json_tags_case_style: "camel"

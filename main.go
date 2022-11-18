@@ -81,5 +81,5 @@ func registerApiHandlers(e *echo.Echo) {
 }
 
 func getDsn(user, password, address, database string) string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, address, database)
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", user, password, address, database)
 }

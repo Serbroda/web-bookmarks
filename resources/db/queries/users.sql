@@ -8,7 +8,7 @@ SELECT *
 FROM users
 WHERE lower(username) = lower(?)
 LIMIT 1;
--- name: CreateUser :execresult
+-- name: CreateUser :execlastid
 INSERT INTO users (
         created_at,
         username,
