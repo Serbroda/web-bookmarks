@@ -7,7 +7,7 @@ import (
 
 	"github.com/Serbroda/ragbag/gen/public"
 	"github.com/Serbroda/ragbag/gen/restricted"
-	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/db"
 	"github.com/Serbroda/ragbag/pkg/handlers"
 	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/Serbroda/ragbag/pkg/utils"
@@ -40,18 +40,19 @@ var (
 func main() {
 	fmt.Println("version=", version)
 
-	database.OpenAndConfigure("mysql", getDsn(dbUser, dbPassword, dbAddress, dbName), migrations, "resources/db/migrations")
+	db.OpenAndConfigure("mysql", getDsn(dbUser, dbPassword, dbAddress, dbName), migrations, "resources/db/migrations")
 
-	services := services.New(database.Queries)
-	database.InitializeAdmin(context.Background(), services)
+	services := services.New(db.Queries)
+	db.InitializeAdmin(context.Background(), services)
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)
 
 	e := echo.New()
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	//e.Use(middleware.Logger())
+	//e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(50)))
 
 	registerHandlers(e)
 

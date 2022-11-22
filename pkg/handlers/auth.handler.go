@@ -7,7 +7,8 @@ import (
 
 	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/gen/public"
-	"github.com/Serbroda/ragbag/pkg/database"
+	"github.com/Serbroda/ragbag/pkg/db"
+	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -28,23 +29,15 @@ type JwtCustomClaims struct {
 func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 	var payload public.LoginDto
 	err := ctx.Bind(&payload)
-	if err != nil {
-		return ctx.String(http.StatusBadRequest, "bad request")
-	}
-
-	if payload.Username == nil || payload.Password == nil {
+	if err != nil || payload.Username == nil || payload.Password == nil {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
 	username := strings.ToLower(*payload.Username)
 
-	user, err := database.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
-	if err != nil {
-		return ctx.String(http.StatusNotFound, "User not found")
-	}
-
-	if !utils.CheckPasswordHash(*payload.Password, user.Password) {
-		return ctx.String(http.StatusForbidden, "Wrong email or password")
+	user, err := db.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
+	if err != nil || user.ID < 1 || !utils.CheckPasswordHash(*payload.Password, user.Password) {
+		return ctx.String(http.StatusNotFound, "invalid login")
 	}
 
 	claims := &JwtCustomClaims{
@@ -68,37 +61,26 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 	var payload public.RegistrationDto
 	err := ctx.Bind(&payload)
-	if err != nil {
-		return ctx.String(http.StatusBadRequest, "bad request")
-	}
-	if payload.Username == nil || payload.Password == nil {
+	if err != nil || payload.Username == nil || payload.Password == nil {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	username := strings.ToLower(*payload.Username)
-
-	user, err := database.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
-	if err == nil {
-		return ctx.String(http.StatusConflict, "User already exists")
+	if services.Services.UserService.ExistsUser(ctx.Request().Context(), *payload.Password) {
+		return ctx.String(http.StatusConflict, "user already exists")
 	}
 
 	hashedPassword, _ := utils.HashPassword(*payload.Password)
 
-	params := gen.CreateUserParams{
-		Username: username,
+	user, err := services.Services.UserService.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
+		Username: strings.ToLower(*payload.Username),
 		Password: hashedPassword,
 		Email:    *payload.Email,
-	}
+	})
 
-	id, err := database.Queries.CreateUser(ctx.Request().Context(), params)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	user, err = database.Queries.FindUser(ctx.Request().Context(), id)
-	if err != nil {
-		return ctx.String(http.StatusInternalServerError, err.Error())
-	}
 	return ctx.JSON(http.StatusCreated, &public.UserDto{
 		Id:       &user.ID,
 		Username: &user.Username,

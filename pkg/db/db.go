@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"database/sql"
@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/Serbroda/ragbag/gen"
-	"github.com/pressly/goose/v3"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -33,17 +32,6 @@ func OpenConnection(driver, source string) *sql.DB {
 		DBCon = db
 	})
 	return DBCon
-}
-
-func Migrate(db *sql.DB, migrations embed.FS, migrationsDir string) {
-	goose.SetBaseFS(migrations)
-	if err := goose.SetDialect("mysql"); err != nil {
-		panic(err)
-	}
-
-	if err := goose.Up(db, migrationsDir); err != nil {
-		panic(err)
-	}
 }
 
 func InitQueries(db *sql.DB) *gen.Queries {

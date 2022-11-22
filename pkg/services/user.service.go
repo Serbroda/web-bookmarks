@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 	"errors"
-	"strings"
+	"regexp"
 
 	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/pkg/utils"
@@ -33,30 +33,27 @@ func (s *UserService) CreateUser(ctx context.Context, arg gen.CreateUserParams) 
 }
 
 func (s *UserService) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserParams, roles []string) (gen.User, error) {
-	e, err := s.Queries.CountUserByName(ctx, arg.Username)
-	if err != nil || e > 0 {
+	if s.ExistsUser(ctx, arg.Username) {
 		return gen.User{}, ErrUserAlreadyExists
 	}
 
 	shortId := shortid.MustGenerate()
-	pwd, _ := utils.HashPassword(shortId)
 
-	arg.Password = pwd
+	if matched, _ := regexp.MatchString(`^\$2a\$14.*$`, arg.Password); !matched {
+		pwd, _ := utils.HashPassword(shortId)
+		arg.Password = pwd
+	}
+
 	id, err := s.Queries.CreateUser(ctx, arg)
 	if err != nil {
 		return gen.User{}, err
 	}
 
 	if len(roles) < 1 {
-		roles = []string{"User"}
+		roles = []string{"USER"}
 	}
 
-	rls, err := s.Queries.FindRolesByNamesIn(ctx, strings.Join(roles, ","))
-	if err != nil {
-		err := s.Queries.DeleteUserFull(ctx, id)
-		return gen.User{}, err
-	}
-	for _, r := range rls {
+	for _, r := range s.getRoles(ctx, roles) {
 		s.Queries.InsertUserRole(ctx, gen.InsertUserRoleParams{
 			UserID: id,
 			RoleID: r.ID,
@@ -64,4 +61,15 @@ func (s *UserService) CreateUserWithRoles(ctx context.Context, arg gen.CreateUse
 	}
 
 	return s.Queries.FindUser(ctx, id)
+}
+
+func (s *UserService) getRoles(ctx context.Context, roleNames []string) []gen.Role {
+	var roles []gen.Role
+	for _, r := range roleNames {
+		role, err := s.Queries.FindRoleByName(ctx, r)
+		if err == nil {
+			roles = append(roles, role)
+		}
+	}
+	return roles
 }
