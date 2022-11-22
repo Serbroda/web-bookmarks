@@ -6,29 +6,30 @@ CREATE TABLE roles (
     updated_at timestamp,
     deleted_at timestamp,
     name varchar(80) NOT NULL,
+    description varchar(255),
     CONSTRAINT PK_roles PRIMARY KEY (id),
     CONSTRAINT UC_roles_name UNIQUE (name)
 );
 -- +goose StatementEnd
 -- +goose StatementBegin
-INSERT INTO roles(created_at, name)
-VALUES(CURRENT_TIMESTAMP, 'Admin');
+INSERT INTO roles(created_at, name, description)
+VALUES(CURRENT_TIMESTAMP, 'ADMIN', 'Administrator');
 -- +goose StatementEnd
 -- +goose StatementBegin
-INSERT INTO roles(created_at, name)
-VALUES(CURRENT_TIMESTAMP, 'User');
+INSERT INTO roles(created_at, name, description)
+VALUES(CURRENT_TIMESTAMP, 'USER', 'User');
 -- +goose StatementEnd
 -- +goose StatementBegin
-INSERT INTO roles(created_at, name)
-VALUES(CURRENT_TIMESTAMP, 'Owner');
+INSERT INTO roles(created_at, name, description)
+VALUES(CURRENT_TIMESTAMP, 'OWNER', 'Owner');
 -- +goose StatementEnd
 -- +goose StatementBegin
-INSERT INTO roles(created_at, name)
-VALUES(CURRENT_TIMESTAMP, 'Maintainer');
+INSERT INTO roles(created_at, name, description)
+VALUES(CURRENT_TIMESTAMP, 'MAINTAINER', 'Maintainer');
 -- +goose StatementEnd
 -- +goose StatementBegin
-INSERT INTO roles(created_at, name)
-VALUES(CURRENT_TIMESTAMP, 'Guest');
+INSERT INTO roles(created_at, name, description)
+VALUES(CURRENT_TIMESTAMP, 'GUEST', 'Guest');
 -- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin

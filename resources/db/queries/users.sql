@@ -1,14 +1,14 @@
--- name: GetUser :one
+-- name: FindUser :one
 SELECT *
 FROM users
 WHERE id = ?
 LIMIT 1;
--- name: GetUserByUsername :one
+-- name: FindUserByName :one
 SELECT *
 FROM users
 WHERE lower(username) = lower(?)
 LIMIT 1;
--- name: ExistsUser :one
+-- name: CountUserByName :one
 SELECT count(*)
 FROM users
 WHERE lower(username) = lower(?);
@@ -16,12 +16,16 @@ WHERE lower(username) = lower(?);
 INSERT INTO users (
         created_at,
         username,
-        name,
         password,
-        email
+        name,
+        email,
+        active,
+        must_change_password
     )
 VALUES(
         CURRENT_TIMESTAMP,
+        ?,
+        ?,
         ?,
         ?,
         ?,
@@ -40,3 +44,6 @@ UPDATE users
 SET deleted_at = CURRENT_TIMESTAMP
 WHERE id = ?
     AND deleted_at IS NULL;
+-- name: DeleteUserFull :exec
+DELETE FROM users
+WHERE id = ?;

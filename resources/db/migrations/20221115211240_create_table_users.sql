@@ -11,7 +11,7 @@ CREATE TABLE users (
     email varchar(120) NOT NULL,
     active BOOLEAN NOT NULL default FALSE,
     confirmed_at timestamp,
-    must_change_password BOOLEAN default FALSE,
+    must_change_password BOOLEAN NOT NULL default FALSE,
     CONSTRAINT PK_users PRIMARY KEY (id),
     CONSTRAINT UC_users_username UNIQUE (username)
 );

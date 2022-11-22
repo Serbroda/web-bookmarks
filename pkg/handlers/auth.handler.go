@@ -38,7 +38,7 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 
 	username := strings.ToLower(*payload.Username)
 
-	user, err := database.Queries.GetUserByUsername(ctx.Request().Context(), *payload.Username)
+	user, err := database.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
 	if err != nil {
 		return ctx.String(http.StatusNotFound, "User not found")
 	}
@@ -77,7 +77,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 
 	username := strings.ToLower(*payload.Username)
 
-	user, err := database.Queries.GetUserByUsername(ctx.Request().Context(), *payload.Username)
+	user, err := database.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
 	if err == nil {
 		return ctx.String(http.StatusConflict, "User already exists")
 	}
@@ -95,7 +95,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	user, err = database.Queries.GetUser(ctx.Request().Context(), id)
+	user, err = database.Queries.FindUser(ctx.Request().Context(), id)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}

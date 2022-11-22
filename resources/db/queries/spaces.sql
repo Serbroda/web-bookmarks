@@ -1,10 +1,10 @@
--- name: GetSpace :one
+-- name: FindSpace :one
 SELECT *
 FROM spaces
 WHERE short_id = ?
     AND deleted_at IS NULL
 LIMIT 1;
--- name: ListSpaces :many
+-- name: FindAllSpaces :many
 SELECT *
 FROM spaces
 WHERE owner_id = ?

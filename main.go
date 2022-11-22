@@ -9,6 +9,7 @@ import (
 	"github.com/Serbroda/ragbag/gen/restricted"
 	"github.com/Serbroda/ragbag/pkg/database"
 	"github.com/Serbroda/ragbag/pkg/handlers"
+	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -40,7 +41,9 @@ func main() {
 	fmt.Println("version=", version)
 
 	database.OpenAndConfigure("mysql", getDsn(dbUser, dbPassword, dbAddress, dbName), migrations, "resources/db/migrations")
-	database.InitializeAdmin(context.Background(), database.Queries)
+
+	services := services.New(database.Queries)
+	database.InitializeAdmin(context.Background(), services)
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)

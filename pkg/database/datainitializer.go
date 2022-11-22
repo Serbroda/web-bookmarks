@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/pkg/utils"
+	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/teris-io/shortid"
 )
 
@@ -15,50 +15,31 @@ const (
 	passwordFile = "adminpassword"
 )
 
-func InitializeAdmin(c context.Context, q *gen.Queries) {
-	e, err := q.CountUserByName(c, admin)
-	if err != nil || e > 0 {
-		fmt.Println("Admin already exists")
+func InitializeAdmin(c context.Context, s *services.Service) {
+	if s.UserService.ExistsUser(c, admin) {
 		return
 	}
 
+	fmt.Println("initializing admin user")
 	shortId := shortid.MustGenerate()
-	pwd, err := utils.HashPassword(shortId)
-	if err != nil {
-		panic(err.Error())
-	}
 
-	id, err := q.CreateUser(c, gen.CreateUserParams{
-		Username: admin,
-		Password: pwd,
-		Email:    "admin@admin",
-	})
+	_, err := s.UserService.CreateUserWithRoles(c, gen.CreateUserParams{
+		Username:           admin,
+		Password:           shortId,
+		Email:              "admin@admin",
+		Active:             true,
+		MustChangePassword: true,
+	}, []string{"ADMIN"})
+
 	if err != nil {
 		panic(err.Error())
-	}
-	n, err := q.CountUserRole(c, gen.CountUserRoleParams{
-		UserID: id,
-		Name:   admin,
-	})
-	if err != nil {
-		panic(err.Error())
-	}
-	if n < 1 {
-		role, err := q.FindRoleByName(c, admin)
-		if err != nil {
-			panic(err.Error())
-		}
-		q.InsertUserRole(c, gen.InsertUserRoleParams{
-			UserID: id,
-			RoleID: role.ID,
-		})
 	}
 
 	file, err := os.Create("adminpassword")
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println("File created admin password file")
+	fmt.Printf("adminpassword file created with initial password: %s\n", shortId)
 	defer file.Close()
 
 	_, err = file.WriteString(shortId)

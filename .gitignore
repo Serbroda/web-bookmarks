@@ -321,3 +321,4 @@ build
 __debug**
 ragbag.db
 gen
+adminpassword

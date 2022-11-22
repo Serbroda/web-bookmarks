@@ -1,7 +1,7 @@
--- name: GetRoles :many
+-- name: FindAllRoles :many
 SELECT *
 FROM roles;
--- name: GetRoleByName :one
+-- name: FindRoleByName :one
 SELECT *
 FROM roles
 WHERE lower(name) = lower(?)

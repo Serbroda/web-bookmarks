@@ -3,12 +3,15 @@ package database
 import (
 	"database/sql"
 	"embed"
+	"sync"
 
 	"github.com/Serbroda/ragbag/gen"
 	"github.com/pressly/goose/v3"
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+var once sync.Once
 
 var (
 	DBCon   *sql.DB
@@ -18,15 +21,17 @@ var (
 func OpenAndConfigure(driver, source string, migrations embed.FS, migrationsDir string) {
 	db := OpenConnection(driver, source)
 	Migrate(db, migrations, migrationsDir)
-	InitialQueries(db)
+	InitQueries(db)
 }
 
 func OpenConnection(driver, source string) *sql.DB {
-	db, err := sql.Open(driver, source)
-	if err != nil {
-		panic("Failed to open database: " + err.Error())
-	}
-	DBCon = db
+	once.Do(func() {
+		db, err := sql.Open(driver, source)
+		if err != nil {
+			panic("Failed to open database: " + err.Error())
+		}
+		DBCon = db
+	})
 	return DBCon
 }
 
@@ -41,6 +46,7 @@ func Migrate(db *sql.DB, migrations embed.FS, migrationsDir string) {
 	}
 }
 
-func InitialQueries(db *sql.DB) {
+func InitQueries(db *sql.DB) *gen.Queries {
 	Queries = gen.New(db)
+	return Queries
 }
