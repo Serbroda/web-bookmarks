@@ -63,9 +63,9 @@ paths:
 
   /refresh_token:
     post:
-      summary: Register
-      description: Register
-      operationId: refresh
+      summary: Refresh token
+      description: Refresh token
+      operationId: refreshToken
       tags:
         - auth
       requestBody:

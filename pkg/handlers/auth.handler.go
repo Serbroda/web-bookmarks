@@ -9,11 +9,11 @@ import (
 
 	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/gen/public"
-	"github.com/Serbroda/ragbag/pkg/db"
 	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 var (
@@ -23,6 +23,8 @@ var (
 )
 
 type PublicServerInterfaceImpl struct {
+	Services *services.Services
+	Queries  *gen.Queries
 }
 
 type JwtCustomClaims struct {
@@ -70,7 +72,7 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	user, err := db.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
+	user, err := si.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
 	if err != nil || user.ID < 1 || !utils.CheckPasswordHash(*payload.Password, user.Password) {
 		return ctx.String(http.StatusNotFound, "invalid login")
 	}
@@ -91,13 +93,13 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	if services.Services.UserService.ExistsUser(ctx.Request().Context(), *payload.Password) {
+	if si.Services.ExistsUser(ctx.Request().Context(), *payload.Password) {
 		return ctx.String(http.StatusConflict, "user already exists")
 	}
 
 	hashedPassword, _ := utils.HashPassword(*payload.Password)
 
-	user, err := services.Services.UserService.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
+	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
 		Username: strings.ToLower(*payload.Username),
 		Password: hashedPassword,
 		Email:    *payload.Email,
@@ -113,8 +115,8 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 	})
 }
 
-func (si *PublicServerInterfaceImpl) Refresh(ctx echo.Context) error {
-	var payload public.RefreshJSONBody
+func (si *PublicServerInterfaceImpl) RefreshToken(ctx echo.Context) error {
+	var payload public.RefreshTokenJSONBody
 	err := ctx.Bind(&payload)
 	if err != nil || payload.RefreshToken == "" {
 		return ctx.String(http.StatusBadRequest, "bad request")
@@ -122,31 +124,33 @@ func (si *PublicServerInterfaceImpl) Refresh(ctx echo.Context) error {
 
 	token, err := jwt.Parse(payload.RefreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(jwtSecretKey), nil
 	})
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		sub := claims["sub"].(string)
-		id := utils.MustParseInt64(sub)
-		user, err := db.Queries.FindUser(ctx.Request().Context(), id)
+	if err != nil {
+		return middleware.ErrJWTInvalid
+	}
 
-		if err != nil || user.ID < 1 {
-			return ctx.String(http.StatusUnauthorized, "Unauthorized")
-		}
+	claims, ok := token.Claims.(jwt.MapClaims)
 
-		if user.Active {
-			newTokenPair, err := generateTokenPair(&user)
-			if err != nil {
-				return err
-			}
+	if !ok || !token.Valid {
+		return middleware.ErrJWTInvalid
+	}
 
-			return ctx.JSON(http.StatusOK, newTokenPair)
-		}
+	sub := claims["sub"].(string)
+	id := utils.MustParseInt64(sub)
+	user, err := si.Queries.FindUser(ctx.Request().Context(), id)
 
+	if err != nil || user.ID < 1 || !user.Active {
 		return echo.ErrUnauthorized
 	}
 
-	return err
+	newTokenPair, err := generateTokenPair(&user)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, newTokenPair)
 }

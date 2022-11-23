@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 
+	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/gen/public"
 	"github.com/Serbroda/ragbag/gen/restricted"
 	"github.com/Serbroda/ragbag/pkg/db"
@@ -55,14 +56,14 @@ func main() {
 	e.Use(middleware.CORS())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(50)))
 
-	registerHandlers(e)
+	registerHandlers(e, db.Queries, services)
 
 	e.Logger.Fatal(e.Start(serverAddress))
 }
 
-func registerHandlers(e *echo.Echo) {
+func registerHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
 	registerStaticHandlers(e)
-	registerApiHandlers(e)
+	registerApiHandlers(e, queries, services)
 }
 
 func registerStaticHandlers(e *echo.Echo) {
@@ -70,10 +71,13 @@ func registerStaticHandlers(e *echo.Echo) {
 	e.FileFS("/", "index.html", distIndexHtml)
 }
 
-func registerApiHandlers(e *echo.Echo) {
+func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
 	baseUrl := "/api/v1"
 
-	var publicApi handlers.PublicServerInterfaceImpl
+	var publicApi = handlers.PublicServerInterfaceImpl{
+		Services: services,
+		Queries:  queries,
+	}
 	public.RegisterHandlersWithBaseURL(e, &publicApi, baseUrl)
 
 	api := e.Group(baseUrl)

@@ -12,15 +12,7 @@ import (
 
 var ErrUserAlreadyExists = errors.New("user already exists")
 
-type UserService struct {
-	Queries *gen.Queries
-}
-
-func NewUserService(q *gen.Queries) *UserService {
-	return &UserService{Queries: q}
-}
-
-func (s *UserService) ExistsUser(ctx context.Context, username string) bool {
+func (s *Services) ExistsUser(ctx context.Context, username string) bool {
 	exists, err := s.Queries.CountUserByName(ctx, username)
 	if err != nil {
 		return false
@@ -28,11 +20,11 @@ func (s *UserService) ExistsUser(ctx context.Context, username string) bool {
 	return exists > 0
 }
 
-func (s *UserService) CreateUser(ctx context.Context, arg gen.CreateUserParams) (gen.User, error) {
+func (s *Services) CreateUser(ctx context.Context, arg gen.CreateUserParams) (gen.User, error) {
 	return s.CreateUserWithRoles(ctx, arg, []string{})
 }
 
-func (s *UserService) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserParams, roles []string) (gen.User, error) {
+func (s *Services) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserParams, roles []string) (gen.User, error) {
 	if s.ExistsUser(ctx, arg.Username) {
 		return gen.User{}, ErrUserAlreadyExists
 	}
@@ -53,7 +45,9 @@ func (s *UserService) CreateUserWithRoles(ctx context.Context, arg gen.CreateUse
 		roles = []string{"USER"}
 	}
 
-	for _, r := range s.getRoles(ctx, roles) {
+	s.FindRolesByNamesIn(ctx, roles)
+
+	for _, r := range s.FindRolesByNamesIn(ctx, roles) {
 		s.Queries.InsertUserRole(ctx, gen.InsertUserRoleParams{
 			UserID: id,
 			RoleID: r.ID,
@@ -61,15 +55,4 @@ func (s *UserService) CreateUserWithRoles(ctx context.Context, arg gen.CreateUse
 	}
 
 	return s.Queries.FindUser(ctx, id)
-}
-
-func (s *UserService) getRoles(ctx context.Context, roleNames []string) []gen.Role {
-	var roles []gen.Role
-	for _, r := range roleNames {
-		role, err := s.Queries.FindRoleByName(ctx, r)
-		if err == nil {
-			roles = append(roles, role)
-		}
-	}
-	return roles
 }

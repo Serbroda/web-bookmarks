@@ -15,15 +15,15 @@ const (
 	passwordFile = "adminpassword"
 )
 
-func InitializeAdmin(c context.Context, s *services.Service) {
-	if s.UserService.ExistsUser(c, admin) {
+func InitializeAdmin(c context.Context, s *services.Services) {
+	if s.ExistsUser(c, admin) {
 		return
 	}
 
 	fmt.Println("initializing admin user")
 	shortId := shortid.MustGenerate()
 
-	_, err := s.UserService.CreateUserWithRoles(c, gen.CreateUserParams{
+	_, err := s.CreateUserWithRoles(c, gen.CreateUserParams{
 		Username:           admin,
 		Password:           shortId,
 		Email:              "admin@admin",

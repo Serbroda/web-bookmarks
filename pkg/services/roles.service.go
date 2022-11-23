@@ -6,15 +6,7 @@ import (
 	"github.com/Serbroda/ragbag/gen"
 )
 
-type RoleService struct {
-	Queries *gen.Queries
-}
-
-func NewRoleService(q *gen.Queries) *RoleService {
-	return &RoleService{Queries: q}
-}
-
-func (s *RoleService) FindRolesByNamesIn(ctx context.Context, roles []string) ([]gen.Role, error) {
+func (s *Services) FindRolesByNamesIn(ctx context.Context, roles []string) []gen.Role {
 	var result []gen.Role
 	for _, r := range roles {
 		res, err := s.Queries.FindRoleByName(ctx, r)
@@ -22,5 +14,5 @@ func (s *RoleService) FindRolesByNamesIn(ctx context.Context, roles []string) ([
 			result = append(result, res)
 		}
 	}
-	return result, nil
+	return result
 }

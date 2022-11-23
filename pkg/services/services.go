@@ -3,18 +3,15 @@ package services
 import "github.com/Serbroda/ragbag/gen"
 
 var (
-	Services *Service
+	Service *Services
 )
 
-type Service struct {
-	UserService *UserService
-	RoleService *RoleService
+type Services struct {
+	Queries *gen.Queries
 }
 
-func New(q *gen.Queries) *Service {
-	Services = &Service{
-		UserService: NewUserService(q),
-		RoleService: NewRoleService(q),
+func New(q *gen.Queries) *Services {
+	return &Services{
+		Queries: q,
 	}
-	return Services
 }
