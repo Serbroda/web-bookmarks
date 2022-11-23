@@ -38,7 +38,7 @@ paths:
           content:
             application/json:    
               schema:
-                type: string
+                $ref: '#/components/schemas/TokenPairDto'
 
   /register:
     post:
@@ -60,6 +60,32 @@ paths:
             application/json:    
               schema:
                 $ref: '#/components/schemas/UserDto'
+
+  /refresh_token:
+    post:
+      summary: Register
+      description: Register
+      operationId: refresh
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  $ref: '#/components/schemas/Jwt'
+              required:
+                - refresh_token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:    
+              schema:
+                $ref: '#/components/schemas/TokenPairDto'
 
   /spaces:
     get:
@@ -433,6 +459,9 @@ components:
       type: string
       example: ZHbMDG-aM
 
+    Jwt:
+      type: string
+
     LoginDto:
       type: object
       properties:
@@ -450,6 +479,14 @@ components:
           type: string
         password:
           type: string
+
+    TokenPairDto:
+      type: object
+      properties:
+        access_token:
+          $ref: "#/components/schemas/Jwt"
+        refresh_token:
+          $ref: "#/components/schemas/Jwt"
 
     UserDto:
       type: object

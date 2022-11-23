@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"sync"
@@ -21,13 +22,16 @@ func GetEnv(key string) (string, bool) {
 
 func GetEnvFallback(key, fallback string) string {
 	if value, ok := GetEnv(key); ok {
+		fmt.Printf("%s=%v\n", key, value)
 		return value
 	}
+	fmt.Printf("%s (fallback)=%v\n", key, fallback)
 	return fallback
 }
 
 func MustGetEnv(key string) string {
 	if value, ok := GetEnv(key); ok {
+		fmt.Printf("%s=%v\n", key, value)
 		return value
 	}
 	panic("Mandatory env " + key + " not found")

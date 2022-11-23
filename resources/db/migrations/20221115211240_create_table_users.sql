@@ -30,5 +30,7 @@ CREATE TABLE users_roles (
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE users;
+-- +goose StatementEnd
+-- +goose StatementBegin
 DROP TABLE users_roles;
 -- +goose StatementEnd

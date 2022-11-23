@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -14,16 +16,51 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var jwtSecretKey = utils.GetEnvFallback("JWT_SECRET_KEY", "s3cr3t")
-var jwtExpirationHours = utils.MustParseInt64(utils.GetEnvFallback("JWT_EXPIRE_HOURS", "72"))
+var (
+	jwtSecretKey       string = utils.MustGetEnv("JWT_SECRET_KEY")
+	jwtAccessTokenExp  int64  = utils.MustParseInt64(utils.GetEnvFallback("JWT_ACCESS_EXPIRE_MINUTES", "15"))
+	jwtRefreshTokenExp int64  = utils.MustParseInt64(utils.GetEnvFallback("JWT_REFRESH_EXPIRE_MINUTES", "10080"))
+)
 
 type PublicServerInterfaceImpl struct {
 }
 
 type JwtCustomClaims struct {
-	Subject string `json:"sub"`
-	UserId  int64  `json:"userid"`
+	Name  string `json:"name,omitempty"`
+	Roles string `json:"roles,omitempty"`
 	jwt.StandardClaims
+}
+
+func generateTokenPair(user *gen.User) (public.TokenPairDto, error) {
+	userIdStr := strconv.FormatInt(user.ID, 10)
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustomClaims{
+		Name: user.Username,
+		StandardClaims: jwt.StandardClaims{
+			Subject:   userIdStr,
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(jwtAccessTokenExp)).Unix(),
+		},
+	})
+	t, err := token.SignedString([]byte(jwtSecretKey))
+	if err != nil {
+		return public.TokenPairDto{}, err
+	}
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustomClaims{
+		StandardClaims: jwt.StandardClaims{
+			Subject:   userIdStr,
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(jwtRefreshTokenExp)).Unix(),
+		},
+	})
+	rt, err := refreshToken.SignedString([]byte(jwtSecretKey))
+	if err != nil {
+		return public.TokenPairDto{}, err
+	}
+
+	return public.TokenPairDto{
+		AccessToken:  &t,
+		RefreshToken: &rt,
+	}, nil
 }
 
 func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
@@ -33,29 +70,18 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	username := strings.ToLower(*payload.Username)
-
 	user, err := db.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
 	if err != nil || user.ID < 1 || !utils.CheckPasswordHash(*payload.Password, user.Password) {
 		return ctx.String(http.StatusNotFound, "invalid login")
 	}
 
-	claims := &JwtCustomClaims{
-		Subject: username,
-		UserId:  user.ID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * time.Duration(jwtExpirationHours)).Unix(),
-		},
-	}
+	tokenPair, err := generateTokenPair(&user)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	t, err := token.SignedString([]byte(jwtSecretKey))
 	if err != nil {
-		return ctx.String(http.StatusInternalServerError, "Internal Server Error")
+		return ctx.String(http.StatusInternalServerError, "failed to generate token")
 	}
 
-	return ctx.String(http.StatusOK, t)
+	return ctx.JSON(http.StatusOK, tokenPair)
 }
 
 func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
@@ -85,4 +111,42 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		Id:       &user.ID,
 		Username: &user.Username,
 	})
+}
+
+func (si *PublicServerInterfaceImpl) Refresh(ctx echo.Context) error {
+	var payload public.RefreshJSONBody
+	err := ctx.Bind(&payload)
+	if err != nil || payload.RefreshToken == "" {
+		return ctx.String(http.StatusBadRequest, "bad request")
+	}
+
+	token, err := jwt.Parse(payload.RefreshToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(jwtSecretKey), nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		sub := claims["sub"].(string)
+		id := utils.MustParseInt64(sub)
+		user, err := db.Queries.FindUser(ctx.Request().Context(), id)
+
+		if err != nil || user.ID < 1 {
+			return ctx.String(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		if user.Active {
+			newTokenPair, err := generateTokenPair(&user)
+			if err != nil {
+				return err
+			}
+
+			return ctx.JSON(http.StatusOK, newTokenPair)
+		}
+
+		return echo.ErrUnauthorized
+	}
+
+	return err
 }

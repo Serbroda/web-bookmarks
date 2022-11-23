@@ -35,6 +35,7 @@ var (
 	dbName        string = utils.GetEnvFallback("DB_NAME", "ragbag")
 	dbUser        string = utils.GetEnvFallback("DB_USER", "ragbag")
 	dbPassword    string = utils.MustGetEnv("DB_PASSWORD")
+	jwtSecretKey  string = utils.MustGetEnv("JWT_SECRET_KEY")
 )
 
 func main() {
@@ -76,11 +77,10 @@ func registerApiHandlers(e *echo.Echo) {
 	public.RegisterHandlersWithBaseURL(e, &publicApi, baseUrl)
 
 	api := e.Group(baseUrl)
-	config := middleware.JWTConfig{
+	api.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		Claims:     &handlers.JwtCustomClaims{},
-		SigningKey: []byte("secret"),
-	}
-	api.Use(middleware.JWTWithConfig(config))
+		SigningKey: []byte(jwtSecretKey),
+	}))
 
 	var restrictedApi handlers.RestrictedServerInterfaceImpl
 	restricted.RegisterHandlers(api, &restrictedApi)
