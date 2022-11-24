@@ -100,7 +100,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 
 	hashedPassword, _ := utils.HashPassword(*payload.Password)
 
-	activationCode := utils.RandomString(32)
+	activationCode := utils.RandomString(128)
 
 	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
 		Username:                strings.ToLower(*payload.Username),

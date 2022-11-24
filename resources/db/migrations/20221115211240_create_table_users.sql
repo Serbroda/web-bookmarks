@@ -10,7 +10,7 @@ CREATE TABLE users (
     name varchar(120),
     email varchar(120) NOT NULL,
     active BOOLEAN NOT NULL default FALSE,
-    activation_code varchar(32),
+    activation_code varchar(128),
     activation_sent_at timestamp,
     activation_code_expires_at timestamp,
     activation_confirmed_at timestamp,
