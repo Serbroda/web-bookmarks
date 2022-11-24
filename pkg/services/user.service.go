@@ -6,14 +6,19 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/teris-io/shortid"
 )
 
-var ErrUserNotFound = errors.New("user not found")
-var ErrUserAlreadyExists = errors.New("user already exists")
+var (
+	ErrUserNotFound          = errors.New("user not found")
+	ErrUserAlreadyExists     = errors.New("user already exists")
+	ErrUserAlreadyActive     = errors.New("user already active")
+	ErrActivationCodeExpores = errors.New("activation code expired")
+)
 
 func (s *Services) ExistsUser(ctx context.Context, username string) bool {
 	_, err := s.FindUserByUsername(ctx, username)
@@ -88,4 +93,38 @@ func (s *Services) FindUserByActivationCode(ctx context.Context, code string) (g
 		return gen.User{}, ErrUserNotFound
 	}
 	return user, nil
+}
+
+func (s *Services) ActivateUser(ctx context.Context, code string) error {
+	user, err := s.FindUserByActivationCode(ctx, code)
+	if err != nil {
+		return err
+	}
+
+	if user.Active {
+		return ErrUserAlreadyActive
+	}
+
+	if !user.ActivationCodeExpiresAt.Valid || user.ActivationCodeExpiresAt.Time.Before(time.Now()) {
+		return ErrActivationCodeExpores
+	}
+
+	err = s.Queries.UpdateUser(ctx, gen.UpdateUserParams{
+		ID:                    user.ID,
+		ActivationConfirmedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		Active:                true,
+
+		Password:                user.Password,
+		Name:                    user.Name,
+		Email:                   user.Email,
+		ActivationCode:          user.ActivationCode,
+		ActivationSentAt:        user.ActivationSentAt,
+		ActivationCodeExpiresAt: user.ActivationCodeExpiresAt,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
