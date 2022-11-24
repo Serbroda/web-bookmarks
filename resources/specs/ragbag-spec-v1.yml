@@ -87,6 +87,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/TokenPairDto'
 
+  /activate:
+    get:
+      summary: Refresh token
+      description: Refresh token
+      operationId: activate
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+      tags:
+        - auth
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
   /spaces:
     get:
       summary: List all spaces

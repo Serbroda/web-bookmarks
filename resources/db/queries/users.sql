@@ -3,15 +3,16 @@ SELECT *
 FROM users
 WHERE id = ?
 LIMIT 1;
--- name: FindUserByName :one
+-- name: FindUserByUsername :one
 SELECT *
 FROM users
 WHERE lower(username) = lower(?)
 LIMIT 1;
--- name: CountUserByName :one
-SELECT count(*)
+-- name: FindUserByActivationCode :one
+SELECT *
 FROM users
-WHERE lower(username) = lower(?);
+WHERE activation_code = ?
+LIMIT 1;
 -- name: CreateUser :execlastid
 INSERT INTO users (
         created_at,
@@ -20,10 +21,16 @@ INSERT INTO users (
         name,
         email,
         active,
-        must_change_password
+        activation_code,
+        activation_sent_at,
+        activation_code_expires_at,
+        activation_confirmed_at
     )
 VALUES(
         CURRENT_TIMESTAMP,
+        ?,
+        ?,
+        ?,
         ?,
         ?,
         ?,
@@ -34,16 +41,15 @@ VALUES(
 -- name: UpdateUser :exec
 UPDATE users
 SET updated_at = CURRENT_TIMESTAMP,
-    password = ?,
-    name = ?,
-    email = ?
-WHERE id = ?
-    AND deleted_at IS NULL;
+    password = COALESCE(?, password),
+    name = COALESCE(?, name),
+    email = COALESCE(?, email),
+    active = COALESCE(?, active),
+    activation_code = COALESCE(?, activation_code),
+    activation_sent_at = COALESCE(?, activation_sent_at),
+    activation_code_expires_at = COALESCE(?, activation_sent_at),
+    activation_confirmed_at = COALESCE(?, activation_confirmed_at)
+WHERE id = ?;
 -- name: DeleteUser :exec
-UPDATE users
-SET deleted_at = CURRENT_TIMESTAMP
-WHERE id = ?
-    AND deleted_at IS NULL;
--- name: DeleteUserFull :exec
 DELETE FROM users
 WHERE id = ?;

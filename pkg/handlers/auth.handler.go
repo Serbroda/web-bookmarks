@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -72,7 +73,7 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	user, err := si.Queries.FindUserByName(ctx.Request().Context(), *payload.Username)
+	user, err := si.Services.FindUserByUsername(ctx.Request().Context(), *payload.Username)
 	if err != nil || user.ID < 1 || !utils.CheckPasswordHash(*payload.Password, user.Password) {
 		return ctx.String(http.StatusNotFound, "invalid login")
 	}
@@ -99,15 +100,23 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 
 	hashedPassword, _ := utils.HashPassword(*payload.Password)
 
+	activationCode := utils.RandomString(32)
+
 	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
-		Username: strings.ToLower(*payload.Username),
-		Password: hashedPassword,
-		Email:    *payload.Email,
+		Username:                strings.ToLower(*payload.Username),
+		Password:                hashedPassword,
+		Email:                   *payload.Email,
+		ActivationCode:          sql.NullString{String: activationCode, Valid: true},
+		ActivationSentAt:        sql.NullTime{Time: time.Now(), Valid: true},
+		ActivationCodeExpiresAt: sql.NullTime{Time: time.Now().Add(time.Hour * 48), Valid: true},
+		Active:                  false,
 	})
 
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
+
+	fmt.Printf("http://localhost:8080/api/v1/activate?code=%s\n", activationCode)
 
 	return ctx.JSON(http.StatusCreated, &public.UserDto{
 		Id:       &user.ID,
@@ -153,4 +162,33 @@ func (si *PublicServerInterfaceImpl) RefreshToken(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, newTokenPair)
+}
+
+func (si *PublicServerInterfaceImpl) Activate(ctx echo.Context, params public.ActivateParams) error {
+	user, err := si.Services.FindUserByActivationCode(ctx.Request().Context(), params.Code)
+	if err != nil {
+		return ctx.String(http.StatusNotFound, "user not found")
+	}
+
+	if user.Active {
+		return ctx.String(http.StatusAccepted, "user already activated")
+	}
+
+	if !user.ActivationCodeExpiresAt.Valid || user.ActivationCodeExpiresAt.Time.Before(time.Now()) {
+		return ctx.String(http.StatusBadRequest, "activation expired")
+	}
+
+	si.Queries.UpdateUser(ctx.Request().Context(), gen.UpdateUserParams{
+		ID:                    user.ID,
+		ActivationConfirmedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		Active:                true,
+
+		Password:                user.Password,
+		Name:                    user.Name,
+		Email:                   user.Email,
+		ActivationCode:          user.ActivationCode,
+		ActivationSentAt:        user.ActivationSentAt,
+		ActivationCodeExpiresAt: user.ActivationCodeExpiresAt,
+	})
+	return ctx.String(http.StatusOK, "user activated")
 }
