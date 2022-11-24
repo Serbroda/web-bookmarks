@@ -165,30 +165,9 @@ func (si *PublicServerInterfaceImpl) RefreshToken(ctx echo.Context) error {
 }
 
 func (si *PublicServerInterfaceImpl) Activate(ctx echo.Context, params public.ActivateParams) error {
-	user, err := si.Services.FindUserByActivationCode(ctx.Request().Context(), params.Code)
+	err := si.Services.ActivateUser(ctx.Request().Context(), params.Code)
 	if err != nil {
-		return ctx.String(http.StatusNotFound, "user not found")
+		return fmt.Errorf("%v", err)
 	}
-
-	if user.Active {
-		return ctx.String(http.StatusAccepted, "user already activated")
-	}
-
-	if !user.ActivationCodeExpiresAt.Valid || user.ActivationCodeExpiresAt.Time.Before(time.Now()) {
-		return ctx.String(http.StatusBadRequest, "activation expired")
-	}
-
-	si.Queries.UpdateUser(ctx.Request().Context(), gen.UpdateUserParams{
-		ID:                    user.ID,
-		ActivationConfirmedAt: sql.NullTime{Time: time.Now(), Valid: true},
-		Active:                true,
-
-		Password:                user.Password,
-		Name:                    user.Name,
-		Email:                   user.Email,
-		ActivationCode:          user.ActivationCode,
-		ActivationSentAt:        user.ActivationSentAt,
-		ActivationCodeExpiresAt: user.ActivationCodeExpiresAt,
-	})
 	return ctx.String(http.StatusOK, "user activated")
 }

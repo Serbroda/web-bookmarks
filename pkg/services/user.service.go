@@ -126,5 +126,16 @@ func (s *Services) ActivateUser(ctx context.Context, code string) error {
 		return err
 	}
 
+	_, err = s.CreateSpace(ctx, gen.CreateSpaceParams{
+		ShortID:    shortid.MustGenerate(),
+		OwnerID:    user.ID,
+		Name:       "Default",
+		Visibility: "PRIVATE",
+	})
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
