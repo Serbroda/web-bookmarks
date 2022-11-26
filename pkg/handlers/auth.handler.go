@@ -102,6 +102,27 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 
 	activationCode := utils.RandomString(128)
 
+	link := fmt.Sprintf("http://localhost:8080/api/v1/activate?code=%s", activationCode)
+	err = utils.SendMailTemplate(utils.MailWithTemplate{
+		Mail: utils.Mail{
+			To:      []string{"moguai90@gmail.com"},
+			Subject: "Verify your email address",
+		},
+		Template: "resources/templates/activation-mail.html",
+		Data: struct {
+			Name string
+			Link string
+		}{
+			Name: "Danny",
+			Link: link,
+		},
+	})
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+
 	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
 		Username:                strings.ToLower(*payload.Username),
 		Password:                hashedPassword,
@@ -116,7 +137,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	fmt.Printf("http://localhost:8080/api/v1/activate?code=%s\n", activationCode)
+	fmt.Printf("%s\n", link)
 
 	return ctx.JSON(http.StatusCreated, &public.UserDto{
 		Id:       &user.ID,

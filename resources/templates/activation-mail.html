@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Email verification</title>
+
+    <style>
+      div#email {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        font-family: sans-serif;
+        background-color: white;
+        position: relative;
+      }
+      .btn {
+        width: 100%;
+        display: inline-block;
+        text-align: center;
+        background-color: black;
+        color: white !important;
+        font-weight: bold;
+        line-height: 36px;
+        border-radius: 3px;
+        padding: 8px;
+        text-decoration: none;
+        font-weight: normal;
+        opacity: 1;
+        border: 2px solid black;
+        box-sizing: border-box;
+      }
+      .btn:hover,
+      .btn:focus {
+        opacity: 0.8;
+        color: black !important;
+        background: white;
+      }
+      a {
+        color: black !important;
+      }
+      a:hover {
+        color: rgb(87, 87, 87) !important;
+      }
+      .text-info {
+        color: rgb(87, 87, 87);
+        font-size: 0.75rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="email">
+      <div style="border: 1px solid black; padding: 16px 24px">
+        <div style="border-bottom: 1px solid black">
+          <h1>Verify your email address</h1>
+        </div>
+        <br />
+        <p>Hey {{.Name}},</p>
+        <p>
+          You are almost ready to start enjoying ragbag. <br />Simply click the
+          button below to verify your email address.
+        </p>
+        <p>
+          <a href="{{.Link}}" class="btn" target="_blank"
+            ><span>Verify email address</span></a
+          >
+        </p>
+        <br />
+        <p>
+          <span>Or you can click here:</span><br />
+          <a href="{{.Link}}" target="_blank" style="color: black"
+            ><span>{{.Link}}</span></a
+          >
+        </p>
+
+        <p>
+          If you didn't request this, ignore this email. You won't get another
+          one!
+        </p>
+      </div>
+
+      <br />
+      <div style="text-align: center">
+        <p>Steilshooper Str. 15, 22305 Hamburg, Germany</p>
+        <p>Powered by Ragbag</p>
+        <br />
+        <i class="text-info">
+          This is an automatically generated e-mail - please do not reply to
+          this email address.
+        </i>
+      </div>
+    </div>
+  </body>
+</html>
