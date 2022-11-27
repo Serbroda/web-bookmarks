@@ -486,6 +486,9 @@ components:
           type: string
         password:
           type: string
+      required:
+        - username
+        - password
 
     RegistrationDto:
       type: object
@@ -496,6 +499,16 @@ components:
           type: string
         password:
           type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - username
+        - email
+        - password
+        - firstName
+        - lastName
 
     TokenPairDto:
       type: object

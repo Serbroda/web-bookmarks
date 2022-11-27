@@ -21,6 +21,7 @@ var (
 	jwtSecretKey       string = utils.MustGetEnv("JWT_SECRET_KEY")
 	jwtAccessTokenExp  int64  = utils.MustParseInt64(utils.GetEnvFallback("JWT_ACCESS_EXPIRE_MINUTES", "15"))
 	jwtRefreshTokenExp int64  = utils.MustParseInt64(utils.GetEnvFallback("JWT_REFRESH_EXPIRE_MINUTES", "10080"))
+	baseUrl            string = utils.MustGetEnv("SERVER_BASE_URL")
 )
 
 type PublicServerInterfaceImpl struct {
@@ -69,12 +70,12 @@ func generateTokenPair(user *gen.User) (public.TokenPairDto, error) {
 func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 	var payload public.LoginDto
 	err := ctx.Bind(&payload)
-	if err != nil || payload.Username == nil || payload.Password == nil {
+	if err != nil || payload.Username == "" || payload.Password == "" {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	user, err := si.Services.FindUserByUsername(ctx.Request().Context(), *payload.Username)
-	if err != nil || user.ID < 1 || !utils.CheckPasswordHash(*payload.Password, user.Password) {
+	user, err := si.Services.FindUserByUsername(ctx.Request().Context(), payload.Username)
+	if err != nil || user.ID < 1 || !utils.CheckPasswordHash(payload.Password, user.Password) {
 		return ctx.String(http.StatusNotFound, "invalid login")
 	}
 
@@ -90,30 +91,30 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 	var payload public.RegistrationDto
 	err := ctx.Bind(&payload)
-	if err != nil || payload.Username == nil || payload.Password == nil {
+	if err != nil || payload.Username == "" || payload.Password == "" {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	if si.Services.ExistsUser(ctx.Request().Context(), *payload.Password) {
+	if si.Services.ExistsUser(ctx.Request().Context(), payload.Password) {
 		return ctx.String(http.StatusConflict, "user already exists")
 	}
 
-	hashedPassword, _ := utils.HashPassword(*payload.Password)
+	hashedPassword, _ := utils.HashPassword(payload.Password)
 
 	activationCode := utils.RandomString(128)
 
-	link := fmt.Sprintf("http://localhost:8080/api/v1/activate?code=%s", activationCode)
+	link := fmt.Sprintf("%s/api/v1/activate?code=%s", baseUrl, activationCode)
 	err = utils.SendMailTemplate(utils.MailWithTemplate{
 		Mail: utils.Mail{
-			To:      []string{"moguai90@gmail.com"},
+			To:      []string{payload.Email},
 			Subject: "Verify your email address",
 		},
-		Template: "resources/templates/activation-mail.html",
+		Template: "resources/templates/email/email-verification.html",
 		Data: struct {
 			Name string
 			Link string
 		}{
-			Name: "Danny",
+			Name: payload.FirstName,
 			Link: link,
 		},
 	})
@@ -124,9 +125,11 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 	}
 
 	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
-		Username:                strings.ToLower(*payload.Username),
+		Username:                strings.ToLower(payload.Username),
 		Password:                hashedPassword,
-		Email:                   *payload.Email,
+		Email:                   payload.Email,
+		FirstName:               payload.FirstName,
+		LastName:                payload.LastName,
 		ActivationCode:          sql.NullString{String: activationCode, Valid: true},
 		ActivationSentAt:        sql.NullTime{Time: time.Now(), Valid: true},
 		ActivationCodeExpiresAt: sql.NullTime{Time: time.Now().Add(time.Hour * 48), Valid: true},

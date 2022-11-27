@@ -5,6 +5,8 @@ CREATE TABLE users (
     created_at timestamp default CURRENT_TIMESTAMP,
     updated_at timestamp,
     deleted_at timestamp,
+    first_name varchar(80) NOT NULL,
+    last_name varchar(80) NOT NULL,
     username varchar(120) NOT NULL,
     password varchar(120) NOT NULL,
     name varchar(120),

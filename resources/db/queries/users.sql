@@ -20,6 +20,8 @@ INSERT INTO users (
         password,
         name,
         email,
+        first_name,
+        last_name,
         active,
         activation_code,
         activation_sent_at,
@@ -36,6 +38,8 @@ VALUES(
         ?,
         ?,
         ?,
+        ?,
+        ?,
         ?
     );
 -- name: UpdateUser :exec
@@ -44,6 +48,8 @@ SET updated_at = CURRENT_TIMESTAMP,
     password = COALESCE(?, password),
     name = COALESCE(?, name),
     email = COALESCE(?, email),
+    first_name = COALESCE(?, first_name),
+    last_name = COALESCE(?, last_name),
     active = COALESCE(?, active),
     activation_code = COALESCE(?, activation_code),
     activation_sent_at = COALESCE(?, activation_sent_at),

@@ -25,3 +25,6 @@ SET updated_at = CURRENT_TIMESTAMP,
     description = COALESCE(?, updated_at),
     visibility = COALESCE(?, updated_at)
 WHERE id = ?;
+-- name: InsertUserSpace :exec
+INSERT INTO users_spaces (user_id, space_id, role_id, created_at)
+VALUES(?, ?, ?, CURRENT_TIMESTAMP);

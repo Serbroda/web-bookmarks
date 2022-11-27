@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"net/mail"
 	"net/smtp"
-	"strings"
 )
 
 var (
@@ -29,12 +28,6 @@ type MailWithTemplate struct {
 	Data     any
 }
 
-func encodeRFC2047(str string) string {
-	// use mail's rfc2047 to encode any string
-	addr := mail.Address{Name: str, Address: ""}
-	return strings.Trim(addr.String(), " <>")
-}
-
 func SendMailTemplate(info MailWithTemplate) error {
 	auth := smtp.PlainAuth("", user, password, smtpHost)
 
@@ -44,7 +37,7 @@ func SendMailTemplate(info MailWithTemplate) error {
 
 	headers := make(map[string]string)
 	headers["From"] = from.String()
-	headers["Subject"] = encodeRFC2047(info.Subject)
+	headers["Subject"] = info.Subject
 	headers["MIME-Version"] = "1.0"
 	headers["Content-Type"] = "text/html; charset=\"UTF-8\""
 
