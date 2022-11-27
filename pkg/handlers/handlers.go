@@ -5,41 +5,11 @@ import (
 	"net/http"
 
 	"github.com/Serbroda/ragbag/gen/restricted"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
 type RestrictedServerInterfaceImpl struct {
-}
-
-// Delete a space
-// (DELETE /groups/{groupId})
-func (si *RestrictedServerInterfaceImpl) DeleteGroup(ctx echo.Context, groupId restricted.IdString) error {
-	panic("not implemented") // TODO: Implement
-}
-
-// Get a group
-// (GET /groups/{groupId})
-func (si *RestrictedServerInterfaceImpl) GetGroup(ctx echo.Context, groupId restricted.IdString) error {
-	panic("not implemented") // TODO: Implement
-}
-
-// Update a group
-// (PATCH /groups/{groupId})
-func (si *RestrictedServerInterfaceImpl) UpdateGroup(ctx echo.Context, groupId restricted.IdString) error {
-	panic("not implemented") // TODO: Implement
-}
-
-// List links of a group
-// (GET /groups/{groupId}/links)
-func (si *RestrictedServerInterfaceImpl) GetLinks(ctx echo.Context, groupId restricted.IdString) error {
-	panic("not implemented") // TODO: Implement
-}
-
-// Create a link
-// (POST /groups/{groupId}/links)
-func (si *RestrictedServerInterfaceImpl) CreateLink(ctx echo.Context, groupId restricted.IdString) error {
-	panic("not implemented") // TODO: Implement
 }
 
 // Delete a link
@@ -57,6 +27,36 @@ func (si *RestrictedServerInterfaceImpl) GetLink(ctx echo.Context, linkId restri
 // Update a link
 // (PATCH /links/{linkId})
 func (si *RestrictedServerInterfaceImpl) UpdateLink(ctx echo.Context, linkId restricted.IdString) error {
+	panic("not implemented") // TODO: Implement
+}
+
+// Delete a page
+// (DELETE /pages/{pageId})
+func (si *RestrictedServerInterfaceImpl) DeletePage(ctx echo.Context, pageId restricted.IdString) error {
+	panic("not implemented") // TODO: Implement
+}
+
+// Get a page
+// (GET /pages/{pageId})
+func (si *RestrictedServerInterfaceImpl) GetPage(ctx echo.Context, pageId restricted.IdString) error {
+	panic("not implemented") // TODO: Implement
+}
+
+// Update a page
+// (PATCH /pages/{pageId})
+func (si *RestrictedServerInterfaceImpl) UpdatePage(ctx echo.Context, pageId restricted.IdString) error {
+	panic("not implemented") // TODO: Implement
+}
+
+// List links of a page
+// (GET /pages/{pageId}/links)
+func (si *RestrictedServerInterfaceImpl) GetLinks(ctx echo.Context, pageId restricted.IdString) error {
+	panic("not implemented") // TODO: Implement
+}
+
+// Create a link
+// (POST /pages/{pageId}/links)
+func (si *RestrictedServerInterfaceImpl) CreateLink(ctx echo.Context, pageId restricted.IdString) error {
 	panic("not implemented") // TODO: Implement
 }
 
@@ -95,14 +95,14 @@ func (si *RestrictedServerInterfaceImpl) UpdateSpace(ctx echo.Context, spaceId r
 	panic("not implemented") // TODO: Implement
 }
 
-// List groups of a space
-// (GET /spaces/{spaceId}/groups)
-func (si *RestrictedServerInterfaceImpl) GetGroups(ctx echo.Context, spaceId restricted.IdString) error {
+// List pages of a space
+// (GET /spaces/{spaceId}/pages)
+func (si *RestrictedServerInterfaceImpl) GetPages(ctx echo.Context, spaceId restricted.IdString) error {
 	panic("not implemented") // TODO: Implement
 }
 
-// Create a group
-// (POST /spaces/{spaceId}/groups)
-func (si *RestrictedServerInterfaceImpl) CreateGroup(ctx echo.Context, spaceId restricted.IdString) error {
+// Create a page
+// (POST /spaces/{spaceId}/pages)
+func (si *RestrictedServerInterfaceImpl) CreatePage(ctx echo.Context, spaceId restricted.IdString) error {
 	panic("not implemented") // TODO: Implement
 }

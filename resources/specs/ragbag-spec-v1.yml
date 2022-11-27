@@ -13,8 +13,8 @@ tags:
     description: Authentication
   - name: spaces
     description: Spaces
-  - name: groups
-    description: Groups
+  - name: pages
+    description: Pages
   - name: links
     description: Links
   
@@ -205,13 +205,13 @@ paths:
         '204':
           $ref: '#/components/responses/NoContent'
   
-  /spaces/{spaceId}/groups:
+  /spaces/{spaceId}/pages:
     get:
-      summary: List groups of a space
-      description: List groups of a space
-      operationId: getGroups
+      summary: List pages of a space
+      description: List pages of a space
+      operationId: getPages
       tags:
-        - groups
+        - pages
       security:
         - bearerAuth: []
       parameters:
@@ -228,13 +228,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/GroupDto"
+                  $ref: "#/components/schemas/PageDto"
     post:
-      summary: Create a group
-      description: Create a group
-      operationId: createGroup
+      summary: Create a page
+      description: Create a page
+      operationId: createPage
       tags:
-        - groups
+        - pages
       security:
         - bearerAuth: []
       parameters:
@@ -248,26 +248,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateGroupDto'
+              $ref: '#/components/schemas/CreatePageDto'
       responses:
         '201':
           description: Created
           content:
             application/json:    
               schema:
-                $ref: "#/components/schemas/GroupDto"
+                $ref: "#/components/schemas/PageDto"
   
-  /groups/{groupId}:
+  /pages/{pageId}:
     get:
-      summary: Get a group
-      description: Get a group
-      operationId: getGroup
+      summary: Get a page
+      description: Get a page
+      operationId: getPage
       tags:
-        - groups
+        - pages
       security:
         - bearerAuth: []
       parameters:
-        - name: groupId
+        - name: pageId
           in: path
           required: true
           schema:
@@ -280,17 +280,17 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/GroupDto"
+                  $ref: "#/components/schemas/PageDto"
     patch:
-      summary: Update a group
-      description: Update a group
-      operationId: updateGroup
+      summary: Update a page
+      description: Update a page
+      operationId: updatePage
       tags:
-        - groups
+        - pages
       security:
         - bearerAuth: []
       parameters:
-        - name: groupId
+        - name: pageId
           in: path
           required: true
           schema:
@@ -300,20 +300,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateGroupDto'
+              $ref: '#/components/schemas/CreatePageDto'
       responses:
         '200':
           description: Ok
     delete:
-      summary: Delete a space
-      description: Delete a space
-      operationId: deleteGroup
+      summary: Delete a page
+      description: Delete a page
+      operationId: deletePage
       tags:
-        - groups
+        - pages
       security:
         - bearerAuth: []
       parameters:
-        - name: groupId
+        - name: pageId
           in: path
           required: true
           schema:
@@ -322,17 +322,17 @@ paths:
         '204':
           $ref: '#/components/responses/NoContent'
 
-  /groups/{groupId}/links:
+  /pages/{pageId}/links:
     get:
-      summary: List links of a group
-      description: List links of a group
+      summary: List links of a page
+      description: List links of a page
       operationId: getLinks
       tags:
         - links
       security:
         - bearerAuth: []
       parameters:
-        - name: groupId
+        - name: pageId
           in: path
           required: true
           schema:
@@ -355,7 +355,7 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - name: groupId
+        - name: pageId
           in: path
           required: true
           schema:
@@ -558,13 +558,13 @@ components:
       required:
         - name
 
-    GroupVisibility:
+    PageVisibility:
       type: string
       enum: 
         - PRIVATE
         - PUBLIC
 
-    GroupDto:
+    PageDto:
       type: object
       properties:
         id:
@@ -580,9 +580,9 @@ components:
         description:
           type: string
         visibility:
-          $ref: "#/components/schemas/GroupVisibility"
+          $ref: "#/components/schemas/PageVisibility"
 
-    CreateGroupDto:
+    CreatePageDto:
       type: object
       properties:
         name:
@@ -590,7 +590,7 @@ components:
         description:
           type: string
         visibility:
-          $ref: "#/components/schemas/GroupVisibility"
+          $ref: "#/components/schemas/PageVisibility"
       required:
         - name
 
@@ -599,7 +599,7 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/IdString"
-        groupId:
+        pageId:
           $ref: "#/components/schemas/IdString"
         name:
           type: string
