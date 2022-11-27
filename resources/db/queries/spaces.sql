@@ -28,3 +28,7 @@ WHERE id = ?;
 -- name: InsertUserSpace :exec
 INSERT INTO users_spaces (user_id, space_id, role_id, created_at)
 VALUES(?, ?, ?, CURRENT_TIMESTAMP);
+-- name: DeleteUserSpace :exec
+DELETE FROM users_spaces
+WHERE user_id = ?
+    AND space_id = ?;
