@@ -131,7 +131,7 @@ func (s *Services) ActivateUser(ctx context.Context, code string) error {
 	_, err = s.CreateSpace(ctx, gen.CreateSpaceParams{
 		ShortID:    shortid.MustGenerate(),
 		OwnerID:    user.ID,
-		Name:       "Default",
+		Name:       fmt.Sprintf("%s's Space", user.FirstName),
 		Visibility: "PRIVATE",
 	})
 
