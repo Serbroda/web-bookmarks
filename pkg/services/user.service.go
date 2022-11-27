@@ -114,6 +114,8 @@ func (s *Services) ActivateUser(ctx context.Context, code string) error {
 		ActivationConfirmedAt: sql.NullTime{Time: time.Now(), Valid: true},
 		Active:                true,
 
+		FirstName:               user.FirstName,
+		LastName:                user.LastName,
 		Password:                user.Password,
 		Name:                    user.Name,
 		Email:                   user.Email,
