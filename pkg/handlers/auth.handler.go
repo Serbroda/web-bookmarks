@@ -95,7 +95,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	if si.Services.ExistsUser(ctx.Request().Context(), payload.Password) {
+	if si.Services.ExistsUser(ctx.Request().Context(), payload.Username) {
 		return ctx.String(http.StatusConflict, "user already exists")
 	}
 
@@ -139,8 +139,6 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
-
-	fmt.Printf("%s\n", link)
 
 	return ctx.JSON(http.StatusCreated, &public.UserDto{
 		Id:       &user.ID,

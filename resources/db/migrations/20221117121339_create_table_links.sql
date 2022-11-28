@@ -12,7 +12,7 @@ CREATE TABLE links (
     description varchar(2048),
     visibility varchar(20),
     CONSTRAINT PK_links PRIMARY KEY (id),
-    CONSTRAINT UC_links_short_id UNIQUE (short_id),
+    CONSTRAINT UC_links_short_id UNIQUE INDEX (short_id),
     CONSTRAINT FK_links_page_id FOREIGN KEY (page_id) REFERENCES pages(id)
 );
 -- +goose StatementEnd

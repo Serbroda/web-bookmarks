@@ -8,7 +8,7 @@ CREATE TABLE roles (
     name varchar(80) NOT NULL,
     description varchar(255),
     CONSTRAINT PK_roles PRIMARY KEY (id),
-    CONSTRAINT UC_roles_name UNIQUE (name)
+    CONSTRAINT UC_roles_name UNIQUE INDEX (name)
 );
 -- +goose StatementEnd
 -- +goose StatementBegin

@@ -9,7 +9,6 @@ CREATE TABLE users (
     last_name varchar(80) NOT NULL,
     username varchar(120) NOT NULL,
     password varchar(120) NOT NULL,
-    name varchar(120),
     email varchar(120) NOT NULL,
     active BOOLEAN NOT NULL default FALSE,
     activation_code varchar(128),
@@ -17,7 +16,7 @@ CREATE TABLE users (
     activation_code_expires_at timestamp,
     activation_confirmed_at timestamp,
     CONSTRAINT PK_users PRIMARY KEY (id),
-    CONSTRAINT UC_users_username UNIQUE (username)
+    CONSTRAINT UC_users_username UNIQUE INDEX (username)
 );
 -- +goose StatementEnd
 -- +goose StatementBegin

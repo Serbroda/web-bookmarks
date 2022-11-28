@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/Serbroda/ragbag/gen"
@@ -98,6 +99,9 @@ func (si *RestrictedServerInterfaceImpl) GetSpace(ctx echo.Context, spaceId rest
 	}
 	space, err := services.Service.FindUserSpace(ctx.Request().Context(), user.ID, spaceId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return echo.ErrNotFound
+		}
 		return echo.ErrInternalServerError
 	}
 	return ctx.JSON(http.StatusOK, mappers.MapSpace(space))

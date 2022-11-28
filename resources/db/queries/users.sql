@@ -18,7 +18,6 @@ INSERT INTO users (
         created_at,
         username,
         password,
-        name,
         email,
         first_name,
         last_name,
@@ -39,14 +38,12 @@ VALUES(
         ?,
         ?,
         ?,
-        ?,
         ?
     );
 -- name: UpdateUser :exec
 UPDATE users
 SET updated_at = CURRENT_TIMESTAMP,
     password = COALESCE(?, password),
-    name = COALESCE(?, name),
     email = COALESCE(?, email),
     first_name = COALESCE(?, first_name),
     last_name = COALESCE(?, last_name),

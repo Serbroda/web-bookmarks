@@ -24,10 +24,12 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 	shortId := shortid.MustGenerate()
 
 	_, err := s.CreateUserWithRoles(c, gen.CreateUserParams{
-		Username: admin,
-		Password: shortId,
-		Email:    "admin@admin",
-		Active:   true,
+		Username:  admin,
+		Password:  shortId,
+		Email:     "admin@admin",
+		Active:    true,
+		FirstName: "Admin",
+		LastName:  "Admin",
 	}, []string{"ADMIN"})
 
 	if err != nil {

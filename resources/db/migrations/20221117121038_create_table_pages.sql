@@ -13,7 +13,7 @@ CREATE TABLE pages (
     description varchar(2048),
     visibility varchar(20) NOT NULL,
     CONSTRAINT PK_pages PRIMARY KEY (id),
-    CONSTRAINT UC_pages_short_id UNIQUE (short_id),
+    CONSTRAINT UC_pages_short_id UNIQUE INDEX (short_id),
     CONSTRAINT FK_pages_owner_id FOREIGN KEY (owner_id) REFERENCES users(id),
     CONSTRAINT FK_pages_space_id FOREIGN KEY (space_id) REFERENCES spaces(id),
     CONSTRAINT FK_pages_parent_id FOREIGN KEY (parent_id) REFERENCES pages(id)
