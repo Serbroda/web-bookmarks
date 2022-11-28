@@ -11,7 +11,8 @@ type Services struct {
 }
 
 func New(q *gen.Queries) *Services {
-	return &Services{
+	Service = &Services{
 		Queries: q,
 	}
+	return Service
 }

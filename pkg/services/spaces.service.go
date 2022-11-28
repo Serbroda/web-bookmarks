@@ -26,3 +26,14 @@ func (s *Services) CreateSpace(ctx context.Context, params gen.CreateSpaceParams
 	})
 	return space, nil
 }
+
+func (s *Services) FindUserSpaces(ctx context.Context, id int64) ([]gen.Space, error) {
+	return s.Queries.FindUserSpaces(ctx, id)
+}
+
+func (s *Services) FindUserSpace(ctx context.Context, id int64, spaceId string) (gen.Space, error) {
+	return s.Queries.FindUserSpace(ctx, gen.FindUserSpaceParams{
+		UserID:  id,
+		ShortID: spaceId,
+	})
+}

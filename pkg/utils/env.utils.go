@@ -38,9 +38,17 @@ func MustGetEnv(key string) string {
 }
 
 func MustParseInt64(value string) int64 {
-	val, err := strconv.ParseUint(value, 10, 64)
+	val, err := ParseInt64(value)
 	if err != nil {
 		panic("Failed to parse " + value + " to int64")
 	}
-	return int64(val)
+	return val
+}
+
+func ParseInt64(value string) (int64, error) {
+	val, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return -1, err
+	}
+	return int64(val), nil
 }

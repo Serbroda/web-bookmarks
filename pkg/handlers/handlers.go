@@ -1,11 +1,14 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/gen/restricted"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/Serbroda/ragbag/pkg/handlers/mappers"
+	"github.com/Serbroda/ragbag/pkg/services"
+	"github.com/Serbroda/ragbag/pkg/utils"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -63,12 +66,15 @@ func (si *RestrictedServerInterfaceImpl) CreateLink(ctx echo.Context, pageId res
 // List all spaces
 // (GET /spaces)
 func (si *RestrictedServerInterfaceImpl) GetSpaces(ctx echo.Context) error {
-	user := ctx.Get("user").(*jwt.Token)
-	claims := user.Claims.(*JwtCustomClaims)
-	name := claims.Subject
-	fmt.Println(name)
-
-	return ctx.JSON(http.StatusOK, claims) // TODO: Implement
+	user, err := si.getUser(ctx)
+	if err != nil {
+		return err
+	}
+	spaces, err := services.Service.FindUserSpaces(ctx.Request().Context(), user.ID)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+	return ctx.JSON(http.StatusOK, mappers.MapSpaces(spaces))
 }
 
 // Create a space
@@ -86,7 +92,15 @@ func (si *RestrictedServerInterfaceImpl) DeleteSpace(ctx echo.Context, spaceId r
 // Get a space
 // (GET /spaces/{spaceId})
 func (si *RestrictedServerInterfaceImpl) GetSpace(ctx echo.Context, spaceId restricted.IdString) error {
-	panic("not implemented") // TODO: Implement
+	user, err := si.getUser(ctx)
+	if err != nil {
+		return err
+	}
+	space, err := services.Service.FindUserSpace(ctx.Request().Context(), user.ID, spaceId)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+	return ctx.JSON(http.StatusOK, mappers.MapSpace(space))
 }
 
 // Update a space
@@ -105,4 +119,29 @@ func (si *RestrictedServerInterfaceImpl) GetPages(ctx echo.Context, spaceId rest
 // (POST /spaces/{spaceId}/pages)
 func (si *RestrictedServerInterfaceImpl) CreatePage(ctx echo.Context, spaceId restricted.IdString) error {
 	panic("not implemented") // TODO: Implement
+}
+
+func (si *RestrictedServerInterfaceImpl) getUser(ctx echo.Context) (gen.User, error) {
+	user := ctx.Get("user").(*jwt.Token)
+	if user == nil {
+		return gen.User{}, echo.ErrUnauthorized
+	}
+
+	claims := user.Claims.(*JwtCustomClaims)
+	if claims == nil {
+		return gen.User{}, echo.ErrUnauthorized
+	}
+
+	id, err := utils.ParseInt64(claims.Subject)
+	if err != nil {
+		return gen.User{}, echo.ErrInternalServerError
+	}
+	entity, err := services.Service.FindUser(ctx.Request().Context(), id)
+	if err != nil {
+		if err == services.ErrUserNotFound {
+			return gen.User{}, echo.ErrNotFound
+		}
+		return gen.User{}, err
+	}
+	return entity, nil
 }

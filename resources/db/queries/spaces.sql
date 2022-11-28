@@ -8,6 +8,22 @@ SELECT *
 FROM spaces
 WHERE short_id = ?
 LIMIT 1;
+-- name: FindUserSpaces :many
+SELECT s.*
+FROM spaces s
+    INNER JOIN users_spaces us on us.space_id = s.id
+WHERE us.user_id = ?;
+-- name: FindUserSpace :one
+SELECT s.*
+FROM spaces s
+    INNER JOIN users_spaces us on us.space_id = s.id
+WHERE us.user_id = ?
+    and s.short_id = ?
+    and (
+        s.visibility <> 'PRIVATE'
+        or s.owner_id = us.user_id
+    )
+LIMIT 1;
 -- name: CreateSpace :execlastid
 INSERT INTO spaces (
         created_at,
