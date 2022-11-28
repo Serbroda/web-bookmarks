@@ -1,10 +1,12 @@
 package utils
 
 import (
+	"encoding/hex"
 	"math/rand"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/sha3"
 )
 
 const CharsetAlpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -12,14 +14,24 @@ const Charset = CharsetAlpha + "0123456789_-"
 
 var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+func HashBcrypt(plain string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(plain), 14)
 	return string(bytes), err
 }
 
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+func CheckBcryptHash(plain, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(plain))
 	return err == nil
+}
+
+func HashSha3256(plain string) string {
+	h := sha3.New256()
+	h.Write([]byte(plain))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func CheckSha3256Hash(plain, hash string) bool {
+	return hash == HashSha3256(plain)
 }
 
 func RandomString(n int) string {

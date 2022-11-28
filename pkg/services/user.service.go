@@ -50,10 +50,8 @@ func (s *Services) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserPa
 		return gen.User{}, ErrUserAlreadyExists
 	}
 
-	shortId := shortid.MustGenerate()
-
 	if matched, _ := regexp.MatchString(`^\$2a\$14.*$`, arg.Password); !matched {
-		pwd, _ := utils.HashPassword(shortId)
+		pwd, _ := utils.HashBcrypt(arg.Password)
 		arg.Password = pwd
 	}
 
@@ -86,17 +84,50 @@ func (s *Services) HasUserRole(ctx context.Context, id int64, role string) bool 
 	return err != nil && res > 0
 }
 
-func (s *Services) FindUserByActivationCode(ctx context.Context, code string) (gen.User, error) {
-	user, err := s.Queries.FindUserByActivationCode(ctx, sql.NullString{String: code, Valid: true})
-	if err != nil || user.ID < 1 {
-		fmt.Printf("error: %v, user: %v", err, user)
-		return gen.User{}, ErrUserNotFound
+func (s *Services) FindActivationToken(ctx context.Context, token string) (gen.ActivationToken, error) {
+	at, err := s.Queries.FindActivationCode(ctx, utils.HashSha3256(token))
+	if err != nil {
+		return gen.ActivationToken{}, ErrUserNotFound
 	}
-	return user, nil
+	return at, nil
 }
 
-func (s *Services) ActivateUser(ctx context.Context, code string) error {
-	user, err := s.FindUserByActivationCode(ctx, code)
+func (s *Services) ChangePassword(ctx context.Context, userId int64, password string) error {
+	user, err := s.FindUser(ctx, userId)
+	if err != nil {
+		return err
+	}
+
+	if matched, _ := regexp.MatchString(`^\$2a\$14.*$`, password); !matched {
+		pwd, _ := utils.HashBcrypt(password)
+		password = pwd
+	}
+
+	err = s.Queries.UpdateUser(ctx, gen.UpdateUserParams{
+		ID:       user.ID,
+		Password: password,
+
+		ActivationConfirmedAt: user.ActivationConfirmedAt,
+		Active:                user.Active,
+		FirstName:             user.FirstName,
+		LastName:              user.LastName,
+		Email:                 user.Email,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Services) ActivateUser(ctx context.Context, token string) error {
+	at, err := s.FindActivationToken(ctx, token)
+	if err != nil {
+		return err
+	}
+
+	user, err := s.FindUser(ctx, at.UserID)
 	if err != nil {
 		return err
 	}
@@ -105,7 +136,7 @@ func (s *Services) ActivateUser(ctx context.Context, code string) error {
 		return ErrUserAlreadyActive
 	}
 
-	if !user.ActivationCodeExpiresAt.Valid || user.ActivationCodeExpiresAt.Time.Before(time.Now()) {
+	if at.ExpiresAt.Valid && at.ExpiresAt.Time.Before(time.Now()) {
 		return ErrActivationCodeExpores
 	}
 
@@ -114,13 +145,10 @@ func (s *Services) ActivateUser(ctx context.Context, code string) error {
 		ActivationConfirmedAt: sql.NullTime{Time: time.Now(), Valid: true},
 		Active:                true,
 
-		FirstName:               user.FirstName,
-		LastName:                user.LastName,
-		Password:                user.Password,
-		Email:                   user.Email,
-		ActivationCode:          user.ActivationCode,
-		ActivationSentAt:        user.ActivationSentAt,
-		ActivationCodeExpiresAt: user.ActivationCodeExpiresAt,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Password:  user.Password,
+		Email:     user.Email,
 	})
 
 	if err != nil {
@@ -139,4 +167,36 @@ func (s *Services) ActivateUser(ctx context.Context, code string) error {
 	}
 
 	return nil
+}
+
+func (s *Services) CreateActivationToken(ctx context.Context, userId int64) (string, error) {
+	activationToken := utils.RandomString(64)
+
+	err := s.Queries.InsertActivationToken(ctx, gen.InsertActivationTokenParams{
+		UserID:    userId,
+		TokenHash: utils.HashSha3256(activationToken),
+		ExpiresAt: sql.NullTime{Time: time.Now().Add(time.Hour * 48), Valid: true},
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return activationToken, nil
+}
+
+func (s *Services) CreatePasswordResetToken(ctx context.Context, userId int64) (string, error) {
+	activationToken := utils.RandomString(64)
+
+	err := s.Queries.InsertPasswordResetToken(ctx, gen.InsertPasswordResetTokenParams{
+		UserID:    userId,
+		TokenHash: utils.HashSha3256(activationToken),
+		ExpiresAt: time.Now().Add(time.Hour * 4),
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return activationToken, nil
 }

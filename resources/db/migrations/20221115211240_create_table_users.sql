@@ -11,9 +11,6 @@ CREATE TABLE users (
     password varchar(120) NOT NULL,
     email varchar(120) NOT NULL,
     active BOOLEAN NOT NULL default FALSE,
-    activation_code varchar(128),
-    activation_sent_at timestamp,
-    activation_code_expires_at timestamp,
     activation_confirmed_at timestamp,
     CONSTRAINT PK_users PRIMARY KEY (id),
     CONSTRAINT UC_users_username UNIQUE INDEX (username)
@@ -30,10 +27,34 @@ CREATE TABLE users_roles (
     CONSTRAINT FK_users_roles_role_id FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 -- +goose StatementEnd
+-- +goose StatementBegin
+CREATE TABLE activation_tokens (
+    user_id bigint NOT NULL,
+    token_hash varchar(80) NOT NULL,
+    expires_at timestamp,
+    created_at timestamp default CURRENT_TIMESTAMP,
+    CONSTRAINT PK_activation_tokens PRIMARY KEY (user_id, token_hash)
+);
+-- +goose StatementEnd
+-- +goose StatementBegin
+CREATE TABLE password_reset_tokens (
+    user_id bigint NOT NULL,
+    token_hash varchar(80) NOT NULL,
+    expires_at timestamp NOT NULL,
+    created_at timestamp default CURRENT_TIMESTAMP,
+    CONSTRAINT PK_password_reset_tokens PRIMARY KEY (user_id, token_hash)
+);
+-- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE users;
 -- +goose StatementEnd
 -- +goose StatementBegin
 DROP TABLE users_roles;
+-- +goose StatementEnd
+-- +goose StatementBegin
+DROP TABLE activation_tokens;
+-- +goose StatementEnd
+-- +goose StatementBegin
+DROP TABLE password_reset_tokens;
 -- +goose StatementEnd

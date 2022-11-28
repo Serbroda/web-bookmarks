@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -75,7 +74,7 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 	}
 
 	user, err := si.Services.FindUserByUsername(ctx.Request().Context(), payload.Username)
-	if err != nil || user.ID < 1 || !utils.CheckPasswordHash(payload.Password, user.Password) {
+	if err != nil || user.ID < 1 || !utils.CheckBcryptHash(payload.Password, user.Password) {
 		return ctx.String(http.StatusNotFound, "invalid login")
 	}
 
@@ -99,11 +98,25 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusConflict, "user already exists")
 	}
 
-	hashedPassword, _ := utils.HashPassword(payload.Password)
+	hashedPassword, _ := utils.HashBcrypt(payload.Password)
 
-	activationCode := utils.RandomString(128)
+	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
+		Username:  strings.ToLower(payload.Username),
+		Password:  hashedPassword,
+		Email:     payload.Email,
+		FirstName: payload.FirstName,
+		LastName:  payload.LastName,
+		Active:    false,
+	})
+	if err != nil {
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
 
-	link := fmt.Sprintf("%s/api/v1/activate?code=%s", baseUrl, activationCode)
+	token, err := services.Service.CreateActivationToken(ctx.Request().Context(), user.ID)
+	if err != nil {
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+
 	err = utils.SendMailTemplate(utils.MailWithTemplate{
 		Mail: utils.Mail{
 			To:      []string{payload.Email},
@@ -115,25 +128,8 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 			Link string
 		}{
 			Name: payload.FirstName,
-			Link: link,
+			Link: fmt.Sprintf("%s/api/v1/activate?code=%s", baseUrl, token),
 		},
-	})
-
-	if err != nil {
-		fmt.Printf("%v\n", err)
-		return ctx.String(http.StatusInternalServerError, err.Error())
-	}
-
-	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
-		Username:                strings.ToLower(payload.Username),
-		Password:                hashedPassword,
-		Email:                   payload.Email,
-		FirstName:               payload.FirstName,
-		LastName:                payload.LastName,
-		ActivationCode:          sql.NullString{String: activationCode, Valid: true},
-		ActivationSentAt:        sql.NullTime{Time: time.Now(), Valid: true},
-		ActivationCodeExpiresAt: sql.NullTime{Time: time.Now().Add(time.Hour * 48), Valid: true},
-		Active:                  false,
 	})
 
 	if err != nil {
@@ -147,7 +143,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 }
 
 func (si *PublicServerInterfaceImpl) RefreshToken(ctx echo.Context) error {
-	var payload public.RefreshTokenJSONBody
+	var payload public.RefreshTokenJSONRequestBody
 	err := ctx.Bind(&payload)
 	if err != nil || payload.RefreshToken == "" {
 		return ctx.String(http.StatusBadRequest, "bad request")
@@ -192,4 +188,71 @@ func (si *PublicServerInterfaceImpl) Activate(ctx echo.Context, params public.Ac
 		return fmt.Errorf("%v", err)
 	}
 	return ctx.String(http.StatusOK, "user activated")
+}
+
+func (si *PublicServerInterfaceImpl) RequestPasswordReset(ctx echo.Context) error {
+	var payload public.RequestPasswordResetJSONRequestBody
+	err := ctx.Bind(&payload)
+	if err != nil || payload.Email == "" {
+		return ctx.String(http.StatusBadRequest, "bad request")
+	}
+
+	user, err := si.Queries.FindByEmail(ctx.Request().Context(), payload.Email)
+	if err != nil {
+		return ctx.String(http.StatusNoContent, "password reset mail sent")
+	}
+
+	token, err := si.Services.CreatePasswordResetToken(ctx.Request().Context(), user.ID)
+	if err == nil {
+		utils.SendMailTemplate(utils.MailWithTemplate{
+			Mail: utils.Mail{
+				To:      []string{payload.Email},
+				Subject: "Password reset",
+			},
+			Template: "resources/templates/email/password-reset.html",
+			Data: struct {
+				Name     string
+				Username string
+				Link     string
+			}{
+				Name:     user.FirstName,
+				Username: user.Username,
+				Link:     fmt.Sprintf("%s/api/v1/password_reset?code=%s", baseUrl, token),
+			},
+		})
+	}
+
+	return ctx.String(http.StatusNoContent, "password reset mail sent")
+}
+
+func (si *PublicServerInterfaceImpl) StartPasswordReset(ctx echo.Context, params public.StartPasswordResetParams) error {
+	ctx.Response().Header().Set("password_reset_code", params.Code)
+	return ctx.Redirect(http.StatusFound, fmt.Sprintf("%s/password_reset", baseUrl))
+}
+
+func (si *PublicServerInterfaceImpl) ResetPassword(ctx echo.Context) error {
+	var payload public.ResetPasswordJSONRequestBody
+	err := ctx.Bind(&payload)
+	if err != nil || payload.Email == "" {
+		return ctx.String(http.StatusBadRequest, "bad request")
+	}
+
+	prt, err := si.Queries.FindPasswordResetCodeByEmailAndToken(ctx.Request().Context(), gen.FindPasswordResetCodeByEmailAndTokenParams{
+		Email:     payload.Email,
+		TokenHash: utils.HashSha3256(payload.Code),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if prt.ExpiresAt.Before(time.Now()) || !prt.Useractive {
+		return ctx.String(http.StatusBadRequest, "password reset code expired or user not active")
+	}
+
+	err = si.Services.ChangePassword(ctx.Request().Context(), prt.UserID, payload.Password)
+	if err != nil {
+		return err
+	}
+	return ctx.String(http.StatusNoContent, "password reset")
 }

@@ -1,12 +1,10 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Swagger Petstore
-  license:
-    name: MIT
+  title: Ragbag REST API
 
 servers:
-  - url: http://ragbag.dev/api/v1
+  - url: http://app.ragbag.dev/api/v1
 
 tags:
   - name: auth
@@ -104,6 +102,72 @@ paths:
         '204':
           $ref: '#/components/responses/NoContent'
 
+  /password_reset:
+    post:
+      summary: Request a password reset
+      description: Request a password reset
+      operationId: requestPasswordReset
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
+    put:
+      summary: Reset password
+      description: Reset password
+      operationId: resetPassword
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - code
+                - email
+                - password
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+
+    get:
+      summary: Start password reset
+      description: Start password reset
+      operationId: startPasswordReset
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+      tags:
+        - auth
+      responses:
+        '302':
+          $ref: '#/components/responses/Found'
+
+# restricted
   /spaces:
     get:
       summary: List all spaces
@@ -450,6 +514,8 @@ components:
       description: Created
     NoContent: # 204
       description: No Content
+    Found: # 302
+      description: Found
     BadRequest: # 400
       description: Bad Request
     Unauthorized: # 401
