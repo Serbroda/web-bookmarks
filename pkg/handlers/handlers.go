@@ -81,7 +81,34 @@ func (si *RestrictedServerInterfaceImpl) GetSpaces(ctx echo.Context) error {
 // Create a space
 // (POST /spaces)
 func (si *RestrictedServerInterfaceImpl) CreateSpace(ctx echo.Context) error {
-	panic("not implemented") // TODO: Implement
+	var payload restricted.CreateSpaceJSONRequestBody
+	err := ctx.Bind(&payload)
+	if err != nil || payload.Name == "" {
+		return ctx.String(http.StatusBadRequest, "bad request")
+	}
+
+	user, err := si.getUser(ctx)
+	if err != nil {
+		return err
+	}
+
+	params := gen.CreateSpaceParams{
+		OwnerID:     user.ID,
+		Name:        payload.Name,
+		Description: utils.StringToNullString(payload.Description),
+	}
+
+	if payload.Visibility != nil {
+		params.Visibility = string(*payload.Visibility)
+	} else {
+		params.Visibility = "PRIVATE"
+	}
+
+	space, err := services.Service.CreateSpace(ctx.Request().Context(), params)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+	return ctx.JSON(http.StatusOK, mappers.MapSpace(space))
 }
 
 // Delete a space

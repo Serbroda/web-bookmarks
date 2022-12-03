@@ -46,3 +46,75 @@ func NullInt64ToInt64(val sql.NullInt64) *int64 {
 	}
 	return nil
 }
+
+func StringToNullString(val *string) sql.NullString {
+	if val != nil {
+		return sql.NullString{
+			String: *val,
+			Valid:  true,
+		}
+	}
+	return sql.NullString{
+		Valid: false,
+	}
+}
+
+func TimeToNullTime(val *time.Time) sql.NullTime {
+	if val != nil {
+		return sql.NullTime{
+			Time:  *val,
+			Valid: true,
+		}
+	}
+	return sql.NullTime{
+		Valid: false,
+	}
+}
+
+func BoolToNullBool(val *bool) sql.NullBool {
+	if val != nil {
+		return sql.NullBool{
+			Bool:  *val,
+			Valid: true,
+		}
+	}
+	return sql.NullBool{
+		Valid: false,
+	}
+}
+
+func Int16ToNullInt16(val *int16) sql.NullInt16 {
+	if val != nil {
+		return sql.NullInt16{
+			Int16: *val,
+			Valid: true,
+		}
+	}
+	return sql.NullInt16{
+		Valid: false,
+	}
+}
+
+func Int32ToNullInt32(val *int32) sql.NullInt32 {
+	if val != nil {
+		return sql.NullInt32{
+			Int32: *val,
+			Valid: true,
+		}
+	}
+	return sql.NullInt32{
+		Valid: false,
+	}
+}
+
+func Int64ToNullInt64(val *int64) sql.NullInt64 {
+	if val != nil {
+		return sql.NullInt64{
+			Int64: *val,
+			Valid: true,
+		}
+	}
+	return sql.NullInt64{
+		Valid: false,
+	}
+}

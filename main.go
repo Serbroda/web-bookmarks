@@ -72,22 +72,21 @@ func registerStaticHandlers(e *echo.Echo) {
 }
 
 func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
-	baseUrl := "/api/v1"
+	api := e.Group("/api")
 
-	var publicApi = handlers.PublicServerInterfaceImpl{
+	// public api
+	public.RegisterHandlers(api, &handlers.PublicServerInterfaceImpl{
 		Services: services,
 		Queries:  queries,
-	}
-	public.RegisterHandlersWithBaseURL(e, &publicApi, baseUrl)
+	})
 
-	api := e.Group(baseUrl)
-	api.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+	// restricted api
+	restr := api.Group("")
+	restr.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		Claims:     &handlers.JwtCustomClaims{},
 		SigningKey: []byte(jwtSecretKey),
 	}))
-
-	var restrictedApi handlers.RestrictedServerInterfaceImpl
-	restricted.RegisterHandlers(api, &restrictedApi)
+	restricted.RegisterHandlers(restr, &handlers.RestrictedServerInterfaceImpl{})
 }
 
 func getDsn(user, password, address, database string) string {

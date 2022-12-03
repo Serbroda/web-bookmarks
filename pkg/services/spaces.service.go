@@ -4,9 +4,14 @@ import (
 	"context"
 
 	"github.com/Serbroda/ragbag/gen"
+	"github.com/teris-io/shortid"
 )
 
 func (s *Services) CreateSpace(ctx context.Context, params gen.CreateSpaceParams) (gen.Space, error) {
+	if params.ShortID == "" {
+		params.ShortID = shortid.MustGenerate()
+	}
+
 	id, err := s.Queries.CreateSpace(ctx, params)
 	if err != nil {
 		return gen.Space{}, err
