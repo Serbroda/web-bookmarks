@@ -15,15 +15,4 @@ clean:
 	rm -rf build/
 
 generate:
-	rm -rf ./gen && mkdir -p ./gen/public && mkdir -p ./gen/restricted
-	rm -rf ./frontend/src/gen && mkdir -p ./frontend/src/gen
-	cd ./resources/db && sqlc generate && cd ../..
-	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate \
-		-i "/local/${SPEC_FILE_LOCATION}"
-	oapi-codegen -generate types,server -include-tags="auth" -package public ${SPEC_FILE_LOCATION} > ./gen/public/public.gen.go
-	oapi-codegen -generate types,server -exclude-tags="auth" -package restricted ${SPEC_FILE_LOCATION} > ./gen/restricted/restricted.gen.go
-	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
-		-i "/local/${SPEC_FILE_LOCATION}" \
-		-g typescript-fetch \
-		--additional-properties=typescriptThreePlus=true \
-		-o "/local/frontend/src/gen"
+	cd app/cmd/graphql-server && go get github.com/99designs/gqlgen && go run github.com/99designs/gqlgen generate --verbose

@@ -2,12 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
-	"os"
-
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/pkg/services"
-	"github.com/teris-io/shortid"
 )
 
 const (
@@ -15,8 +9,8 @@ const (
 	passwordFile = "adminpassword"
 )
 
-func InitializeAdmin(c context.Context, s *services.Services) {
-	if s.ExistsUser(c, admin) {
+func InitializeAdmin(c context.Context) {
+	/*if s.ExistsUser(c, admin) {
 		return
 	}
 
@@ -46,5 +40,5 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 	_, err = file.WriteString(shortId)
 	if err != nil {
 		panic(err.Error())
-	}
+	}*/
 }

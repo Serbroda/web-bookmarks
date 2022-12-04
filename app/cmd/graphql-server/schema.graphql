@@ -1,0 +1,46 @@
+schema {
+    query: MyQuery
+    mutation: MyMutation
+}
+
+type MyQuery {
+    space(id: String!): Space
+    spaces: [Space!]!
+}
+
+type MyMutation {
+    createSpace(space: CreateSpace!): Space!
+}
+
+type Space {
+    id: String!
+    name: String!
+    description: String
+    visibility: SpaceVisibility
+    #done: Boolean! @hasRole(role: OWNER) # only the owner can see if a todo is done
+}
+
+type Page {
+    id: String!
+    name: String!
+    description: String
+}
+
+"Passed to createTodo to create a new todo"
+input CreateSpace {
+    "The body text"
+    name: String!
+    "Is it done already?"
+    description: String
+    "Visibility"
+    visibility: SpaceVisibility
+}
+
+#"Prevents access to a field if the user doesnt have the matching role"
+#directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum SpaceVisibility {
+    PRIVATE
+    INTERNAL
+    PUBLIC
+}
