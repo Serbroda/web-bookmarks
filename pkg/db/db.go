@@ -13,7 +13,7 @@ import (
 var once sync.Once
 
 var (
-	DBCon   *sql.DB
+	Con     *sql.DB
 	Queries *gen.Queries
 )
 
@@ -29,9 +29,9 @@ func OpenConnection(driver, source string) *sql.DB {
 		if err != nil {
 			panic("Failed to open database: " + err.Error())
 		}
-		DBCon = db
+		Con = db
 	})
-	return DBCon
+	return Con
 }
 
 func InitQueries(db *sql.DB) *gen.Queries {

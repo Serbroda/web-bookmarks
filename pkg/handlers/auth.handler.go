@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	jwtSecretKey       string = utils.MustGetEnv("JWT_SECRET_KEY")
-	jwtAccessTokenExp  int64  = utils.MustParseInt64(utils.GetEnvFallback("JWT_ACCESS_EXPIRE_MINUTES", "15"))
-	jwtRefreshTokenExp int64  = utils.MustParseInt64(utils.GetEnvFallback("JWT_REFRESH_EXPIRE_MINUTES", "10080"))
-	baseUrl            string = utils.MustGetEnv("SERVER_BASE_URL")
+	jwtSecretKey       = utils.MustGetEnv("JWT_SECRET_KEY")
+	jwtAccessTokenExp  = utils.MustParseInt64(utils.GetEnvFallback("JWT_ACCESS_EXPIRE_MINUTES", "15"))
+	jwtRefreshTokenExp = utils.MustParseInt64(utils.GetEnvFallback("JWT_REFRESH_EXPIRE_MINUTES", "10080"))
+	baseUrl            = utils.MustGetEnv("SERVER_BASE_URL")
 )
 
 type PublicServerInterfaceImpl struct {

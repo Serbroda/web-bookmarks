@@ -12,7 +12,7 @@ import (
 const CharsetAlpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const Charset = CharsetAlpha + "0123456789_-"
 
-var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+var seededRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func HashBcrypt(plain string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(plain), 14)

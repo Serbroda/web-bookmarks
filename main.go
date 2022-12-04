@@ -31,12 +31,12 @@ var (
 
 var (
 	version       string
-	serverAddress string = utils.GetEnvFallback("SERVER_URL", "0.0.0.0:8080")
-	dbAddress     string = utils.MustGetEnv("DB_ADDRESS")
-	dbName        string = utils.GetEnvFallback("DB_NAME", "ragbag")
-	dbUser        string = utils.GetEnvFallback("DB_USER", "ragbag")
-	dbPassword    string = utils.MustGetEnv("DB_PASSWORD")
-	jwtSecretKey  string = utils.MustGetEnv("JWT_SECRET_KEY")
+	serverAddress = utils.GetEnvFallback("SERVER_URL", "0.0.0.0:8080")
+	dbAddress     = utils.MustGetEnv("DB_ADDRESS")
+	dbName        = utils.GetEnvFallback("DB_NAME", "ragbag")
+	dbUser        = utils.GetEnvFallback("DB_USER", "ragbag")
+	dbPassword    = utils.MustGetEnv("DB_PASSWORD")
+	jwtSecretKey  = utils.MustGetEnv("JWT_SECRET_KEY")
 )
 
 func main() {

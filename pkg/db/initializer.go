@@ -36,7 +36,7 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 		panic(err.Error())
 	}
 
-	file, err := os.Create("adminpassword")
+	file, err := os.Create(passwordFile)
 	if err != nil {
 		panic(err.Error())
 	}
