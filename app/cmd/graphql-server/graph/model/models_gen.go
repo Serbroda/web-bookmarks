@@ -2,8 +2,61 @@
 
 package model
 
-type Page struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
+// Passed to createTodo to create a new todo
+type CreateSpace struct {
+	// The body text
+	Name string `json:"name"`
+	// Is it done already?
 	Description *string `json:"description"`
+	// Visibility
+	Visibility *SpaceVisibility `json:"visibility"`
+}
+
+type SpaceVisibility string
+
+const (
+	SpaceVisibilityPrivate  SpaceVisibility = "PRIVATE"
+	SpaceVisibilityInternal SpaceVisibility = "INTERNAL"
+	SpaceVisibilityPublic   SpaceVisibility = "PUBLIC"
+)
+
+var AllSpaceVisibility = []SpaceVisibility{
+	SpaceVisibilityPrivate,
+	SpaceVisibilityInternal,
+	SpaceVisibilityPublic,
+}
+
+func (e SpaceVisibility) IsValid() bool {
+	switch e {
+	case SpaceVisibilityPrivate, SpaceVisibilityInternal, SpaceVisibilityPublic:
+		return true
+	}
+	return false
+}
+
+func (e SpaceVisibility) String() string {
+	return string(e)
+}
+
+func (e *SpaceVisibility) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SpaceVisibility(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SpaceVisibility", str)
+	}
+	return nil
+}
+
+func (e SpaceVisibility) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

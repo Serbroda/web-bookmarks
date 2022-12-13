@@ -13,8 +13,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	model1 "github.com/Serbroda/ragbag/cmd/graphql-server/graph/model"
-	"github.com/Serbroda/ragbag/pkg/model"
+	"github.com/Serbroda/ragbag/cmd/graphql-server/graph/model"
+	"github.com/Serbroda/ragbag/pkg/gen"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -39,6 +39,7 @@ type Config struct {
 type ResolverRoot interface {
 	MyMutation() MyMutationResolver
 	MyQuery() MyQueryResolver
+	Page() PageResolver
 	Space() SpaceResolver
 }
 
@@ -70,14 +71,22 @@ type ComplexityRoot struct {
 }
 
 type MyMutationResolver interface {
-	CreateSpace(ctx context.Context, space model.CreateSpace) (*model.Space, error)
+	CreateSpace(ctx context.Context, space model.CreateSpace) (*gen.Space, error)
 }
 type MyQueryResolver interface {
-	Space(ctx context.Context, id string) (*model.Space, error)
-	Spaces(ctx context.Context) ([]*model.Space, error)
+	Space(ctx context.Context, id string) (*gen.Space, error)
+	Spaces(ctx context.Context) ([]*gen.Space, error)
+}
+type PageResolver interface {
+	ID(ctx context.Context, obj *gen.Page) (string, error)
+
+	Description(ctx context.Context, obj *gen.Page) (*string, error)
 }
 type SpaceResolver interface {
-	ID(ctx context.Context, obj *model.Space) (string, error)
+	ID(ctx context.Context, obj *gen.Space) (string, error)
+
+	Description(ctx context.Context, obj *gen.Space) (*string, error)
+	Visibility(ctx context.Context, obj *gen.Space) (*model.SpaceVisibility, error)
 }
 
 type executableSchema struct {
@@ -304,7 +313,7 @@ func (ec *executionContext) field_MyMutation_createSpace_args(ctx context.Contex
 	var arg0 model.CreateSpace
 	if tmp, ok := rawArgs["space"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("space"))
-		arg0, err = ec.unmarshalNCreateSpace2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐCreateSpace(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateSpace2githubᚗcomᚋSerbrodaᚋragbagᚋcmdᚋgraphqlᚑserverᚋgraphᚋmodelᚐCreateSpace(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -407,9 +416,9 @@ func (ec *executionContext) _MyMutation_createSpace(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Space)
+	res := resTmp.(*gen.Space)
 	fc.Result = res
-	return ec.marshalNSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpace(ctx, field.Selections, res)
+	return ec.marshalNSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpace(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MyMutation_createSpace(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -469,9 +478,9 @@ func (ec *executionContext) _MyQuery_space(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.Space)
+	res := resTmp.(*gen.Space)
 	fc.Result = res
-	return ec.marshalOSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpace(ctx, field.Selections, res)
+	return ec.marshalOSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpace(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MyQuery_space(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -534,9 +543,9 @@ func (ec *executionContext) _MyQuery_spaces(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Space)
+	res := resTmp.([]*gen.Space)
 	fc.Result = res
-	return ec.marshalNSpace2ᚕᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpaceᚄ(ctx, field.Selections, res)
+	return ec.marshalNSpace2ᚕᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpaceᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_MyQuery_spaces(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -691,7 +700,7 @@ func (ec *executionContext) fieldContext_MyQuery___schema(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Page_id(ctx context.Context, field graphql.CollectedField, obj *model1.Page) (ret graphql.Marshaler) {
+func (ec *executionContext) _Page_id(ctx context.Context, field graphql.CollectedField, obj *gen.Page) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Page_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -705,7 +714,7 @@ func (ec *executionContext) _Page_id(ctx context.Context, field graphql.Collecte
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return ec.resolvers.Page().ID(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -726,8 +735,8 @@ func (ec *executionContext) fieldContext_Page_id(ctx context.Context, field grap
 	fc = &graphql.FieldContext{
 		Object:     "Page",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -735,7 +744,7 @@ func (ec *executionContext) fieldContext_Page_id(ctx context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _Page_name(ctx context.Context, field graphql.CollectedField, obj *model1.Page) (ret graphql.Marshaler) {
+func (ec *executionContext) _Page_name(ctx context.Context, field graphql.CollectedField, obj *gen.Page) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Page_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -779,7 +788,7 @@ func (ec *executionContext) fieldContext_Page_name(ctx context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Page_description(ctx context.Context, field graphql.CollectedField, obj *model1.Page) (ret graphql.Marshaler) {
+func (ec *executionContext) _Page_description(ctx context.Context, field graphql.CollectedField, obj *gen.Page) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Page_description(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -793,7 +802,7 @@ func (ec *executionContext) _Page_description(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Description, nil
+		return ec.resolvers.Page().Description(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -811,8 +820,8 @@ func (ec *executionContext) fieldContext_Page_description(ctx context.Context, f
 	fc = &graphql.FieldContext{
 		Object:     "Page",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -820,7 +829,7 @@ func (ec *executionContext) fieldContext_Page_description(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Space_id(ctx context.Context, field graphql.CollectedField, obj *model.Space) (ret graphql.Marshaler) {
+func (ec *executionContext) _Space_id(ctx context.Context, field graphql.CollectedField, obj *gen.Space) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Space_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -864,7 +873,7 @@ func (ec *executionContext) fieldContext_Space_id(ctx context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _Space_name(ctx context.Context, field graphql.CollectedField, obj *model.Space) (ret graphql.Marshaler) {
+func (ec *executionContext) _Space_name(ctx context.Context, field graphql.CollectedField, obj *gen.Space) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Space_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -908,7 +917,7 @@ func (ec *executionContext) fieldContext_Space_name(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Space_description(ctx context.Context, field graphql.CollectedField, obj *model.Space) (ret graphql.Marshaler) {
+func (ec *executionContext) _Space_description(ctx context.Context, field graphql.CollectedField, obj *gen.Space) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Space_description(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -922,7 +931,7 @@ func (ec *executionContext) _Space_description(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Description, nil
+		return ec.resolvers.Space().Description(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -940,8 +949,8 @@ func (ec *executionContext) fieldContext_Space_description(ctx context.Context, 
 	fc = &graphql.FieldContext{
 		Object:     "Space",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
@@ -949,7 +958,7 @@ func (ec *executionContext) fieldContext_Space_description(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Space_visibility(ctx context.Context, field graphql.CollectedField, obj *model.Space) (ret graphql.Marshaler) {
+func (ec *executionContext) _Space_visibility(ctx context.Context, field graphql.CollectedField, obj *gen.Space) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Space_visibility(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -963,7 +972,7 @@ func (ec *executionContext) _Space_visibility(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Visibility, nil
+		return ec.resolvers.Space().Visibility(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -972,17 +981,17 @@ func (ec *executionContext) _Space_visibility(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(model.SpaceVisibility)
+	res := resTmp.(*model.SpaceVisibility)
 	fc.Result = res
-	return ec.marshalOSpaceVisibility2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpaceVisibility(ctx, field.Selections, res)
+	return ec.marshalOSpaceVisibility2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋcmdᚋgraphqlᚑserverᚋgraphᚋmodelᚐSpaceVisibility(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Space_visibility(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Space",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type SpaceVisibility does not have child fields")
 		},
@@ -2797,7 +2806,7 @@ func (ec *executionContext) unmarshalInputCreateSpace(ctx context.Context, obj i
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("visibility"))
-			it.Visibility, err = ec.unmarshalOSpaceVisibility2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpaceVisibility(ctx, v)
+			it.Visibility, err = ec.unmarshalOSpaceVisibility2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋcmdᚋgraphqlᚑserverᚋgraphᚋmodelᚐSpaceVisibility(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2941,7 +2950,7 @@ func (ec *executionContext) _MyQuery(ctx context.Context, sel ast.SelectionSet) 
 
 var pageImplementors = []string{"Page"}
 
-func (ec *executionContext) _Page(ctx context.Context, sel ast.SelectionSet, obj *model1.Page) graphql.Marshaler {
+func (ec *executionContext) _Page(ctx context.Context, sel ast.SelectionSet, obj *gen.Page) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, pageImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -2950,23 +2959,49 @@ func (ec *executionContext) _Page(ctx context.Context, sel ast.SelectionSet, obj
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Page")
 		case "id":
+			field := field
 
-			out.Values[i] = ec._Page_id(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Page_id(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
 			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "name":
 
 			out.Values[i] = ec._Page_name(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "description":
+			field := field
 
-			out.Values[i] = ec._Page_description(ctx, field, obj)
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Page_description(ctx, field, obj)
+				return res
+			}
 
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2980,7 +3015,7 @@ func (ec *executionContext) _Page(ctx context.Context, sel ast.SelectionSet, obj
 
 var spaceImplementors = []string{"Space"}
 
-func (ec *executionContext) _Space(ctx context.Context, sel ast.SelectionSet, obj *model.Space) graphql.Marshaler {
+func (ec *executionContext) _Space(ctx context.Context, sel ast.SelectionSet, obj *gen.Space) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, spaceImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -3016,13 +3051,39 @@ func (ec *executionContext) _Space(ctx context.Context, sel ast.SelectionSet, ob
 				atomic.AddUint32(&invalids, 1)
 			}
 		case "description":
+			field := field
 
-			out.Values[i] = ec._Space_description(ctx, field, obj)
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Space_description(ctx, field, obj)
+				return res
+			}
 
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "visibility":
+			field := field
 
-			out.Values[i] = ec._Space_visibility(ctx, field, obj)
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Space_visibility(ctx, field, obj)
+				return res
+			}
 
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3367,16 +3428,16 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCreateSpace2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐCreateSpace(ctx context.Context, v interface{}) (model.CreateSpace, error) {
+func (ec *executionContext) unmarshalNCreateSpace2githubᚗcomᚋSerbrodaᚋragbagᚋcmdᚋgraphqlᚑserverᚋgraphᚋmodelᚐCreateSpace(ctx context.Context, v interface{}) (model.CreateSpace, error) {
 	res, err := ec.unmarshalInputCreateSpace(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNSpace2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpace(ctx context.Context, sel ast.SelectionSet, v model.Space) graphql.Marshaler {
+func (ec *executionContext) marshalNSpace2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpace(ctx context.Context, sel ast.SelectionSet, v gen.Space) graphql.Marshaler {
 	return ec._Space(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNSpace2ᚕᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpaceᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Space) graphql.Marshaler {
+func (ec *executionContext) marshalNSpace2ᚕᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpaceᚄ(ctx context.Context, sel ast.SelectionSet, v []*gen.Space) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3400,7 +3461,7 @@ func (ec *executionContext) marshalNSpace2ᚕᚖgithubᚗcomᚋSerbrodaᚋragbag
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpace(ctx, sel, v[i])
+			ret[i] = ec.marshalNSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpace(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3420,7 +3481,7 @@ func (ec *executionContext) marshalNSpace2ᚕᚖgithubᚗcomᚋSerbrodaᚋragbag
 	return ret
 }
 
-func (ec *executionContext) marshalNSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpace(ctx context.Context, sel ast.SelectionSet, v *model.Space) graphql.Marshaler {
+func (ec *executionContext) marshalNSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpace(ctx context.Context, sel ast.SelectionSet, v *gen.Space) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3724,22 +3785,27 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpace(ctx context.Context, sel ast.SelectionSet, v *model.Space) graphql.Marshaler {
+func (ec *executionContext) marshalOSpace2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋgenᚐSpace(ctx context.Context, sel ast.SelectionSet, v *gen.Space) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Space(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOSpaceVisibility2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpaceVisibility(ctx context.Context, v interface{}) (model.SpaceVisibility, error) {
-	tmp, err := graphql.UnmarshalString(v)
-	res := model.SpaceVisibility(tmp)
+func (ec *executionContext) unmarshalOSpaceVisibility2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋcmdᚋgraphqlᚑserverᚋgraphᚋmodelᚐSpaceVisibility(ctx context.Context, v interface{}) (*model.SpaceVisibility, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.SpaceVisibility)
+	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOSpaceVisibility2githubᚗcomᚋSerbrodaᚋragbagᚋpkgᚋmodelᚐSpaceVisibility(ctx context.Context, sel ast.SelectionSet, v model.SpaceVisibility) graphql.Marshaler {
-	res := graphql.MarshalString(string(v))
-	return res
+func (ec *executionContext) marshalOSpaceVisibility2ᚖgithubᚗcomᚋSerbrodaᚋragbagᚋcmdᚋgraphqlᚑserverᚋgraphᚋmodelᚐSpaceVisibility(ctx context.Context, sel ast.SelectionSet, v *model.SpaceVisibility) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

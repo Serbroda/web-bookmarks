@@ -9,27 +9,48 @@ import (
 	"fmt"
 
 	"github.com/Serbroda/ragbag/cmd/graphql-server/graph/generated"
-	"github.com/Serbroda/ragbag/pkg/model"
+	model1 "github.com/Serbroda/ragbag/cmd/graphql-server/graph/model"
+	"github.com/Serbroda/ragbag/pkg/gen"
 )
 
 // CreateSpace is the resolver for the createSpace field.
-func (r *myMutationResolver) CreateSpace(ctx context.Context, space model.CreateSpace) (*model.Space, error) {
+func (r *myMutationResolver) CreateSpace(ctx context.Context, space model1.CreateSpace) (*gen.Space, error) {
 	panic(fmt.Errorf("not implemented: CreateSpace - createSpace"))
 }
 
 // Space is the resolver for the space field.
-func (r *myQueryResolver) Space(ctx context.Context, id string) (*model.Space, error) {
+func (r *myQueryResolver) Space(ctx context.Context, id string) (*gen.Space, error) {
 	panic(fmt.Errorf("not implemented: Space - space"))
 }
 
 // Spaces is the resolver for the spaces field.
-func (r *myQueryResolver) Spaces(ctx context.Context) ([]*model.Space, error) {
+func (r *myQueryResolver) Spaces(ctx context.Context) ([]*gen.Space, error) {
 	panic(fmt.Errorf("not implemented: Spaces - spaces"))
 }
 
 // ID is the resolver for the id field.
-func (r *spaceResolver) ID(ctx context.Context, obj *model.Space) (string, error) {
+func (r *pageResolver) ID(ctx context.Context, obj *gen.Page) (string, error) {
 	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// Description is the resolver for the description field.
+func (r *pageResolver) Description(ctx context.Context, obj *gen.Page) (*string, error) {
+	panic(fmt.Errorf("not implemented: Description - description"))
+}
+
+// ID is the resolver for the id field.
+func (r *spaceResolver) ID(ctx context.Context, obj *gen.Space) (string, error) {
+	panic(fmt.Errorf("not implemented: ID - id"))
+}
+
+// Description is the resolver for the description field.
+func (r *spaceResolver) Description(ctx context.Context, obj *gen.Space) (*string, error) {
+	panic(fmt.Errorf("not implemented: Description - description"))
+}
+
+// Visibility is the resolver for the visibility field.
+func (r *spaceResolver) Visibility(ctx context.Context, obj *gen.Space) (*model1.SpaceVisibility, error) {
+	panic(fmt.Errorf("not implemented: Visibility - visibility"))
 }
 
 // MyMutation returns generated.MyMutationResolver implementation.
@@ -38,9 +59,13 @@ func (r *Resolver) MyMutation() generated.MyMutationResolver { return &myMutatio
 // MyQuery returns generated.MyQueryResolver implementation.
 func (r *Resolver) MyQuery() generated.MyQueryResolver { return &myQueryResolver{r} }
 
+// Page returns generated.PageResolver implementation.
+func (r *Resolver) Page() generated.PageResolver { return &pageResolver{r} }
+
 // Space returns generated.SpaceResolver implementation.
 func (r *Resolver) Space() generated.SpaceResolver { return &spaceResolver{r} }
 
 type myMutationResolver struct{ *Resolver }
 type myQueryResolver struct{ *Resolver }
+type pageResolver struct{ *Resolver }
 type spaceResolver struct{ *Resolver }

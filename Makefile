@@ -15,4 +15,6 @@ clean:
 	rm -rf build/
 
 generate:
+	rm -rf ./app/pkg/gen
+	cd ./app/resources/db && sqlc generate && cd ../../..
 	cd app/cmd/graphql-server && go get github.com/99designs/gqlgen && go run github.com/99designs/gqlgen generate --verbose

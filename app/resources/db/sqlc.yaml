@@ -1,0 +1,12 @@
+version: 2
+sql:
+- schema: "./migrations"
+  queries: "./queries"
+  engine: "mysql"
+  gen:
+    go: 
+      package: "gen"
+      out: "../../pkg/gen"
+      emit_db_tags: true
+      emit_empty_slices: true
+      emit_json_tags: true
