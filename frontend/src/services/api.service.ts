@@ -1,18 +1,28 @@
-import { AuthApi, Configuration, ConfigurationParameters, GroupsApi, LinksApi, SpacesApi } from "../gen";
-import TokenMiddleware from "./token.middleware";
+import {NewSpace, Space, UpdateSpace} from "../models/space";
+import {ID} from "../models/base";
+import {NewPage, Page, UpdatePage} from "../models/page";
+import {Link, NewLink, UpdateLink} from "../models/link";
 
-const { VITE_BACKEND_BASE_URL } = import.meta.env;
+export interface SpaceService {
+    getSpaces(): Promise<Space[]>;
+    getSpace(id: ID): Promise<Space | undefined>;
+    createSpace(body: NewSpace): Promise<Space>;
+    updateSpace(id: ID, body: UpdateSpace): Promise<Space>;
+    deleteSpace(id: ID): Promise<void>;
+}
 
-const configParams: ConfigurationParameters = {
-    basePath: `${VITE_BACKEND_BASE_URL}/api/v1`,
-    middleware: [new TokenMiddleware()],
-};
+export interface PageService {
+    getPages(spaceId: ID): Promise<Page[]>;
+    getPage(id: ID): Promise<Page | undefined>;
+    createPage(spaceId: ID, body: NewPage): Promise<Page>;
+    updatePage(id: ID, body: UpdatePage): Promise<Space>;
+    deletePage(id: ID): Promise<void>;
+}
 
-const apiConfig = new Configuration(configParams);
-
-const authApi = new AuthApi(apiConfig);
-const spacesApi = new SpacesApi(apiConfig);
-const groupsApi = new GroupsApi(apiConfig);
-const linksApi = new LinksApi(apiConfig);
-
-export { authApi, spacesApi, groupsApi, linksApi };
+export interface LinkService {
+    getLinks(pageId: ID): Promise<Link[]>;
+    getLink(id: ID): Promise<Link | undefined>;
+    createLink(pageId: ID, body: NewLink): Promise<Link>;
+    updateLink(id: ID, body: UpdateLink): Promise<Space>;
+    deleteLink(id: ID): Promise<void>;
+}

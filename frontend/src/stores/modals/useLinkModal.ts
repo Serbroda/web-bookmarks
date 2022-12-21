@@ -17,7 +17,6 @@ const useLinkModal = create<LinkModalState>((set, get) => ({
     props: {
         mode: "new",
         onSave: () => {}
-
     },
     setOpen: (value: boolean) => set({isOpen: value}),
     openModal: (props: LinkModalProps) => {
