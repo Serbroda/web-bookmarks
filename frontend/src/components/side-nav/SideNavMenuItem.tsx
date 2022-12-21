@@ -82,8 +82,8 @@ const SideNavMenuItem: FC<{ item: SideNavMenuItemData }> = ({ item }) => {
               </div>
 
               <Disclosure.Panel className="ml-4">
-                {item.children.map((child) => (
-                  <SideNavMenuItem item={child} key={item.label} />
+                {item.children.map((child, idx) => (
+                  <SideNavMenuItem item={child} key={`${idx}_${item.label}`} />
                 ))}
               </Disclosure.Panel>
             </>

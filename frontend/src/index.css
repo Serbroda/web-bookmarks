@@ -22,7 +22,7 @@ div.__resizer {
 @layer components {
   /* buttons */
   .btn {
-    @apply inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm;
+    @apply inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm;
   }
 
   .btn-primary {
@@ -93,11 +93,11 @@ div.__resizer {
   /* input */
   input.input,
   textarea.input {
-    @apply block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+    @apply block appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm;
   }
 
   select.input {
-    @apply block rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm;
+    @apply block appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm;
   }
 
   input.input-error,
@@ -116,4 +116,8 @@ div.__resizer {
   .card {
     @apply border-2 border-transparent drop-shadow rounded-xl p-2;
   }
+}
+
+.h-full--3rem {
+  height: calc(100% - 3rem);
 }

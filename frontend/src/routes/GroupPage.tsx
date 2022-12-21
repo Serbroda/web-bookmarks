@@ -5,10 +5,24 @@ import TopNav from "../components/TopNav";
 import useLinkModal from "../stores/modals/useLinkModal";
 import useSideNav from "../stores/useSideNav";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
+import {useEffect} from "react";
+import {apiService} from "../services/config";
+import useAlertModal from "../stores/modals/useAlertModal";
 
 const GroupPage = () => {
   const { isOpen, setOpen } = useSideNav();
   const { openModal: openLinkModal } = useLinkModal();
+
+  const {openModal} = useAlertModal();
+
+  useEffect(() => {
+      const cre = async () => {
+          const res = await apiService.createSpace({name: "Test", description: "A test space", visibility: 'PRIVATE'})
+          console.log(res)
+      }
+      //cre()
+      openModal({title: 'Lol', message: 'Create', confirmButtonMessage: 'Ok', onConfirm: () => console.log('Bla')})
+  }, [])
 
   return (
     <div className="flex flex-col relative h-full">
