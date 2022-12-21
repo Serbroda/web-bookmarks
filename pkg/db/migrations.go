@@ -7,9 +7,9 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
-func Migrate(db *sql.DB, migrations embed.FS, migrationsDir string) {
+func Migrate(db *sql.DB, dialect string, migrations embed.FS, migrationsDir string) {
 	goose.SetBaseFS(migrations)
-	if err := goose.SetDialect("mysql"); err != nil {
+	if err := goose.SetDialect(dialect); err != nil {
 		panic(err)
 	}
 

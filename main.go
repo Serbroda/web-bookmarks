@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	//go:embed resources/db/migrations/*.sql
+	//go:embed resources/db/migrations/sqlite/*.sql
 	migrations embed.FS
 
 	//go:embed all:frontend/dist
@@ -32,17 +32,14 @@ var (
 var (
 	version       string
 	serverAddress = utils.GetEnvFallback("SERVER_URL", "0.0.0.0:8080")
-	dbAddress     = utils.MustGetEnv("DB_ADDRESS")
 	dbName        = utils.GetEnvFallback("DB_NAME", "ragbag")
-	dbUser        = utils.GetEnvFallback("DB_USER", "ragbag")
-	dbPassword    = utils.MustGetEnv("DB_PASSWORD")
 	jwtSecretKey  = utils.MustGetEnv("JWT_SECRET_KEY")
 )
 
 func main() {
 	fmt.Println("version=", version)
 
-	db.OpenAndConfigure("mysql", getDsn(dbUser, dbPassword, dbAddress, dbName), migrations, "resources/db/migrations")
+	db.OpenAndConfigure("sqlite", dbName, migrations, "resources/db/migrations/sqlite")
 
 	services := services.New(db.Queries)
 	db.InitializeAdmin(context.Background(), services)

@@ -19,13 +19,13 @@ var (
 
 func OpenAndConfigure(driver, source string, migrations embed.FS, migrationsDir string) {
 	db := OpenConnection(driver, source)
-	Migrate(db, migrations, migrationsDir)
+	Migrate(db, driver, migrations, migrationsDir)
 	InitQueries(db)
 }
 
 func OpenConnection(driver, source string) *sql.DB {
 	once.Do(func() {
-		db, err := sql.Open(driver, source)
+		db, err := connectDatabase(driver, source)
 		if err != nil {
 			panic("Failed to open database: " + err.Error())
 		}
