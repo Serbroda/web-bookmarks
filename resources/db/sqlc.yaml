@@ -1,8 +1,8 @@
 version: 2
 sql:
-- schema: "./migrations"
+- schema: "./migrations/sqlite"
   queries: "./queries"
-  engine: "mysql"
+  engine: "sqlite"
   gen:
     go: 
       package: "gen"

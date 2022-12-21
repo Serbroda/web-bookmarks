@@ -11,7 +11,7 @@ CREATE TABLE users
     username                TEXT    NOT NULL,
     password                TEXT    NOT NULL,
     email                   TEXT    NOT NULL,
-    active                  INTEGER NOT NULL DEFAULT 0,
+    active                  BOOLEAN NOT NULL DEFAULT 0,
     activation_confirmed_at DATETIME,
     UNIQUE (username)
 );

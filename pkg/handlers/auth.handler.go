@@ -246,7 +246,7 @@ func (si *PublicServerInterfaceImpl) ResetPassword(ctx echo.Context) error {
 		return err
 	}
 
-	if prt.ExpiresAt.Before(time.Now()) || !prt.Useractive {
+	if prt.ExpiresAt.Before(time.Now()) || !prt.UserActive {
 		return ctx.String(http.StatusBadRequest, "password reset code expired or user not active")
 	}
 
