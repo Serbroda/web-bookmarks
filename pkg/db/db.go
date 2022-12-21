@@ -6,8 +6,6 @@ import (
 	"sync"
 
 	"github.com/Serbroda/ragbag/gen"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 var once sync.Once
