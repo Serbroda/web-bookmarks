@@ -1,7 +1,8 @@
-import {AuthApi, Configuration, SpacesApi} from "../gen";
+import {AuthApi, Configuration, SpacesApi, UserDto} from "../gen";
 import TokenMiddleware from "./middlewares/token.middleware";
 import {AuthService} from "./auth.service";
 import {ApiAuthService} from "./api-auth.service";
+import {AuthStore} from "./auth.store";
 
 const { VITE_BACKEND_BASE_URL } = import.meta.env;
 
@@ -15,6 +16,7 @@ const config = new Configuration({
 const authApi = new AuthApi(config);
 const spacesApi = new SpacesApi(config);
 
-const authService: AuthService<any> = new ApiAuthService(authApi);
+const authStore = new AuthStore<UserDto>();
+const authService: AuthService<UserDto> = new ApiAuthService(authApi, authStore);
 
-export { authApi, spacesApi, authService };
+export { authStore, authApi, spacesApi, authService };

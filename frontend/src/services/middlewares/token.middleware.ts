@@ -1,13 +1,20 @@
 import { FetchParams, Middleware, RequestContext, ResponseContext } from "../../gen";
 
+export type AccessToken = string;
+export type RefreshToken = string;
+
 const ACCESS_TOKEN = "access_token";
 const REFRESH_TOKEN = "refresh_token";
 
-const getToken = (): string | null => {
+const getAccessToken = (): AccessToken | null => {
     return localStorage.getItem(ACCESS_TOKEN);
 }
 
-const setToken = (token: string | null) => {
+const getRefreshToken = (): RefreshToken | null => {
+    return localStorage.getItem(REFRESH_TOKEN);
+}
+
+const setAccessToken = (token: AccessToken | null) => {
     if(token) {
         localStorage.setItem(ACCESS_TOKEN, token);
     } else {
@@ -15,10 +22,18 @@ const setToken = (token: string | null) => {
     }
 }
 
+const setRefreshToken = (token: RefreshToken | null) => {
+    if(token) {
+        localStorage.setItem(REFRESH_TOKEN, token);
+    } else {
+        localStorage.removeItem(REFRESH_TOKEN);
+    }
+}
+
 export default class TokenMiddleware implements Middleware {
 
     public async pre(context: RequestContext): Promise<void | FetchParams> {
-        const accessToken = getToken();
+        const accessToken = getAccessToken();
 
         if(accessToken) {
             return {
@@ -41,4 +56,4 @@ export default class TokenMiddleware implements Middleware {
     }
 }
 
-export {getToken, setToken, ACCESS_TOKEN, REFRESH_TOKEN}
+export {getAccessToken, setAccessToken, ACCESS_TOKEN, REFRESH_TOKEN}

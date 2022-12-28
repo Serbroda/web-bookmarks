@@ -2,13 +2,11 @@ package db
 
 import (
 	"context"
-	"log"
-	"os"
-	"path/filepath"
-
 	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/teris-io/shortid"
+	"log"
+	"os"
 )
 
 const (
@@ -41,9 +39,10 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 	if err != nil {
 		panic(err.Error())
 	}
-	abs, err := filepath.Abs(passwordFile)
+	//abs, err := filepath.Abs(passwordFile)
 	if err == nil {
-		log.Printf("adminpassword file created. Execute 'cat %s' to view initial password.", abs)
+		//log.Printf("adminpassword file created. Execute 'cat %s' to view initial password.", abs)
+		log.Printf("adminpassword file created: %s", shortId)
 	}
 
 	defer file.Close()
