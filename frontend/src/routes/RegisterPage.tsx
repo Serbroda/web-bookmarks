@@ -44,7 +44,7 @@ const RegisterPage = () => {
                                 <input
                                     id="username"
                                     name="username"
-                                    type="username"
+                                    type="text"
                                     autoComplete="username"
                                     required
                                     className="input w-full"
