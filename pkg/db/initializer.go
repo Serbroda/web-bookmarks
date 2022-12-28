@@ -2,8 +2,9 @@ package db
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/Serbroda/ragbag/gen"
 	"github.com/Serbroda/ragbag/pkg/services"
@@ -20,7 +21,7 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 		return
 	}
 
-	fmt.Println("initializing admin user")
+	log.Println("initializing admin user")
 	shortId := shortid.MustGenerate()
 
 	_, err := s.CreateUserWithRoles(c, gen.CreateUserParams{
@@ -40,7 +41,11 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("adminpassword file created with initial password: %s\n", shortId)
+	abs, err := filepath.Abs(passwordFile)
+	if err == nil {
+		log.Printf("adminpassword file created. Execute 'cat %s' to view initial password.", abs)
+	}
+
 	defer file.Close()
 
 	_, err = file.WriteString(shortId)
