@@ -1,6 +1,7 @@
-import { FetchParams, Middleware, RequestContext, ResponseContext } from "../gen";
+import { FetchParams, Middleware, RequestContext, ResponseContext } from "../../gen";
 
 const ACCESS_TOKEN = "access_token";
+const REFRESH_TOKEN = "refresh_token";
 
 const getToken = (): string | null => {
     return localStorage.getItem(ACCESS_TOKEN);
@@ -40,4 +41,4 @@ export default class TokenMiddleware implements Middleware {
     }
 }
 
-export {getToken, setToken}
+export {getToken, setToken, ACCESS_TOKEN, REFRESH_TOKEN}

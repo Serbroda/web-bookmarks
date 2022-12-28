@@ -17,7 +17,7 @@ import Logo from "../../assets/logo.svg";
 import {Dialog, Transition} from "@headlessui/react";
 import useSideNav from "../../stores/useSideNav";
 import TopNav from "../TopNav";
-import {apiService, authService} from "../../services/config";
+import {spacesApi, authService} from "../../services/config";
 import useAuthentication from "../../stores/useAuthentication";
 import ScrollArea from "../ScrollArea";
 import SideNavLeftItem, {SideSideBarItem} from "./SideNavLeftItem";
@@ -87,7 +87,7 @@ const SideNav = () => {
     }, []);
 
     const loadSpaces = async () => {
-        const result = await apiService.getSpaces();
+        const result = await spacesApi.getSpaces();
         let items: SideSideBarItem[] = result.map((i) => {
             return {
                 content: <HomeIcon className="w-6 h-6 text-gray-700"/>,

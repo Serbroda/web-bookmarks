@@ -1,11 +1,20 @@
-import PocketBase from 'pocketbase'
-import PocketbaseAuthService from "./pocketbase-auth.service";
-import PocketbaseApiService from "./pocketbase-api.service";
+import {AuthApi, Configuration, SpacesApi} from "../gen";
+import TokenMiddleware from "./middlewares/token.middleware";
+import {AuthService} from "./auth.service";
+import {ApiAuthService} from "./api-auth.service";
 
-const pb = new PocketBase('http://127.0.0.1:8090');
+const { VITE_BACKEND_BASE_URL } = import.meta.env;
 
-const authService = new PocketbaseAuthService(pb);
-const apiService = new PocketbaseApiService(pb);
+const basePath: string = VITE_BACKEND_BASE_URL || "/";
 
-export default pb;
-export { authService, apiService }
+const config = new Configuration({
+    basePath,
+    middleware: [new TokenMiddleware()]
+});
+
+const authApi = new AuthApi(config);
+const spacesApi = new SpacesApi(config);
+
+const authService: AuthService<any> = new ApiAuthService(authApi);
+
+export { authApi, spacesApi, authService };
