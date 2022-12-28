@@ -3,41 +3,68 @@ export type RefreshToken = string;
 
 export type AuthListener<T> = ((authenticated: boolean, user: T | null | undefined) => void);
 
+export interface AuthStoreProps {
+    accessTokenKey: string;
+    refreshTokenKey: string;
+    userKey: string;
+    listenStorage: boolean;
+    informListenersTimeout: number;
+    authenticatedValidator: (accessToken: AccessToken | null | undefined, user?: any) => boolean;
+}
+
 export class AuthStore<T> {
     _listeners: AuthListener<T>[] = [];
     _timeout: number | undefined;
+    _props: AuthStoreProps;
 
     constructor(
-        private accessTokenKey: string = "access_token",
-        private refreshTokenKey: string = "refresh_token") {
+        props?: Partial<AuthStoreProps>) {
+        this._props = {
+            ...{
+                accessTokenKey: "access_token",
+                refreshTokenKey: "refresh_token",
+                userKey: "user",
+                listenStorage: true,
+                informListenersTimeout: 150,
+                authenticatedValidator: (token, user) => token !== undefined && token !== null
+            }, ...props
+        };
+        if (this._props.listenStorage) {
+            const keys = [this._props.accessTokenKey, this._props.refreshTokenKey, this._props.userKey];
+            addEventListener('storage', (e) => {
+                if (e.key && keys.includes(e.key)) {
+                    this.informListeners();
+                }
+            })
+        }
     }
 
     public set accessToken(token: AccessToken | null | undefined) {
-        this.setItem(this.accessTokenKey, token);
+        this.setItem(this._props.accessTokenKey, token);
     }
 
     public set refreshToken(token: RefreshToken | null | undefined) {
-        this.setItem(this.refreshTokenKey, token);
+        this.setItem(this._props.refreshTokenKey, token);
     }
 
     public get accessToken(): AccessToken | null | undefined {
-        return localStorage.getItem(this.accessTokenKey);
+        return localStorage.getItem(this._props.accessTokenKey);
     }
 
     public get refreshToken(): AccessToken | null | undefined {
-        return localStorage.getItem(this.refreshTokenKey);
+        return localStorage.getItem(this._props.refreshTokenKey);
     }
 
     public set user(user: T | null | undefined) {
         if (user) {
-            this.setItem("_user", JSON.stringify(user))
+            this.setItem(this._props.userKey, JSON.stringify(user))
         } else {
-            this.setItem("_user", undefined)
+            this.setItem(this._props.userKey, undefined)
         }
     }
 
     public get user(): T | null | undefined {
-        const userRaw = localStorage.getItem("_user");
+        const userRaw = localStorage.getItem(this._props.userKey);
         if (userRaw) {
             return JSON.parse(userRaw);
         } else {
@@ -46,8 +73,7 @@ export class AuthStore<T> {
     }
 
     public get authenticated(): boolean {
-        const t = this.accessToken;
-        return t !== undefined && t !== null;
+        return this._props.authenticatedValidator(this.accessToken, this.user);
     }
 
     public clear() {
@@ -81,6 +107,6 @@ export class AuthStore<T> {
             for (const l of this._listeners) {
                 l(this.authenticated, this.user);
             }
-        }, 150);
+        }, this._props.informListenersTimeout);
     }
 }

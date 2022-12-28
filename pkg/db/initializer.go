@@ -22,7 +22,7 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 	log.Println("initializing admin user")
 	shortId := shortid.MustGenerate()
 
-	_, err := s.CreateUserWithRoles(c, gen.CreateUserParams{
+	user, err := s.CreateUserWithRoles(c, gen.CreateUserParams{
 		Username:  admin,
 		Password:  shortId,
 		Email:     "admin@admin",
@@ -30,6 +30,16 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 		FirstName: "Admin",
 		LastName:  "Admin",
 	}, []string{"ADMIN"})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_, err = s.CreateSpace(c, gen.CreateSpaceParams{
+		ShortID: shortid.MustGenerate(),
+		OwnerID: user.ID,
+		Name:    "Admin's Space",
+	})
 
 	if err != nil {
 		panic(err.Error())

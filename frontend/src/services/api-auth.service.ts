@@ -1,6 +1,6 @@
-import {AuthMethod, AuthService, isOAuth2Method} from "./auth.service";
+import {AuthMethod, AuthService, isOAuth2Method} from "./auth/auth.service";
 import {AuthApi, UserDto} from "../gen";
-import {AuthListener, AuthStore} from "./auth.store";
+import {AuthListener, AuthStore} from "./auth/auth.store";
 
 export class ApiAuthService implements AuthService<UserDto> {
     listeners: AuthListener<UserDto>[] = [];

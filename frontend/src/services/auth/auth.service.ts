@@ -26,4 +26,3 @@ export interface AuthService<T> {
     logout(): void;
     onChange(listener: (authenticated: boolean, user: T | undefined | null) => void): void;
 }
-

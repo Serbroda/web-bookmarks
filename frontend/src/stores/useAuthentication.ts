@@ -1,6 +1,6 @@
 import create from "zustand";
 import {Admin, Record} from "pocketbase";
-import {AuthMethod} from "../services/auth.service";
+import {AuthMethod} from "../services/auth/auth.service";
 import {authService} from "../services/config";
 
 export type AuthenticationState = {
