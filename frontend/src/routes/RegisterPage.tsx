@@ -1,6 +1,7 @@
 import {useState} from "react";
 import logo from "../assets/logo.svg";
-import {NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
+import {authApi} from "../services/config";
 
 const RegisterPage = () => {
     //const {authenticate} = useAuthentication();
@@ -8,11 +9,28 @@ const RegisterPage = () => {
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
 
-    const handleSubmit = (event: any) => {
+    const nav = useNavigate();
+
+    const handleSubmit = async (event: any) => {
         // 👇️ prevent page refresh
         event.preventDefault();
 
-        //authenticate({username, password})
+        try {
+            const response = await authApi.register({
+                registrationDto: {
+                    email: username,
+                    username,
+                    password,
+                    firstName: 'Test',
+                    lastName: 'Last'
+                }
+            });
+            if(response) {
+                nav('/login')
+            }
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (

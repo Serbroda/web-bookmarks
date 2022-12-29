@@ -4,20 +4,30 @@ import {AuthService} from "./auth/auth.service";
 import {ApiAuthService} from "./api-auth.service";
 import {AuthStore} from "./auth/auth.store";
 
-const { VITE_BACKEND_BASE_URL } = import.meta.env;
+const {VITE_BACKEND_BASE_URL} = import.meta.env;
 
 const basePath: string = VITE_BACKEND_BASE_URL || "/";
 
 const authStore = new AuthStore<UserDto>();
 
-const config = new Configuration({
+const publicConfig = new Configuration({
     basePath,
-    middleware: [new TokenMiddleware(authStore)]
 });
 
-const authApi = new AuthApi(config);
-const spacesApi = new SpacesApi(config);
-
+const authApi = new AuthApi(publicConfig);
 const authService: AuthService<UserDto> = new ApiAuthService(authApi, authStore);
 
-export { authStore, authApi, spacesApi, authService };
+const restrictedConfig = new Configuration({
+    basePath,
+    middleware: [new TokenMiddleware({
+        authStore,
+        refreshTokenFn: async () => {
+            await authService.authRefresh();
+            return authStore.accessToken;
+        }
+    })]
+});
+
+const spacesApi = new SpacesApi(restrictedConfig);
+
+export {authStore, authApi, spacesApi, authService};

@@ -19,7 +19,7 @@ export class ApiAuthService implements AuthService<UserDto> {
             throw new Error("Refresh token not set");
         }
 
-        let response = await this.auth.refreshToken({
+        const response = await this.auth.refreshToken({
             inlineObject: {refreshToken}
         });
         this.applyToken(response);

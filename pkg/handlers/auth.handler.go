@@ -75,7 +75,11 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 
 	user, err := si.Services.FindUserByUsername(ctx.Request().Context(), payload.Username)
 	if err != nil || user.ID < 1 || !utils.CheckBcryptHash(payload.Password, user.Password) {
-		return ctx.String(http.StatusNotFound, "invalid login")
+		return ctx.String(http.StatusBadRequest, "invalid login")
+	}
+
+	if !user.Active {
+		return ctx.String(http.StatusBadRequest, "user not active")
 	}
 
 	tokenPair, err := generateTokenPair(&user)
@@ -137,7 +141,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 			Link string
 		}{
 			Name: payload.FirstName,
-			Link: fmt.Sprintf("%s/api/v1/activate?code=%s", baseUrl, token),
+			Link: fmt.Sprintf("%s/auth/activate?code=%s", baseUrl, token),
 		},
 	})
 

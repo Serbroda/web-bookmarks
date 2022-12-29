@@ -17,7 +17,7 @@ var (
 	ErrUserNotFound          = errors.New("user not found")
 	ErrUserAlreadyExists     = errors.New("user already exists")
 	ErrUserAlreadyActive     = errors.New("user already active")
-	ErrActivationCodeExpores = errors.New("activation code expired")
+	ErrActivationCodeExpired = errors.New("activation code expired")
 )
 
 func (s *Services) ExistsUser(ctx context.Context, username string) bool {
@@ -137,7 +137,7 @@ func (s *Services) ActivateUser(ctx context.Context, token string) error {
 	}
 
 	if at.ExpiresAt.Valid && at.ExpiresAt.Time.Before(time.Now()) {
-		return ErrActivationCodeExpores
+		return ErrActivationCodeExpired
 	}
 
 	err = s.Queries.UpdateUser(ctx, gen.UpdateUserParams{
