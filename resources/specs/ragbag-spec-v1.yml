@@ -36,7 +36,7 @@ paths:
           content:
             application/json:    
               schema:
-                $ref: '#/components/schemas/TokenPairDto'
+                $ref: '#/components/schemas/LoginResponseDto'
 
   /auth/register:
     post:
@@ -83,7 +83,7 @@ paths:
           content:
             application/json:    
               schema:
-                $ref: '#/components/schemas/TokenPairDto'
+                $ref: '#/components/schemas/LoginResponseDto'
 
   /auth/activate:
     get:
@@ -583,6 +583,14 @@ components:
           $ref: "#/components/schemas/Jwt"
         refresh_token:
           $ref: "#/components/schemas/Jwt"
+
+    LoginResponseDto:
+      allOf:
+        - $ref: '#/components/schemas/TokenPairDto'
+        - type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/UserDto'
 
     UserDto:
       type: object

@@ -84,7 +84,16 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, "failed to generate token")
 	}
 
-	return ctx.JSON(http.StatusOK, tokenPair)
+	res := public.LoginResponseDto{
+		AccessToken:  tokenPair.AccessToken,
+		RefreshToken: tokenPair.RefreshToken,
+		User: &public.UserDto{
+			Id:       &user.ID,
+			Username: &user.Username,
+		},
+	}
+
+	return ctx.JSON(http.StatusOK, res)
 }
 
 func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
@@ -179,7 +188,16 @@ func (si *PublicServerInterfaceImpl) RefreshToken(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, newTokenPair)
+	res := public.LoginResponseDto{
+		AccessToken:  newTokenPair.AccessToken,
+		RefreshToken: newTokenPair.RefreshToken,
+		User: &public.UserDto{
+			Id:       &user.ID,
+			Username: &user.Username,
+		},
+	}
+
+	return ctx.JSON(http.StatusOK, res)
 }
 
 func (si *PublicServerInterfaceImpl) Activate(ctx echo.Context, params public.ActivateParams) error {

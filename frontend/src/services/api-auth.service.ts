@@ -1,5 +1,5 @@
 import {AuthMethod, AuthService, isOAuth2Method} from "./auth/auth.service";
-import {AuthApi, TokenPairDto, UserDto} from "../gen";
+import {AuthApi, LoginResponseDto, UserDto} from "../gen";
 import {AuthListener, AuthStore} from "./auth/auth.store";
 
 export class ApiAuthService implements AuthService<UserDto> {
@@ -23,9 +23,7 @@ export class ApiAuthService implements AuthService<UserDto> {
             inlineObject: {refreshToken}
         });
         this.applyToken(response);
-        const u = await this.user();
-        this.store.user = u;
-        return u;
+        return response.user;
     }
 
     async authenticate(auth: AuthMethod): Promise<UserDto | undefined | null> {
@@ -39,10 +37,7 @@ export class ApiAuthService implements AuthService<UserDto> {
                 }
             });
             this.applyToken(response);
-
-            const u = await this.user();
-            this.store.user = u;
-            return u;
+            return response.user;
         }
     }
 
@@ -61,15 +56,18 @@ export class ApiAuthService implements AuthService<UserDto> {
     }
 
     async user(): Promise<UserDto | undefined | null> {
-        return null;
+        return this.store.user;
     }
 
-    private applyToken(tokens: TokenPairDto) {
+    private applyToken(tokens: LoginResponseDto) {
         if (tokens.accessToken) {
             this.store.accessToken = tokens.accessToken;
         }
         if (tokens.refreshToken) {
             this.store.refreshToken = tokens.refreshToken;
+        }
+        if (tokens.user) {
+            this.store.user = tokens.user;
         }
     }
 }
