@@ -1,5 +1,5 @@
 import {AuthMethod, AuthService, isOAuth2Method} from "./auth/auth.service";
-import {AuthApi, UserDto} from "../gen";
+import {AuthApi, TokenPairDto, UserDto} from "../gen";
 import {AuthListener, AuthStore} from "./auth/auth.store";
 
 export class ApiAuthService implements AuthService<UserDto> {
@@ -14,7 +14,18 @@ export class ApiAuthService implements AuthService<UserDto> {
     }
 
     async authRefresh(): Promise<UserDto | undefined | null> {
-        throw new Error("OAuth2 is not implemented");
+        const refreshToken = this.store.refreshToken
+        if (refreshToken === undefined || refreshToken === null) {
+            throw new Error("Refresh token not set");
+        }
+
+        let response = await this.auth.refreshToken({
+            inlineObject: {refreshToken}
+        });
+        this.applyToken(response);
+        const u = await this.user();
+        this.store.user = u;
+        return u;
     }
 
     async authenticate(auth: AuthMethod): Promise<UserDto | undefined | null> {
@@ -27,12 +38,8 @@ export class ApiAuthService implements AuthService<UserDto> {
                     password: auth.password
                 }
             });
-            if (response.accessToken) {
-                this.store.accessToken = response.accessToken;
-            }
-            if (response.refreshToken) {
-                this.store.refreshToken = response.refreshToken;
-            }
+            this.applyToken(response);
+
             const u = await this.user();
             this.store.user = u;
             return u;
@@ -55,5 +62,14 @@ export class ApiAuthService implements AuthService<UserDto> {
 
     async user(): Promise<UserDto | undefined | null> {
         return null;
+    }
+
+    private applyToken(tokens: TokenPairDto) {
+        if (tokens.accessToken) {
+            this.store.accessToken = tokens.accessToken;
+        }
+        if (tokens.refreshToken) {
+            this.store.refreshToken = tokens.refreshToken;
+        }
     }
 }
