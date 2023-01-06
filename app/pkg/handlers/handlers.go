@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"database/sql"
+	"github.com/Serbroda/ragbag/app/pkg/handlers/mappers"
+	services2 "github.com/Serbroda/ragbag/app/pkg/services"
+	utils2 "github.com/Serbroda/ragbag/app/pkg/utils"
 	"net/http"
 
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/gen/restricted"
-	"github.com/Serbroda/ragbag/pkg/handlers/mappers"
-	"github.com/Serbroda/ragbag/pkg/services"
-	"github.com/Serbroda/ragbag/pkg/utils"
+	"github.com/Serbroda/ragbag/app/gen"
+	"github.com/Serbroda/ragbag/app/gen/restricted"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
@@ -71,7 +71,7 @@ func (si *RestrictedServerInterfaceImpl) GetSpaces(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	spaces, err := services.Service.FindUserSpaces(ctx.Request().Context(), user.ID)
+	spaces, err := services2.Service.FindUserSpaces(ctx.Request().Context(), user.ID)
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
@@ -95,7 +95,7 @@ func (si *RestrictedServerInterfaceImpl) CreateSpace(ctx echo.Context) error {
 	params := gen.CreateSpaceParams{
 		OwnerID:     user.ID,
 		Name:        payload.Name,
-		Description: utils.StringToNullString(payload.Description),
+		Description: utils2.StringToNullString(payload.Description),
 	}
 
 	if payload.Visibility != nil {
@@ -104,7 +104,7 @@ func (si *RestrictedServerInterfaceImpl) CreateSpace(ctx echo.Context) error {
 		params.Visibility = "PRIVATE"
 	}
 
-	space, err := services.Service.CreateSpace(ctx.Request().Context(), params)
+	space, err := services2.Service.CreateSpace(ctx.Request().Context(), params)
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
@@ -124,7 +124,7 @@ func (si *RestrictedServerInterfaceImpl) GetSpace(ctx echo.Context, spaceId rest
 	if err != nil {
 		return err
 	}
-	space, err := services.Service.FindUserSpace(ctx.Request().Context(), user.ID, spaceId)
+	space, err := services2.Service.FindUserSpace(ctx.Request().Context(), user.ID, spaceId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return echo.ErrNotFound
@@ -163,13 +163,13 @@ func (si *RestrictedServerInterfaceImpl) getUser(ctx echo.Context) (gen.User, er
 		return gen.User{}, echo.ErrUnauthorized
 	}
 
-	id, err := utils.ParseInt64(claims.Subject)
+	id, err := utils2.ParseInt64(claims.Subject)
 	if err != nil {
 		return gen.User{}, echo.ErrInternalServerError
 	}
-	entity, err := services.Service.FindUser(ctx.Request().Context(), id)
+	entity, err := services2.Service.FindUser(ctx.Request().Context(), id)
 	if err != nil {
-		if err == services.ErrUserNotFound {
+		if err == services2.ErrUserNotFound {
 			return gen.User{}, echo.ErrNotFound
 		}
 		return gen.User{}, err

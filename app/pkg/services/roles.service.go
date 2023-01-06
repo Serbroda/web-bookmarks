@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/Serbroda/ragbag/gen"
+	"github.com/Serbroda/ragbag/app/gen"
 )
 
 func (s *Services) FindRolesByNamesIn(ctx context.Context, roles []string) []gen.Role {

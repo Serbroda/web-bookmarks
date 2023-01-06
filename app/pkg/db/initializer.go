@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/pkg/services"
+	"github.com/Serbroda/ragbag/app/gen"
+	"github.com/Serbroda/ragbag/app/pkg/services"
 	"github.com/teris-io/shortid"
 	"log"
 	"os"

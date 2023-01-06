@@ -1,6 +1,6 @@
 BINARY_NAME=ragbag
 BINARY_VERSION=next
-SPEC_FILE_LOCATION=./resources/specs/ragbag-spec-v1.yml
+SPEC_FILE_LOCATION=./app/resources/specs/ragbag-spec-v1.yml
 
 build: clean generate
 	cd frontend && yarn install && yarn build && cd ..
@@ -15,13 +15,13 @@ clean:
 	rm -rf build/
 
 generate:
-	rm -rf ./gen && mkdir -p ./gen/public && mkdir -p ./gen/restricted
+	rm -rf ./app/gen && mkdir -p ./app/gen/public && mkdir -p ./app/gen/restricted
 	rm -rf ./frontend/src/gen && mkdir -p ./frontend/src/gen
-	cd ./resources/db && sqlc generate && cd ../..
+	cd ./app/resources/db && sqlc generate && cd ../..
 	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate \
 		-i "/local/${SPEC_FILE_LOCATION}"
-	oapi-codegen -generate types,server -include-tags="auth" -package public ${SPEC_FILE_LOCATION} > ./gen/public/public.gen.go
-	oapi-codegen -generate types,server -exclude-tags="auth" -package restricted ${SPEC_FILE_LOCATION} > ./gen/restricted/restricted.gen.go
+	oapi-codegen -generate types,server -include-tags="auth" -package public ${SPEC_FILE_LOCATION} > ./app/gen/public/public.gen.go
+	oapi-codegen -generate types,server -exclude-tags="auth" -package restricted ${SPEC_FILE_LOCATION} > ./app/gen/restricted/restricted.gen.go
 	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
 		-i "/local/${SPEC_FILE_LOCATION}" \
 		-g typescript-fetch \

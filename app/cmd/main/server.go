@@ -2,31 +2,24 @@ package main
 
 import (
 	"context"
-	"embed"
 	"fmt"
+	"github.com/Serbroda/ragbag"
+	db2 "github.com/Serbroda/ragbag/app/pkg/db"
+	handlers2 "github.com/Serbroda/ragbag/app/pkg/handlers"
+	"github.com/Serbroda/ragbag/app/pkg/services"
+	"github.com/Serbroda/ragbag/app/pkg/utils"
 
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/gen/public"
-	"github.com/Serbroda/ragbag/gen/restricted"
-	"github.com/Serbroda/ragbag/pkg/db"
-	"github.com/Serbroda/ragbag/pkg/handlers"
-	"github.com/Serbroda/ragbag/pkg/services"
-	"github.com/Serbroda/ragbag/pkg/utils"
+	"github.com/Serbroda/ragbag/app/gen"
+	"github.com/Serbroda/ragbag/app/gen/public"
+	"github.com/Serbroda/ragbag/app/gen/restricted"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/teris-io/shortid"
 )
 
 var (
-	//go:embed resources/db/migrations/sqlite/*.sql
-	migrations embed.FS
-
-	//go:embed all:frontend/dist
-	dist embed.FS
-	//go:embed frontend/dist/index.html
-	indexHTML     embed.FS
-	distDirFS     = echo.MustSubFS(dist, "frontend/dist")
-	distIndexHtml = echo.MustSubFS(indexHTML, "frontend/dist")
+	distDirFS     = echo.MustSubFS(ragbag.FrontendDist, "frontend/dist")
+	distIndexHtml = echo.MustSubFS(ragbag.IndexHTML, "frontend/dist")
 )
 
 var (
@@ -39,10 +32,10 @@ var (
 func main() {
 	fmt.Println("version=", version)
 
-	db.OpenAndConfigure("sqlite", dbName, migrations, "resources/db/migrations/sqlite")
+	db2.OpenAndConfigure("sqlite", dbName, ragbag.Migrations, "app/resources/db/migrations/sqlite")
 
-	services := services.New(db.Queries)
-	db.InitializeAdmin(context.Background(), services)
+	services := services.New(db2.Queries)
+	db2.InitializeAdmin(context.Background(), services)
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)
@@ -53,7 +46,7 @@ func main() {
 	e.Use(middleware.CORS())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(50)))
 
-	registerHandlers(e, db.Queries, services)
+	registerHandlers(e, db2.Queries, services)
 
 	e.Logger.Fatal(e.Start(serverAddress))
 }
@@ -72,7 +65,7 @@ func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.
 	api := e.Group("/api")
 
 	// public api
-	public.RegisterHandlers(api, &handlers.PublicServerInterfaceImpl{
+	public.RegisterHandlers(api, &handlers2.PublicServerInterfaceImpl{
 		Services: services,
 		Queries:  queries,
 	})
@@ -80,10 +73,10 @@ func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.
 	// restricted api
 	restr := api.Group("")
 	restr.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		Claims:     &handlers.JwtCustomClaims{},
+		Claims:     &handlers2.JwtCustomClaims{},
 		SigningKey: []byte(jwtSecretKey),
 	}))
-	restricted.RegisterHandlers(restr, &handlers.RestrictedServerInterfaceImpl{})
+	restricted.RegisterHandlers(restr, &handlers2.RestrictedServerInterfaceImpl{})
 }
 
 func getDsn(user, password, address, database string) string {
