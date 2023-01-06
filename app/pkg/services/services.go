@@ -1,6 +1,6 @@
 package services
 
-import "github.com/Serbroda/ragbag/gen"
+import "github.com/Serbroda/ragbag/app/gen"
 
 var (
 	Service *Services

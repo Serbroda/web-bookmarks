@@ -5,7 +5,7 @@ import (
 	"embed"
 	"sync"
 
-	"github.com/Serbroda/ragbag/gen"
+	"github.com/Serbroda/ragbag/app/gen"
 )
 
 var once sync.Once

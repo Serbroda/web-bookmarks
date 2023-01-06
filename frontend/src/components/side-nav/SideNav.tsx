@@ -126,7 +126,7 @@ const SideNav = () => {
                             />)}
                         <SideNavLeftItem
                             item={{
-                                tooltip: "New Space",
+                                tooltip: "Add Space",
                                 content: <PlusIcon className="w-6 h-6 text-indigo-700"/>,
                                 active: false,
                                 onClick: () => {
@@ -160,7 +160,7 @@ const SideNav = () => {
                                 />
 
                                 <h2 className="w-full py-4 px-1 text-sm font-semibold text-gray-400">
-                                    My Groups
+                                    Groups
                                 </h2>
 
                                 {navItems.map((item, idx) => (

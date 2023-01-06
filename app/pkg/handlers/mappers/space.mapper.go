@@ -1,9 +1,9 @@
 package mappers
 
 import (
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/gen/restricted"
-	"github.com/Serbroda/ragbag/pkg/utils"
+	"github.com/Serbroda/ragbag/app/gen"
+	"github.com/Serbroda/ragbag/app/gen/restricted"
+	"github.com/Serbroda/ragbag/app/pkg/utils"
 )
 
 func MapSpace(space gen.Space) restricted.SpaceDto {

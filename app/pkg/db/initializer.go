@@ -2,8 +2,9 @@ package db
 
 import (
 	"context"
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/pkg/services"
+	"fmt"
+	"github.com/Serbroda/ragbag/app/gen"
+	"github.com/Serbroda/ragbag/app/pkg/services"
 	"github.com/teris-io/shortid"
 	"log"
 	"os"
@@ -57,7 +58,7 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 
 	defer file.Close()
 
-	_, err = file.WriteString(shortId)
+	_, err = file.WriteString(fmt.Sprintf("%s\n", shortId))
 	if err != nil {
 		panic(err.Error())
 	}

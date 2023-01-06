@@ -38,10 +38,3 @@ SET updated_at = CURRENT_TIMESTAMP,
     description = COALESCE(?, description),
     visibility = COALESCE(?, visibility)
 WHERE id = ?;
--- name: InsertUserPage :exec
-INSERT INTO users_pages (user_id, page_id, role_id, created_at)
-VALUES(?, ?, ?, CURRENT_TIMESTAMP);
--- name: DeleteUserPage :exec
-DELETE FROM users_pages
-WHERE user_id = ?
-    AND page_id = ?;

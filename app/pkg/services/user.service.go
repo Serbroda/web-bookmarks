@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/Serbroda/ragbag/app/pkg/utils"
 	"regexp"
 	"time"
 
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/pkg/utils"
+	"github.com/Serbroda/ragbag/app/gen"
 	"github.com/teris-io/shortid"
 )
 

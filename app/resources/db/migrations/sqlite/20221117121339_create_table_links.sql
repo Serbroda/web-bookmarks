@@ -11,7 +11,6 @@ CREATE TABLE links
     name        TEXT,
     url         TEXT    NOT NULL,
     description TEXT,
-    visibility  TEXT,
     UNIQUE (short_id),
     FOREIGN KEY (page_id) REFERENCES pages (id)
 );

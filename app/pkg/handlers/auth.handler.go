@@ -2,25 +2,25 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/Serbroda/ragbag/app/pkg/services"
+	utils2 "github.com/Serbroda/ragbag/app/pkg/utils"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Serbroda/ragbag/gen"
-	"github.com/Serbroda/ragbag/gen/public"
-	"github.com/Serbroda/ragbag/pkg/services"
-	"github.com/Serbroda/ragbag/pkg/utils"
+	"github.com/Serbroda/ragbag/app/gen"
+	"github.com/Serbroda/ragbag/app/gen/public"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 var (
-	jwtSecretKey       = utils.MustGetEnv("JWT_SECRET_KEY")
-	jwtAccessTokenExp  = utils.MustParseInt64(utils.GetEnvFallback("JWT_ACCESS_EXPIRE_MINUTES", "15"))
-	jwtRefreshTokenExp = utils.MustParseInt64(utils.GetEnvFallback("JWT_REFRESH_EXPIRE_MINUTES", "10080"))
-	baseUrl            = utils.MustGetEnv("SERVER_BASE_URL")
+	jwtSecretKey       = utils2.MustGetEnv("JWT_SECRET_KEY")
+	jwtAccessTokenExp  = utils2.MustParseInt64(utils2.GetEnvFallback("JWT_ACCESS_EXPIRE_MINUTES", "15"))
+	jwtRefreshTokenExp = utils2.MustParseInt64(utils2.GetEnvFallback("JWT_REFRESH_EXPIRE_MINUTES", "10080"))
+	baseUrl            = utils2.MustGetEnv("SERVER_BASE_URL")
 )
 
 type PublicServerInterfaceImpl struct {
@@ -74,7 +74,7 @@ func (si *PublicServerInterfaceImpl) Login(ctx echo.Context) error {
 	}
 
 	user, err := si.Services.FindUserByUsername(ctx.Request().Context(), payload.Username)
-	if err != nil || user.ID < 1 || !utils.CheckBcryptHash(payload.Password, user.Password) {
+	if err != nil || user.ID < 1 || !utils2.CheckBcryptHash(payload.Password, user.Password) {
 		return ctx.String(http.StatusBadRequest, "invalid login")
 	}
 
@@ -111,7 +111,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusConflict, "user already exists")
 	}
 
-	hashedPassword, _ := utils.HashBcrypt(payload.Password)
+	hashedPassword, _ := utils2.HashBcrypt(payload.Password)
 
 	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
 		Username:  strings.ToLower(payload.Username),
@@ -130,8 +130,8 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	err = utils.SendMailTemplate(utils.MailWithTemplate{
-		Mail: utils.Mail{
+	err = utils2.SendMailTemplate(utils2.MailWithTemplate{
+		Mail: utils2.Mail{
 			To:      []string{payload.Email},
 			Subject: "Verify your email address",
 		},
@@ -180,7 +180,7 @@ func (si *PublicServerInterfaceImpl) RefreshToken(ctx echo.Context) error {
 	}
 
 	sub := claims["sub"].(string)
-	id := utils.MustParseInt64(sub)
+	id := utils2.MustParseInt64(sub)
 	user, err := si.Queries.FindUser(ctx.Request().Context(), id)
 
 	if err != nil || user.ID < 1 || !user.Active {
@@ -226,8 +226,8 @@ func (si *PublicServerInterfaceImpl) RequestPasswordReset(ctx echo.Context) erro
 
 	token, err := si.Services.CreatePasswordResetToken(ctx.Request().Context(), user.ID)
 	if err == nil {
-		utils.SendMailTemplate(utils.MailWithTemplate{
-			Mail: utils.Mail{
+		utils2.SendMailTemplate(utils2.MailWithTemplate{
+			Mail: utils2.Mail{
 				To:      []string{payload.Email},
 				Subject: "Password reset",
 			},
@@ -261,7 +261,7 @@ func (si *PublicServerInterfaceImpl) ResetPassword(ctx echo.Context) error {
 
 	prt, err := si.Queries.FindPasswordResetCodeByEmailAndToken(ctx.Request().Context(), gen.FindPasswordResetCodeByEmailAndTokenParams{
 		Email:     payload.Email,
-		TokenHash: utils.HashSha3256(payload.Code),
+		TokenHash: utils2.HashSha3256(payload.Code),
 	})
 
 	if err != nil {

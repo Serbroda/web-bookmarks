@@ -1,10 +1,10 @@
 import create from "zustand";
-import {Admin, Record} from "pocketbase";
 import {AuthMethod} from "../services/auth/auth.service";
 import {authService} from "../services/config";
+import {UserDto} from "../gen";
 
 export type AuthenticationState = {
-    user: Admin | Record | undefined | null;
+    user: UserDto | undefined | null;
     authenticated: boolean;
     init: () => void;
     authenticate: (auth: AuthMethod) => void;
@@ -29,13 +29,13 @@ const useAuthentication = create<AuthenticationState>((set) => ({
     },
     authenticate: (auth: AuthMethod) => {
         authService.authenticate(auth)
-            .then((res) => set({user: res?.record, authenticated: res !== undefined && res !== null}))
+            .then((res) => set({user: res, authenticated: res !== undefined && res !== null}))
             .catch((err) => set({user: null, authenticated: false}));
 
     },
     authRefresh: () => {
         authService.authRefresh()
-            .then((res) => set({user: res?.record, authenticated: res !== undefined && res !== null}))
+            .then((res) => set({user: res, authenticated: res !== undefined && res !== null}))
             .catch((err) => set({user: null, authenticated: false}));
     },
     logout: () => {

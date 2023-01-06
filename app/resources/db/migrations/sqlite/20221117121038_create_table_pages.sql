@@ -20,26 +20,7 @@ CREATE TABLE pages
 );
 -- +goose StatementEnd
 
--- +goose StatementBegin
-CREATE TABLE users_pages
-(
-    user_id    INTEGER NOT NULL,
-    page_id    INTEGER NOT NULL,
-    role_id    INTEGER NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, page_id),
-    UNIQUE (user_id, page_id),
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (page_id) REFERENCES pages (id),
-    FOREIGN KEY (role_id) REFERENCES roles (id)
-);
--- +goose StatementEnd
-
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE pages;
--- +goose StatementEnd
-
--- +goose StatementBegin
-DROP TABLE users_pages;
 -- +goose StatementEnd

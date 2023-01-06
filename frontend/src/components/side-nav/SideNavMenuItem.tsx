@@ -56,8 +56,18 @@ const SideNavMenuItem: FC<{ item: SideNavMenuItemData }> = ({ item }) => {
         <Disclosure defaultOpen={hasActiveChild()}>
           {({ open }) => (
             <>
-              <div className="flex w-full items-center py-2 px-3 text-sm font-medium text-gray-600 mr-2 hover:bg-gray-100 rounded-md text-left">
-                <Link to={item.href} className="group flex flex-1">
+              <div className="flex w-full items-center p-2 text-sm font-medium text-gray-600 mr-2 hover:bg-gray-100 rounded-md text-left">
+                <Disclosure.Button className="rounded-md hover:bg-gray-200">
+                  <ChevronUpIcon
+                      className={`${
+                          open
+                              ? "rotate-180 text-gray-600"
+                              : "rotate-90 text-gray-400"
+                      } h-6 w-6`}
+                  />
+                </Disclosure.Button>
+
+                <Link to={item.href} className="group flex flex-1 ml-1">
                   {item.icon ? (
                     <span className="w-5 h-5 text-gray-400 group-hover:text-gray-700 mr-2">
                       {item.icon}
@@ -69,16 +79,6 @@ const SideNavMenuItem: FC<{ item: SideNavMenuItemData }> = ({ item }) => {
                     {item.label}
                   </span>
                 </Link>
-
-                <Disclosure.Button className="rounded-md hover:bg-gray-200">
-                  <ChevronUpIcon
-                    className={`${
-                      open
-                        ? "transform text-gray-600"
-                        : "rotate-180 text-gray-400"
-                    } h-6 w-6`}
-                  />
-                </Disclosure.Button>
               </div>
 
               <Disclosure.Panel className="ml-4">
