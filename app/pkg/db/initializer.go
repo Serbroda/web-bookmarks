@@ -12,7 +12,7 @@ const (
 	passwordFile = "adminpassword"
 )
 
-func Initialize(us UserService) {
+func Initialize(us UserService, rs RoleService) {
 	res, err := us.FindOneByUsername(admin)
 	if exists(res, err) {
 		return
@@ -21,7 +21,7 @@ func Initialize(us UserService) {
 	log.Println("Creating admin user")
 
 	pwd := shortid.MustGenerate()
-	us.CreateUser(User{
+	res, err = us.CreateUser(User{
 		Username:  admin,
 		Password:  pwd,
 		Email:     "admin@admin",
@@ -29,6 +29,14 @@ func Initialize(us UserService) {
 		FirstName: "Admin",
 		LastName:  "Admin",
 	})
+	if err != nil {
+		panic(err)
+	}
+	role, err := rs.FindRoleByName("ADMIN")
+	if err != nil {
+		panic(err)
+	}
+	err = rs.InsertUserRole(res.ID, role.ID)
 }
 
 func exists(user User, err error) bool {
