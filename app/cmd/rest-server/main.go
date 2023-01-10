@@ -8,7 +8,9 @@ import (
 	handlers2 "github.com/Serbroda/ragbag/app/pkg/handlers"
 	"github.com/Serbroda/ragbag/app/pkg/services"
 	"github.com/Serbroda/ragbag/app/pkg/utils"
+	echoSwagger "github.com/swaggo/echo-swagger"
 
+	_ "github.com/Serbroda/ragbag/app/docs"
 	"github.com/Serbroda/ragbag/app/gen"
 	"github.com/Serbroda/ragbag/app/gen/public"
 	"github.com/Serbroda/ragbag/app/gen/restricted"
@@ -29,6 +31,21 @@ var (
 	jwtSecretKey  = utils.MustGetEnv("JWT_SECRET_KEY")
 )
 
+// @title Echo Swagger Example API
+// @version 1.0
+// @description This is a sample server server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:3000
+// @BasePath /
+// @schemes http
 func main() {
 	fmt.Println("version=", version)
 
@@ -45,6 +62,7 @@ func main() {
 	//e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(50)))
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	registerHandlers(e, db2.Queries, services)
 

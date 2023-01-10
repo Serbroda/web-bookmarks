@@ -14,6 +14,9 @@ clean:
 	rm -rf frontend/dist/
 	rm -rf build/
 
+gen-echo-swagger:
+	go run github.com/swaggo/swag/cmd/swag init -g cmd/rest-server/main.go --output docs
+
 generate:
 	rm -rf ./app/gen && mkdir -p ./app/gen/public && mkdir -p ./app/gen/restricted
 	rm -rf ./frontend/src/gen && mkdir -p ./frontend/src/gen

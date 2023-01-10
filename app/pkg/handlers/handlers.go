@@ -64,8 +64,14 @@ func (si *RestrictedServerInterfaceImpl) CreateLink(ctx echo.Context, pageId res
 	panic("not implemented") // TODO: Implement
 }
 
-// List all spaces
-// (GET /spaces)
+// HealthCheck godoc
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router / [get]
 func (si *RestrictedServerInterfaceImpl) GetSpaces(ctx echo.Context) error {
 	user, err := si.getUser(ctx)
 	if err != nil {
