@@ -1,13 +1,10 @@
 package db
 
 import (
-	"context"
-	"fmt"
-	"github.com/Serbroda/ragbag/app/gen"
-	"github.com/Serbroda/ragbag/app/pkg/services"
+	. "github.com/Serbroda/ragbag/app/pkg/models"
+	. "github.com/Serbroda/ragbag/app/pkg/services"
 	"github.com/teris-io/shortid"
 	"log"
-	"os"
 )
 
 const (
@@ -15,7 +12,30 @@ const (
 	passwordFile = "adminpassword"
 )
 
-func InitializeAdmin(c context.Context, s *services.Services) {
+func Initialize(us UserService) {
+	res, err := us.FindOneByUsername(admin)
+	if exists(res, err) {
+		return
+	}
+
+	log.Println("Creating admin user")
+
+	pwd := shortid.MustGenerate()
+	us.CreateUser(User{
+		Username:  admin,
+		Password:  pwd,
+		Email:     "admin@admin",
+		Active:    true,
+		FirstName: "Admin",
+		LastName:  "Admin",
+	})
+}
+
+func exists(user User, err error) bool {
+	return user.ID > 0 && err == nil
+}
+
+/*func InitializeAdmin(c context.Context, s *services.Services) {
 	if s.ExistsUser(c, admin) {
 		return
 	}
@@ -63,3 +83,4 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 		panic(err.Error())
 	}
 }
+*/

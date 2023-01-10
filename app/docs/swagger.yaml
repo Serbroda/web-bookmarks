@@ -1,4 +1,31 @@
 basePath: /
+definitions:
+  controllers.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  controllers.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  controllers.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  controllers.RegistrationRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
 host: localhost:3000
 info:
   contact:
@@ -13,22 +40,97 @@ info:
   title: Echo Swagger Example API
   version: "1.0"
 paths:
-  /:
+  /auth/activate:
     get:
+      operationId: activateUser
+      parameters:
+      - description: code
+        in: query
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      tags:
+      - auth
+  /auth/login:
+    post:
       consumes:
-      - '*/*'
-      description: get the status of server.
+      - application/json
+      parameters:
+      - description: login body
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: Show the status of server.
+            $ref: '#/definitions/controllers.LoginResponse'
+        "400":
+          description: Bad Request
       tags:
-      - root
+      - auth
+  /auth/refresh_token:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: refresh token body
+        in: body
+        name: refreshtoken
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: registration body
+        in: body
+        name: registration
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.RegistrationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      tags:
+      - auth
+  /v1/spaces:
+    get:
+      consumes:
+      - application/json
+      description: get spaces.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: get spaces.
+      tags:
+      - spaces
 schemes:
 - http
 swagger: "2.0"

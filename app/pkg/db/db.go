@@ -1,38 +1,30 @@
 package db
 
 import (
-	"database/sql"
 	"embed"
+	"github.com/jmoiron/sqlx"
 	"sync"
-
-	"github.com/Serbroda/ragbag/app/gen"
 )
 
 var once sync.Once
 
 var (
-	Con     *sql.DB
-	Queries *gen.Queries
+	DB *sqlx.DB
 )
 
-func OpenAndConfigure(driver, source string, migrations embed.FS, migrationsDir string) {
+func OpenAndConfigure(driver, source string, migrations embed.FS, migrationsDir string) *sqlx.DB {
 	db := OpenConnection(driver, source)
-	Migrate(db, driver, migrations, migrationsDir)
-	InitQueries(db)
+	Migrate(db.DB, driver, migrations, migrationsDir)
+	return db
 }
 
-func OpenConnection(driver, source string) *sql.DB {
+func OpenConnection(driver, source string) *sqlx.DB {
 	once.Do(func() {
 		db, err := connectDatabase(driver, source)
 		if err != nil {
 			panic("Failed to open database: " + err.Error())
 		}
-		Con = db
+		DB = db
 	})
-	return Con
-}
-
-func InitQueries(db *sql.DB) *gen.Queries {
-	Queries = gen.New(db)
-	return Queries
+	return DB
 }

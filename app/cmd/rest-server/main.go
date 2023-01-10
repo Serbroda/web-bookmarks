@@ -1,19 +1,18 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/Serbroda/ragbag"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/controllers"
+	_ "github.com/Serbroda/ragbag/app/cmd/rest-server/controllers"
+	_ "github.com/Serbroda/ragbag/app/cmd/rest-server/controllers/v1"
+	v1 "github.com/Serbroda/ragbag/app/cmd/rest-server/controllers/v1"
 	db2 "github.com/Serbroda/ragbag/app/pkg/db"
-	handlers2 "github.com/Serbroda/ragbag/app/pkg/handlers"
-	"github.com/Serbroda/ragbag/app/pkg/services"
+	"github.com/Serbroda/ragbag/app/pkg/sqlx"
 	"github.com/Serbroda/ragbag/app/pkg/utils"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	_ "github.com/Serbroda/ragbag/app/docs"
-	"github.com/Serbroda/ragbag/app/gen"
-	"github.com/Serbroda/ragbag/app/gen/public"
-	"github.com/Serbroda/ragbag/app/gen/restricted"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/teris-io/shortid"
@@ -49,10 +48,12 @@ var (
 func main() {
 	fmt.Println("version=", version)
 
-	db2.OpenAndConfigure("sqlite", dbName, ragbag.Migrations, "app/resources/db/migrations/sqlite")
+	db := db2.OpenAndConfigure("sqlite", dbName, ragbag.Migrations, "app/resources/db/migrations/sqlite")
 
-	services := services.New(db2.Queries)
-	db2.InitializeAdmin(context.Background(), services)
+	/*services := services.New(db2.Queries)
+	db2.InitializeAdmin(context.Background(), services)*/
+
+	db2.Initialize(&sqlx.UserServiceSqlx{DB: db})
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)
@@ -62,16 +63,25 @@ func main() {
 	//e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(50)))
+
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	registerHandlers(e, db2.Queries, services)
+	baseurl := "/api"
+	controllers.RegisterAuthController(e, controllers.AuthController{}, baseurl)
+
+	jwtMiddleware := middleware.JWTWithConfig(middleware.JWTConfig{
+		Claims:     &controllers.JwtCustomClaims{},
+		SigningKey: []byte(jwtSecretKey),
+	})
+	v1.RegisterSpaceController(e, v1.SpaceController{}, baseurl, jwtMiddleware)
+	//registerHandlers(e, db2.Queries, services)
 
 	e.Logger.Fatal(e.Start(serverAddress))
 }
 
-func registerHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
+func registerHandlers(e *echo.Echo) {
 	registerStaticHandlers(e)
-	registerApiHandlers(e, queries, services)
+	//registerApiHandlers(e, queries, services)
 }
 
 func registerStaticHandlers(e *echo.Echo) {
@@ -79,7 +89,7 @@ func registerStaticHandlers(e *echo.Echo) {
 	e.FileFS("/", "index.html", distIndexHtml)
 }
 
-func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
+/*func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
 	api := e.Group("/api")
 
 	// public api
@@ -96,7 +106,4 @@ func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.
 	}))
 	restricted.RegisterHandlers(restr, &handlers2.RestrictedServerInterfaceImpl{})
 }
-
-func getDsn(user, password, address, database string) string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", user, password, address, database)
-}
+*/

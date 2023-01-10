@@ -1,12 +1,12 @@
 package db
 
 import (
-	"database/sql"
+	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
 )
 
-func connectDatabase(driver, source string) (*sql.DB, error) {
-	db, err := sql.Open(driver, source)
+func connectDatabase(driver, source string) (*sqlx.DB, error) {
+	db, err := sqlx.Connect(driver, source)
 	if err != nil {
 		return nil, err
 	}

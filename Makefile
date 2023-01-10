@@ -1,6 +1,6 @@
 BINARY_NAME=ragbag
 BINARY_VERSION=next
-SPEC_FILE_LOCATION=./app/resources/specs/ragbag-spec-v1.yml
+SPEC_FILE_LOCATION=./app/docs/swagger.json
 
 build: clean generate
 	cd frontend && yarn install && yarn build && cd ..
@@ -14,17 +14,14 @@ clean:
 	rm -rf frontend/dist/
 	rm -rf build/
 
-gen-echo-swagger:
-	go run github.com/swaggo/swag/cmd/swag init -g cmd/rest-server/main.go --output docs
+generate: generate-swagger-docs generate-swagger-client
 
-generate:
-	rm -rf ./app/gen && mkdir -p ./app/gen/public && mkdir -p ./app/gen/restricted
-	rm -rf ./frontend/src/gen && mkdir -p ./frontend/src/gen
-	cd ./app/resources/db && sqlc generate && cd ../..
-	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate \
-		-i "/local/${SPEC_FILE_LOCATION}"
-	oapi-codegen -generate types,server -include-tags="auth" -package public ${SPEC_FILE_LOCATION} > ./app/gen/public/public.gen.go
-	oapi-codegen -generate types,server -exclude-tags="auth" -package restricted ${SPEC_FILE_LOCATION} > ./app/gen/restricted/restricted.gen.go
+generate-swagger-docs:
+	echo generating swagger docs
+	swag init -g app/cmd/rest-server/main.go --output app/docs
+
+generate-swagger-client:
+	echo generating swagger client
 	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
 		-i "/local/${SPEC_FILE_LOCATION}" \
 		-g typescript-fetch \
