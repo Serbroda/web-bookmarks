@@ -2,12 +2,11 @@ package services
 
 import (
 	"context"
-
-	"github.com/Serbroda/ragbag/app/gen"
+	"github.com/Serbroda/ragbag/app/pkg/sqlc"
 )
 
-func (s *Services) FindRolesByNamesIn(ctx context.Context, roles []string) []gen.Role {
-	var result []gen.Role
+func (s *Services) FindRolesByNamesIn(ctx context.Context, roles []string) []sqlc.Role {
+	var result []sqlc.Role
 	for _, r := range roles {
 		res, err := s.Queries.FindRoleByName(ctx, r)
 		if err == nil && res.ID > 0 {

@@ -1,6 +1,7 @@
 BINARY_NAME=ragbag
 BINARY_VERSION=next
 SPEC_FILE_LOCATION=./app/resources/specs/ragbag-spec-v1.yml
+SWAGGER_SERVER_TARGET_DIR=./app/cmd/rest-server/handlers
 
 build: clean generate
 	cd frontend && yarn install && yarn build && cd ..
@@ -14,16 +15,28 @@ clean:
 	rm -rf frontend/dist/
 	rm -rf build/
 
-generate:
-	rm -rf ./app/gen && mkdir -p ./app/gen/public && mkdir -p ./app/gen/restricted
-	rm -rf ./frontend/src/gen && mkdir -p ./frontend/src/gen
+generate: generate-sqlc generate-swagger-server generate-swagger-client
+
+
+generate-sqlc:
+	rm -rf ./app/sqlc
 	cd ./app/resources/db && sqlc generate && cd ../..
-	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate \
-		-i "/local/${SPEC_FILE_LOCATION}"
-	oapi-codegen -generate types,server -include-tags="auth" -package public ${SPEC_FILE_LOCATION} > ./app/gen/public/public.gen.go
-	oapi-codegen -generate types,server -exclude-tags="auth" -package restricted ${SPEC_FILE_LOCATION} > ./app/gen/restricted/restricted.gen.go
+
+generate-swagger-server: validate-swagger
+	mkdir -p ${SWAGGER_SERVER_TARGET_DIR}/public
+	mkdir -p ${SWAGGER_SERVER_TARGET_DIR}/restricted
+	oapi-codegen -generate types,server -include-tags="auth" -package public \
+		${SPEC_FILE_LOCATION} > ${SWAGGER_SERVER_TARGET_DIR}/public/gen.go
+	oapi-codegen -generate types,server -exclude-tags="auth" -package restricted \
+		${SPEC_FILE_LOCATION} > ${SWAGGER_SERVER_TARGET_DIR}/restricted/gen.go
+
+generate-swagger-client: validate-swagger
 	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli generate \
 		-i "/local/${SPEC_FILE_LOCATION}" \
 		-g typescript-fetch \
 		--additional-properties=typescriptThreePlus=true \
 		-o "/local/frontend/src/gen"
+
+validate-swagger:
+	docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate \
+		-i "/local/${SPEC_FILE_LOCATION}"

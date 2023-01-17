@@ -1,16 +1,16 @@
 package services
 
-import "github.com/Serbroda/ragbag/app/gen"
+import . "github.com/Serbroda/ragbag/app/pkg/sqlc"
 
 var (
 	Service *Services
 )
 
 type Services struct {
-	Queries *gen.Queries
+	Queries *Queries
 }
 
-func New(q *gen.Queries) *Services {
+func NewServices(q *Queries) *Services {
 	Service = &Services{
 		Queries: q,
 	}

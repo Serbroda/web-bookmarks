@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/Serbroda/ragbag/app/pkg/sqlc"
 	"github.com/Serbroda/ragbag/app/pkg/utils"
 	"regexp"
 	"time"
 
-	"github.com/Serbroda/ragbag/app/gen"
 	"github.com/teris-io/shortid"
 )
 
@@ -25,29 +25,29 @@ func (s *Services) ExistsUser(ctx context.Context, username string) bool {
 	return err == nil
 }
 
-func (s *Services) FindUser(ctx context.Context, id int64) (gen.User, error) {
+func (s *Services) FindUser(ctx context.Context, id int64) (sqlc.User, error) {
 	user, err := s.Queries.FindUser(ctx, id)
 	if err != nil || user.ID < 1 {
-		return gen.User{}, ErrUserNotFound
+		return sqlc.User{}, ErrUserNotFound
 	}
 	return user, nil
 }
 
-func (s *Services) FindUserByUsername(ctx context.Context, username string) (gen.User, error) {
+func (s *Services) FindUserByUsername(ctx context.Context, username string) (sqlc.User, error) {
 	user, err := s.Queries.FindUserByUsername(ctx, username)
 	if err != nil || user.ID < 1 {
-		return gen.User{}, ErrUserNotFound
+		return sqlc.User{}, ErrUserNotFound
 	}
 	return user, nil
 }
 
-func (s *Services) CreateUser(ctx context.Context, arg gen.CreateUserParams) (gen.User, error) {
+func (s *Services) CreateUser(ctx context.Context, arg sqlc.CreateUserParams) (sqlc.User, error) {
 	return s.CreateUserWithRoles(ctx, arg, []string{})
 }
 
-func (s *Services) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserParams, roles []string) (gen.User, error) {
+func (s *Services) CreateUserWithRoles(ctx context.Context, arg sqlc.CreateUserParams, roles []string) (sqlc.User, error) {
 	if s.ExistsUser(ctx, arg.Username) {
-		return gen.User{}, ErrUserAlreadyExists
+		return sqlc.User{}, ErrUserAlreadyExists
 	}
 
 	if matched, _ := regexp.MatchString(`^\$2a\$14.*$`, arg.Password); !matched {
@@ -57,7 +57,7 @@ func (s *Services) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserPa
 
 	id, err := s.Queries.CreateUser(ctx, arg)
 	if err != nil {
-		return gen.User{}, err
+		return sqlc.User{}, err
 	}
 
 	if len(roles) < 1 {
@@ -66,7 +66,7 @@ func (s *Services) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserPa
 
 	for _, r := range s.FindRolesByNamesIn(ctx, roles) {
 		if !s.HasUserRole(ctx, id, r.Name) {
-			s.Queries.InsertUserRole(ctx, gen.InsertUserRoleParams{
+			s.Queries.InsertUserRole(ctx, sqlc.InsertUserRoleParams{
 				UserID: id,
 				RoleID: r.ID,
 			})
@@ -77,17 +77,17 @@ func (s *Services) CreateUserWithRoles(ctx context.Context, arg gen.CreateUserPa
 }
 
 func (s *Services) HasUserRole(ctx context.Context, id int64, role string) bool {
-	res, err := s.Queries.CountUserRole(ctx, gen.CountUserRoleParams{
+	res, err := s.Queries.CountUserRole(ctx, sqlc.CountUserRoleParams{
 		UserID: id,
 		Name:   role,
 	})
 	return err != nil && res > 0
 }
 
-func (s *Services) FindActivationToken(ctx context.Context, token string) (gen.ActivationToken, error) {
+func (s *Services) FindActivationToken(ctx context.Context, token string) (sqlc.ActivationToken, error) {
 	at, err := s.Queries.FindActivationCode(ctx, utils.HashSha3256(token))
 	if err != nil {
-		return gen.ActivationToken{}, ErrUserNotFound
+		return sqlc.ActivationToken{}, ErrUserNotFound
 	}
 	return at, nil
 }
@@ -103,7 +103,7 @@ func (s *Services) ChangePassword(ctx context.Context, userId int64, password st
 		password = pwd
 	}
 
-	err = s.Queries.UpdateUser(ctx, gen.UpdateUserParams{
+	err = s.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
 		ID:       user.ID,
 		Password: password,
 
@@ -140,7 +140,7 @@ func (s *Services) ActivateUser(ctx context.Context, token string) error {
 		return ErrActivationCodeExpired
 	}
 
-	err = s.Queries.UpdateUser(ctx, gen.UpdateUserParams{
+	err = s.Queries.UpdateUser(ctx, sqlc.UpdateUserParams{
 		ID:                    user.ID,
 		ActivationConfirmedAt: sql.NullTime{Time: time.Now(), Valid: true},
 		Active:                true,
@@ -155,7 +155,7 @@ func (s *Services) ActivateUser(ctx context.Context, token string) error {
 		return err
 	}
 
-	_, err = s.CreateSpace(ctx, gen.CreateSpaceParams{
+	_, err = s.CreateSpace(ctx, sqlc.CreateSpaceParams{
 		ShortID:    shortid.MustGenerate(),
 		OwnerID:    user.ID,
 		Name:       fmt.Sprintf("%s's Space", user.FirstName),
@@ -172,7 +172,7 @@ func (s *Services) ActivateUser(ctx context.Context, token string) error {
 func (s *Services) CreateActivationToken(ctx context.Context, userId int64) (string, error) {
 	activationToken := utils.RandomString(64)
 
-	err := s.Queries.InsertActivationToken(ctx, gen.InsertActivationTokenParams{
+	err := s.Queries.InsertActivationToken(ctx, sqlc.InsertActivationTokenParams{
 		UserID:    userId,
 		TokenHash: utils.HashSha3256(activationToken),
 		ExpiresAt: sql.NullTime{Time: time.Now().Add(time.Hour * 48), Valid: true},
@@ -188,7 +188,7 @@ func (s *Services) CreateActivationToken(ctx context.Context, userId int64) (str
 func (s *Services) CreatePasswordResetToken(ctx context.Context, userId int64) (string, error) {
 	activationToken := utils.RandomString(64)
 
-	err := s.Queries.InsertPasswordResetToken(ctx, gen.InsertPasswordResetTokenParams{
+	err := s.Queries.InsertPasswordResetToken(ctx, sqlc.InsertPasswordResetTokenParams{
 		UserID:    userId,
 		TokenHash: utils.HashSha3256(activationToken),
 		ExpiresAt: time.Now().Add(time.Hour * 4),

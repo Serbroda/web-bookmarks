@@ -1,12 +1,12 @@
 package mappers
 
 import (
-	"github.com/Serbroda/ragbag/app/gen"
-	"github.com/Serbroda/ragbag/app/gen/restricted"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/handlers/restricted"
+	"github.com/Serbroda/ragbag/app/pkg/sqlc"
 	"github.com/Serbroda/ragbag/app/pkg/utils"
 )
 
-func MapSpace(space gen.Space) restricted.SpaceDto {
+func MapSpace(space sqlc.Space) restricted.SpaceDto {
 	return restricted.SpaceDto{
 		Description: utils.NullStringToString(space.Description),
 		Id:          &space.ShortID,
@@ -16,7 +16,7 @@ func MapSpace(space gen.Space) restricted.SpaceDto {
 	}
 }
 
-func MapSpaces(spaces []gen.Space) []restricted.SpaceDto {
+func MapSpaces(spaces []sqlc.Space) []restricted.SpaceDto {
 	var dtos []restricted.SpaceDto
 	for _, s := range spaces {
 		dtos = append(dtos, MapSpace(s))
