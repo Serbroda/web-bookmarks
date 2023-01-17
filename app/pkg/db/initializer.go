@@ -3,8 +3,8 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/Serbroda/ragbag/app/gen"
 	"github.com/Serbroda/ragbag/app/pkg/services"
+	"github.com/Serbroda/ragbag/app/sqlc"
 	"github.com/teris-io/shortid"
 	"log"
 	"os"
@@ -23,7 +23,7 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 	log.Println("initializing admin user")
 	shortId := shortid.MustGenerate()
 
-	user, err := s.CreateUserWithRoles(c, gen.CreateUserParams{
+	user, err := s.CreateUserWithRoles(c, sqlc.CreateUserParams{
 		Username:  admin,
 		Password:  shortId,
 		Email:     "admin@admin",
@@ -36,7 +36,7 @@ func InitializeAdmin(c context.Context, s *services.Services) {
 		panic(err.Error())
 	}
 
-	_, err = s.CreateSpace(c, gen.CreateSpaceParams{
+	_, err = s.CreateSpace(c, sqlc.CreateSpaceParams{
 		ShortID: shortid.MustGenerate(),
 		OwnerID: user.ID,
 		Name:    "Admin's Space",

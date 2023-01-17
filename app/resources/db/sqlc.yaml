@@ -5,6 +5,6 @@ sql:
   engine: "sqlite"
   gen:
     go: 
-      package: "gen"
-      out: "../../gen"
+      package: "sqlc"
+      out: "../../sqlc"
       emit_db_tags: true

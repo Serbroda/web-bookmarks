@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/Serbroda/ragbag"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/handlers"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/handlers/public"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/handlers/restricted"
 	db2 "github.com/Serbroda/ragbag/app/pkg/db"
-	handlers2 "github.com/Serbroda/ragbag/app/pkg/handlers"
 	"github.com/Serbroda/ragbag/app/pkg/services"
 	"github.com/Serbroda/ragbag/app/pkg/utils"
+	"github.com/Serbroda/ragbag/app/sqlc"
 
-	"github.com/Serbroda/ragbag/app/gen"
-	"github.com/Serbroda/ragbag/app/gen/public"
-	"github.com/Serbroda/ragbag/app/gen/restricted"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/teris-io/shortid"
@@ -34,7 +34,7 @@ func main() {
 
 	db2.OpenAndConfigure("sqlite", dbName, ragbag.Migrations, "app/resources/db/migrations/sqlite")
 
-	services := services.New(db2.Queries)
+	services := services.NewServices(db2.Queries)
 	db2.InitializeAdmin(context.Background(), services)
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
@@ -51,7 +51,7 @@ func main() {
 	e.Logger.Fatal(e.Start(serverAddress))
 }
 
-func registerHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
+func registerHandlers(e *echo.Echo, queries *sqlc.Queries, services *services.Services) {
 	registerStaticHandlers(e)
 	registerApiHandlers(e, queries, services)
 }
@@ -61,11 +61,11 @@ func registerStaticHandlers(e *echo.Echo) {
 	e.FileFS("/", "index.html", distIndexHtml)
 }
 
-func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.Services) {
+func registerApiHandlers(e *echo.Echo, queries *sqlc.Queries, services *services.Services) {
 	api := e.Group("/api")
 
 	// public api
-	public.RegisterHandlers(api, &handlers2.PublicServerInterfaceImpl{
+	public.RegisterHandlers(api, &handlers.PublicServerInterfaceImpl{
 		Services: services,
 		Queries:  queries,
 	})
@@ -73,10 +73,10 @@ func registerApiHandlers(e *echo.Echo, queries *gen.Queries, services *services.
 	// restricted api
 	restr := api.Group("")
 	restr.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		Claims:     &handlers2.JwtCustomClaims{},
+		Claims:     &handlers.JwtCustomClaims{},
 		SigningKey: []byte(jwtSecretKey),
 	}))
-	restricted.RegisterHandlers(restr, &handlers2.RestrictedServerInterfaceImpl{})
+	restricted.RegisterHandlers(restr, &handlers.RestrictedServerInterfaceImpl{})
 }
 
 func getDsn(user, password, address, database string) string {

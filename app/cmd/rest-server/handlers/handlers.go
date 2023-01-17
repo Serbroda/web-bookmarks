@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"database/sql"
-	"github.com/Serbroda/ragbag/app/pkg/handlers/mappers"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/handlers/restricted"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/mappers"
 	services2 "github.com/Serbroda/ragbag/app/pkg/services"
 	utils2 "github.com/Serbroda/ragbag/app/pkg/utils"
+	"github.com/Serbroda/ragbag/app/sqlc"
 	"net/http"
 
-	"github.com/Serbroda/ragbag/app/gen"
-	"github.com/Serbroda/ragbag/app/gen/restricted"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
@@ -92,7 +92,7 @@ func (si *RestrictedServerInterfaceImpl) CreateSpace(ctx echo.Context) error {
 		return err
 	}
 
-	params := gen.CreateSpaceParams{
+	params := sqlc.CreateSpaceParams{
 		OwnerID:     user.ID,
 		Name:        payload.Name,
 		Description: utils2.StringToNullString(payload.Description),
@@ -152,27 +152,27 @@ func (si *RestrictedServerInterfaceImpl) CreatePage(ctx echo.Context, spaceId re
 	panic("not implemented") // TODO: Implement
 }
 
-func (si *RestrictedServerInterfaceImpl) getUser(ctx echo.Context) (gen.User, error) {
+func (si *RestrictedServerInterfaceImpl) getUser(ctx echo.Context) (sqlc.User, error) {
 	user := ctx.Get("user").(*jwt.Token)
 	if user == nil {
-		return gen.User{}, echo.ErrUnauthorized
+		return sqlc.User{}, echo.ErrUnauthorized
 	}
 
 	claims := user.Claims.(*JwtCustomClaims)
 	if claims == nil {
-		return gen.User{}, echo.ErrUnauthorized
+		return sqlc.User{}, echo.ErrUnauthorized
 	}
 
 	id, err := utils2.ParseInt64(claims.Subject)
 	if err != nil {
-		return gen.User{}, echo.ErrInternalServerError
+		return sqlc.User{}, echo.ErrInternalServerError
 	}
 	entity, err := services2.Service.FindUser(ctx.Request().Context(), id)
 	if err != nil {
 		if err == services2.ErrUserNotFound {
-			return gen.User{}, echo.ErrNotFound
+			return sqlc.User{}, echo.ErrNotFound
 		}
-		return gen.User{}, err
+		return sqlc.User{}, err
 	}
 	return entity, nil
 }

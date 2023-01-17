@@ -2,15 +2,15 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/Serbroda/ragbag/app/cmd/rest-server/handlers/public"
 	"github.com/Serbroda/ragbag/app/pkg/services"
 	utils2 "github.com/Serbroda/ragbag/app/pkg/utils"
+	"github.com/Serbroda/ragbag/app/sqlc"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Serbroda/ragbag/app/gen"
-	"github.com/Serbroda/ragbag/app/gen/public"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -25,7 +25,7 @@ var (
 
 type PublicServerInterfaceImpl struct {
 	Services *services.Services
-	Queries  *gen.Queries
+	Queries  *sqlc.Queries
 }
 
 type JwtCustomClaims struct {
@@ -34,7 +34,7 @@ type JwtCustomClaims struct {
 	jwt.StandardClaims
 }
 
-func generateTokenPair(user *gen.User) (public.TokenPairDto, error) {
+func generateTokenPair(user *sqlc.User) (public.TokenPairDto, error) {
 	userIdStr := strconv.FormatInt(user.ID, 10)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustomClaims{
@@ -113,7 +113,7 @@ func (si *PublicServerInterfaceImpl) Register(ctx echo.Context) error {
 
 	hashedPassword, _ := utils2.HashBcrypt(payload.Password)
 
-	user, err := si.Services.CreateUser(ctx.Request().Context(), gen.CreateUserParams{
+	user, err := si.Services.CreateUser(ctx.Request().Context(), sqlc.CreateUserParams{
 		Username:  strings.ToLower(payload.Username),
 		Password:  hashedPassword,
 		Email:     payload.Email,
@@ -259,7 +259,7 @@ func (si *PublicServerInterfaceImpl) ResetPassword(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	prt, err := si.Queries.FindPasswordResetCodeByEmailAndToken(ctx.Request().Context(), gen.FindPasswordResetCodeByEmailAndTokenParams{
+	prt, err := si.Queries.FindPasswordResetCodeByEmailAndToken(ctx.Request().Context(), sqlc.FindPasswordResetCodeByEmailAndTokenParams{
 		Email:     payload.Email,
 		TokenHash: utils2.HashSha3256(payload.Code),
 	})

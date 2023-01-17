@@ -3,16 +3,15 @@ package db
 import (
 	"database/sql"
 	"embed"
+	"github.com/Serbroda/ragbag/app/sqlc"
 	"sync"
-
-	"github.com/Serbroda/ragbag/app/gen"
 )
 
 var once sync.Once
 
 var (
 	Con     *sql.DB
-	Queries *gen.Queries
+	Queries *sqlc.Queries
 )
 
 func OpenAndConfigure(driver, source string, migrations embed.FS, migrationsDir string) {
@@ -32,7 +31,7 @@ func OpenConnection(driver, source string) *sql.DB {
 	return Con
 }
 
-func InitQueries(db *sql.DB) *gen.Queries {
-	Queries = gen.New(db)
+func InitQueries(db *sql.DB) *sqlc.Queries {
+	Queries = sqlc.New(db)
 	return Queries
 }
