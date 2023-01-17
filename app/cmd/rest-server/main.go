@@ -53,7 +53,7 @@ func main() {
 	/*services := services.New(db2.Queries)
 	db2.InitializeAdmin(context.Background(), services)*/
 
-	db2.Initialize(&sqlx.UserServiceSqlx{DB: db})
+	db2.Initialize(&sqlx.UserServiceSqlx{DB: db}, &sqlx.RoleServiceSqlx{DB: db})
 
 	sid, _ := shortid.New(1, shortid.DefaultABC, 2342)
 	shortid.SetDefault(sid)

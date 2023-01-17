@@ -39,6 +39,7 @@ type LoginRequest struct {
 type LoginResponse struct {
 	AccessToken  *Jwt `json:"access_token,omitempty"`
 	RefreshToken *Jwt `json:"refresh_token,omitempty"`
+	User         User `json:"user"`
 }
 
 type RegistrationRequest struct {
@@ -98,7 +99,7 @@ func (c *AuthController) Login(ctx echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param registration body RegistrationRequest true "registration body"
-// @Success 200
+// @Success 200 {object} models.User
 // @Failure 400
 // @Router /auth/register [post]
 func (c *AuthController) Register(ctx echo.Context) error {
@@ -158,7 +159,7 @@ func (c *AuthController) Register(ctx echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param refreshtoken body RefreshTokenRequest true "refresh token body"
-// @Success 200
+// @Success 200 {object} LoginResponse
 // @Failure 400
 // @Router /auth/refresh_token [post]
 func (c *AuthController) RefreshToken(ctx echo.Context) error {

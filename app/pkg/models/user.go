@@ -13,4 +13,5 @@ type User struct {
 	Email                 string     `db:"email" json:"email"`
 	Active                bool       `db:"active" json:"-"`
 	ActivationConfirmedAt *time.Time `db:"activation_confirmed_at" json:"-"`
+	Roles                 []Role     `db:"-" json:"roles"`
 }

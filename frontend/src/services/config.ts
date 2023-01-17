@@ -1,4 +1,4 @@
-import {AuthApi, Configuration, SpacesApi, UserDto} from "../gen";
+import {AuthApi, Configuration, SpacesApi, ModelsUser} from "../gen";
 import TokenMiddleware from "./middlewares/token.middleware";
 import {AuthService} from "./auth/auth.service";
 import {ApiAuthService} from "./api-auth.service";
@@ -8,14 +8,14 @@ const {VITE_BACKEND_BASE_URL} = import.meta.env;
 
 const basePath: string = VITE_BACKEND_BASE_URL || "/";
 
-const authStore = new AuthStore<UserDto>();
+const authStore = new AuthStore<ModelsUser>();
 
 const publicConfig = new Configuration({
     basePath,
 });
 
 const authApi = new AuthApi(publicConfig);
-const authService: AuthService<UserDto> = new ApiAuthService(authApi, authStore);
+const authService: AuthService<ModelsUser> = new ApiAuthService(authApi, authStore);
 
 const restrictedConfig = new Configuration({
     basePath,

@@ -8,7 +8,7 @@ import {EllipsisVerticalIcon} from "@heroicons/react/20/solid";
 import {useEffect} from "react";
 import {spacesApi} from "../services/config";
 import useAlertModal from "../stores/modals/useAlertModal";
-import {SpaceVisibility} from "../gen";
+import {} from "../gen";
 
 const GroupPage = () => {
     const {isOpen, setOpen} = useSideNav();
@@ -17,12 +17,12 @@ const GroupPage = () => {
     const {openModal} = useAlertModal();
 
     useEffect(() => {
-        const cre = async () => {
-            const res = await spacesApi.createSpace({
+        /*const cre = async () => {
+            const res = await spacesApi.v1SpacesGet({
                 createSpaceDto: {name: "Test", description: "A test space", visibility: SpaceVisibility.Private}
             })
             console.log(res)
-        }
+        }*/
         //cre()
         openModal({title: 'Lol', message: 'Create', confirmButtonMessage: 'Ok', onConfirm: () => console.log('Bla')})
     }, [])
