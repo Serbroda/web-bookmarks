@@ -7,7 +7,6 @@ import (
 	services2 "github.com/Serbroda/ragbag/app/pkg/services"
 	"github.com/Serbroda/ragbag/app/pkg/sqlc"
 	utils2 "github.com/Serbroda/ragbag/app/pkg/utils"
-	"github.com/Serbroda/ragbag/app/sqlc"
 	"net/http"
 
 	"github.com/golang-jwt/jwt"

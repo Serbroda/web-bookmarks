@@ -11,7 +11,6 @@ import (
 	"github.com/Serbroda/ragbag/app/pkg/services"
 	"github.com/Serbroda/ragbag/app/pkg/sqlc"
 	"github.com/Serbroda/ragbag/app/pkg/utils"
-	"github.com/Serbroda/ragbag/app/sqlc"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
