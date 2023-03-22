@@ -4,22 +4,23 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 
 export interface LinkItem {
   title: string;
+  url: string;
 }
 
 export interface LinkCardProps {
-  onClick: () => void;
+  onClick: (item: LinkItem) => void;
+  item: LinkItem;
 }
 
-const LinkCard: FC<LinkCardProps> = ({ onClick }) => {
+const LinkCard: FC<LinkCardProps> = ({ onClick, item }) => {
   return (
     <div
-      className="card relative w-80 bg-white p-4 invisble-hover-container hover:border-indigo-500 hover:cursor-pointer"
-      onClick={onClick}
+      className="card relative bg-white p-4 invisble-hover-container hover:border-indigo-500 hover:cursor-pointer"
+      onClick={() => onClick(item)}
     >
       <div className="leading-none">
         <span className="font-semibold line-clamp-2">
-          WebSocket Recipe | Echo - High performance, minimalist Go web
-          framework
+          {item.title}
         </span>{" "}
         <div className="text-sm flex leading-none mt-2">
           <img
@@ -27,7 +28,7 @@ const LinkCard: FC<LinkCardProps> = ({ onClick }) => {
             src="https://icons.duckduckgo.com/ip3/www.youtube.com.ico"
             alt="favicon"
           />{" "}
-          <div>www.youtube.com</div>
+          <div>{item.url}</div>
         </div>{" "}
         <i className="text-xs text-gray-500">18.10.02022, 10:48</i>
       </div>
