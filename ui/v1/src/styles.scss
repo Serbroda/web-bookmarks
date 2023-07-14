@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn {
+    @apply px-2.5 py-1.5 h-8;
+    min-height: 2rem;
+}
+
+[data-theme="light"] .btn {
+    &.btn-primary, &.btn-neutral, &.btn-secondary, &.btn-accent {
+        @apply text-white;
+    }
+  }
