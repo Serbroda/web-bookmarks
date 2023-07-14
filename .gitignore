@@ -1,37 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/go,git,node,yarn,intellij+all,visualstudiocode,angular
-# Edit at https://www.toptal.com/developers/gitignore?templates=go,git,node,yarn,intellij+all,visualstudiocode,angular
-
-### Angular ###
-## Angular ##
-# compiled output
-dist/
-tmp/
-app/**/*.js
-app/**/*.js.map
-
-# dependencies
-node_modules/
-bower_components/
-
-# IDEs and editors
-.idea/
-
-# misc
-.sass-cache/
-connect.lock/
-coverage/
-libpeerconnection.log/
-npm-debug.log
-testem.log
-typings/
-.angular/
-
-# e2e
-e2e/*.js
-e2e/*.map
-
-# System Files
-.DS_Store/
+# Created by https://www.toptal.com/developers/gitignore/api/go,git,node,yarn,intellij+all,visualstudiocode,react
+# Edit at https://www.toptal.com/developers/gitignore?templates=go,git,node,yarn,intellij+all,visualstudiocode,react
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -201,6 +169,7 @@ bower_components
 build/Release
 
 # Dependency directories
+node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -298,6 +267,19 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+### react ###
+.DS_*
+**/*.backup.*
+**/*.back.*
+
+node_modules
+
+*.sublime*
+
+psd
+thumb
+sketch
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -334,7 +316,7 @@ dist
 # and uncomment the following lines
 # .pnp.*
 
-# End of https://www.toptal.com/developers/gitignore/api/go,git,node,yarn,intellij+all,visualstudiocode,angular
+# End of https://www.toptal.com/developers/gitignore/api/go,git,node,yarn,intellij+all,visualstudiocode,react
 
 build
 *.db

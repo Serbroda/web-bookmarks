@@ -7,15 +7,15 @@ import (
 )
 
 var (
-	//go:embed v1/dist/ragbag-ui
+	//go:embed v1/dist
 	FrontendDist embed.FS
-	//go:embed v1/dist/ragbag-ui/index.html
+	//go:embed v1/dist/index.html
 	IndexHTML embed.FS
 )
 
 var (
-	distDirFS     = echo.MustSubFS(FrontendDist, "v1/dist/ragbag-ui")
-	distIndexHtml = echo.MustSubFS(IndexHTML, "v1/dist/ragbag-ui")
+	distDirFS     = echo.MustSubFS(FrontendDist, "v1/dist")
+	distIndexHtml = echo.MustSubFS(IndexHTML, "v1/dist")
 )
 
 func RegisterUi(e *echo.Echo) {
