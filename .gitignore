@@ -1,5 +1,37 @@
-# Created by https://www.toptal.com/developers/gitignore/api/git,go,svelte,node,intellij+all,visualstudiocode,yarn
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,go,svelte,node,intellij+all,visualstudiocode,yarn
+# Created by https://www.toptal.com/developers/gitignore/api/go,git,node,yarn,intellij+all,visualstudiocode,angular
+# Edit at https://www.toptal.com/developers/gitignore?templates=go,git,node,yarn,intellij+all,visualstudiocode,angular
+
+### Angular ###
+## Angular ##
+# compiled output
+dist/
+tmp/
+app/**/*.js
+app/**/*.js.map
+
+# dependencies
+node_modules/
+bower_components/
+
+# IDEs and editors
+.idea/
+
+# misc
+.sass-cache/
+connect.lock/
+coverage/
+libpeerconnection.log/
+npm-debug.log
+testem.log
+typings/
+.angular/
+
+# e2e
+e2e/*.js
+e2e/*.map
+
+# System Files
+.DS_Store/
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -38,10 +70,6 @@
 
 # Go workspace file
 go.work
-
-### Go Patch ###
-/vendor/
-/Godeps/
 
 ### Intellij+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -173,7 +201,6 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -271,13 +298,6 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-### Svelte ###
-# gitignore template for the SvelteKit, frontend web component framework
-# website: https://kit.svelte.dev/
-
-.svelte-kit/
-package
-
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -314,9 +334,8 @@ package
 # and uncomment the following lines
 # .pnp.*
 
-# End of https://www.toptal.com/developers/gitignore/api/git,go,svelte,node,intellij+all,visualstudiocode,yarn
+# End of https://www.toptal.com/developers/gitignore/api/go,git,node,yarn,intellij+all,visualstudiocode,angular
 
 build
-.vscode
+*.db
 __debug**
-ragbag.db
