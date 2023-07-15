@@ -1,24 +1,22 @@
-import HomePage from './pages/HomePage';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
-import SettingsPage from './pages/SettingsPage';
-
-const router = createHashRouter([
-  {
-    path: '/',
-    Component: HomePage,
-  },
-  {
-    path: 'settings',
-    Component: SettingsPage,
-  },
-  {
-    path: 'about',
-    element: <div>About</div>,
-  },
-]);
+import { Link, Outlet } from 'react-router-dom';
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <ol>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/settings">Settings</Link>
+        </li>
+        <li>
+          <Link to="/about">About</Link>
+        </li>
+      </ol>
+      <Outlet />
+    </>
+  );
 };
 
 export default App;
