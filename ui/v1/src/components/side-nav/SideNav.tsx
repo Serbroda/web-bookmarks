@@ -1,6 +1,6 @@
-import { Bars3Icon, BellIcon, Cog6ToothIcon, HomeIcon, XMarkIcon, NewspaperIcon } from '@heroicons/react/24/outline';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import SideNavMenuItem, { SideNavMenuItemData } from './SideNavMenuItem';
+import { Cog6ToothIcon, HomeIcon, NewspaperIcon } from '@heroicons/react/24/outline';
+import SideNavMenuItem, { SideNavMenuItemData } from '@components/side-nav/SideNavMenuItem';
+import { Link } from 'react-router-dom';
 
 const navigation = [{ name: 'Home', href: '#', icon: HomeIcon, current: true }];
 const userNavigation = [
@@ -93,15 +93,15 @@ const SideNav = () => {
             </ul>
           </li>
           <li className="mt-auto">
-            <a
-              href="#"
+            <Link
+              to="/settings"
               className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
               <Cog6ToothIcon
                 className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
                 aria-hidden="true"
               />
               Settings
-            </a>
+            </Link>
           </li>
         </ul>
       </nav>
