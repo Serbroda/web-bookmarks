@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
-import './index.css';
+import './index.scss';
 import ErrorPage from './pages/ErrorPage.tsx';
 import SettingsPage from './pages/SettingsPage.tsx';
 import HomePage from './pages/HomePage.tsx';

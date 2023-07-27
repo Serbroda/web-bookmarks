@@ -1,8 +1,9 @@
+import Layout from '../layouts/Layout';
 import LinkCard from '../components/LinkCard';
 
 const HomePage = () => {
   return (
-    <>
+    <Layout>
       <h1 className="text-xl">Home</h1>
       <LinkCard
         item={{
@@ -11,7 +12,7 @@ const HomePage = () => {
         }}
         onClick={(item) => console.log(item)}
       />
-    </>
+    </Layout>
   );
 };
 
