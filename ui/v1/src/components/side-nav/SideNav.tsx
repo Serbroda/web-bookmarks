@@ -1,16 +1,23 @@
-import { Cog6ToothIcon, HomeIcon, NewspaperIcon } from '@heroicons/react/24/outline';
-import SideNavMenuItem, { SideNavMenuItemData } from '@components/side-nav/SideNavMenuItem';
-import { Link } from 'react-router-dom';
-
-const navigation = [{ name: 'Home', href: '#', icon: HomeIcon, current: true }];
-const userNavigation = [
-  { name: 'Your profile', href: '#' },
-  { name: 'Sign out', href: '#' },
-];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
+import { Fragment, useEffect, useState } from 'react';
+import SideNavMenuItem, { SideNavMenuItemData } from './SideNavMenuItem';
+import {
+  ArrowLeftOnRectangleIcon,
+  Cog6ToothIcon,
+  FolderPlusIcon,
+  HomeIcon,
+  NewspaperIcon,
+  PencilSquareIcon,
+  PlusIcon,
+  QuestionMarkCircleIcon,
+  WrenchScrewdriverIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
+import Tippy from '@tippyjs/react';
+import Logo from '../../assets/react.svg';
+import { Dialog, Transition } from '@headlessui/react';
+import useSideNav from '../../stores/useSideNav';
+import TopNav from '../TopNav';
+import SideNavLeftItem, { SideSideBarItem } from './SideNavLeftItem';
 
 const navItems: SideNavMenuItemData[] = [
   {
@@ -47,65 +54,69 @@ const navItems: SideNavMenuItemData[] = [
   },
 ];
 
+const bottomSideDideBarItems: SideSideBarItem[] = [
+  {
+    tooltip: 'Help',
+    content: <QuestionMarkCircleIcon className="w-6 h-6 text-gray-700" />,
+    active: false,
+  },
+  {
+    tooltip: 'Settings',
+    content: <Cog6ToothIcon className="w-6 h-6 text-gray-700" />,
+    active: false,
+  },
+  {
+    tooltip: 'Logout',
+    content: <ArrowLeftOnRectangleIcon className="w-6 h-6 text-gray-700" />,
+    active: false,
+    onClick: () => console.log('logout'),
+  },
+];
+
 const SideNav = () => {
+  const [spaces, setSpaces] = useState<SideSideBarItem[]>([]);
+
+  useEffect(() => {
+    loadSpaces();
+  }, []);
+
+  const loadSpaces = async () => {
+    const result: any = [{}];
+    let items: SideSideBarItem[] = result.map((i: any) => {
+      return {
+        content: <HomeIcon className="w-6 h-6 text-gray-700" />,
+        active: false,
+        tooltip: i.name,
+      } as SideSideBarItem;
+    });
+    setSpaces(items);
+  };
+
   return (
-    <>
-      <div className="flex h-16 shrink-0 items-center">
-        <img
-          className="h-8 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-          alt="Your Company"
-        />
-      </div>
-      <nav className="flex flex-1 flex-col">
-        <ul role="list" className="flex flex-1 flex-col gap-y-7">
-          <li>
-            <ul role="list" className="-mx-2 space-y-1">
-              {navigation.map((item) => (
-                <li key={item.name}>
-                  <a
-                    href={item.href}
-                    className={classNames(
-                      item.current
-                        ? 'bg-gray-50 text-indigo-600'
-                        : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
-                      'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                    )}>
-                    <item.icon
-                      className={classNames(
-                        item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
-                        'h-6 w-6 shrink-0'
-                      )}
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </li>
-          <li>
-            <div className="text-xs font-semibold leading-6 text-gray-400">Your Links</div>
-            <ul role="list" className="-mx-2 mt-2 space-y-1">
-              {navItems.map((item) => (
-                <SideNavMenuItem item={item} />
-              ))}
-            </ul>
-          </li>
-          <li className="mt-auto">
-            <Link
-              to="/settings"
-              className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-indigo-600">
-              <Cog6ToothIcon
-                className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                aria-hidden="true"
-              />
-              Settings
-            </Link>
-          </li>
-        </ul>
+    <div className="h-full max-h-screen w-60">
+      <TopNav showMenuButton={false}>Hi</TopNav>
+
+      <nav className="flex flex-col h-[calc(100vh-3rem-3rem)] overflow-y-auto border-r">
+        <div>
+          <SideNavMenuItem
+            item={{
+              href: '/',
+              label: 'Home',
+              active: true,
+              children: [],
+              icon: <HomeIcon />,
+            }}
+          />
+
+          <h2 className="w-full py-4 text-sm font-semibold text-gray-400">Groups</h2>
+
+          {navItems.map((item, idx) => (
+            <SideNavMenuItem key={idx} item={item} />
+          ))}
+        </div>
       </nav>
-    </>
+      <footer className="h-12 border-t border-r">test</footer>
+    </div>
   );
 };
 
