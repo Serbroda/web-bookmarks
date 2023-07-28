@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { formatUrl, isValidHttpUrl } from '@utils/url.utils';
 import TopNav from '@components/TopNav';
 import { ArrowRightIcon, EllipsisVerticalIcon } from '@heroicons/react/20/solid';
+import LinkModal from '@components/modals/LinkModal';
+import useLinkModal from '@stores/modals/useLinkModal';
 
 const mockItems: LinkItem[] = [
   {
@@ -26,6 +28,7 @@ const mockItems: LinkItem[] = [
 const GroupPage = () => {
   const [search, setSearch] = useState<string>('');
   const [hasValidUrl, setHasValidUrl] = useState(false);
+  const { openModal: openLinkModal } = useLinkModal();
 
   useEffect(() => {
     setHasValidUrl(false);
@@ -72,7 +75,16 @@ const GroupPage = () => {
           {search && hasValidUrl && (
             <button
               type="submit"
-              className="btn btn-xs btn-ghost text-gray-400 hover:text-indigo-400 hover:bg-gray-50 absolute right-8 top-1 w-24">
+              className="btn btn-xs btn-ghost text-gray-400 hover:text-indigo-400 hover:bg-gray-50 absolute right-8 top-1 w-24"
+              onClick={() => {
+                openLinkModal({
+                  mode: 'new',
+                  url: search,
+                  onSave: () => {
+                    console.log('Link saved');
+                  },
+                });
+              }}>
               <span className="pr-2">Add link</span> <ArrowRightIcon className="h-4 w-4" />
             </button>
           )}
@@ -92,6 +104,8 @@ const GroupPage = () => {
             ))}
         </div>
       </div>
+
+      <LinkModal />
     </>
   );
 };
