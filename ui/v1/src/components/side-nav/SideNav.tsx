@@ -74,49 +74,110 @@ const bottomSideDideBarItems: SideSideBarItem[] = [
 ];
 
 const SideNav = () => {
-  const [spaces, setSpaces] = useState<SideSideBarItem[]>([]);
-
-  useEffect(() => {
-    loadSpaces();
-  }, []);
-
-  const loadSpaces = async () => {
-    const result: any = [{}];
-    let items: SideSideBarItem[] = result.map((i: any) => {
-      return {
-        content: <HomeIcon className="w-6 h-6 text-gray-700" />,
-        active: false,
-        tooltip: i.name,
-      } as SideSideBarItem;
-    });
-    setSpaces(items);
-  };
+  const { isOpen, setOpen } = useSideNav();
 
   return (
-    <div className="h-full max-h-screen w-60">
-      <TopNav showMenuButton={false}>Hi</TopNav>
+    <>
+      <Transition.Root show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-40 md:hidden" onClose={setOpen}>
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
+          </Transition.Child>
 
-      <nav className="flex flex-col h-[calc(100vh-3rem-3rem)] overflow-y-auto border-r">
-        <div>
-          <SideNavMenuItem
-            item={{
-              href: '/',
-              label: 'Home',
-              active: true,
-              children: [],
-              icon: <HomeIcon />,
-            }}
-          />
+          <div className="fixed inset-0 z-40 flex">
+            <Transition.Child
+              as={Fragment}
+              enter="transition ease-in-out duration-300 transform"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transition ease-in-out duration-300 transform"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full">
+              <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white focus:outline-none">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-in-out duration-300"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leave="ease-in-out duration-300"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0">
+                  <div className="absolute top-0 right-0 -mr-12 pt-4">
+                    <button
+                      type="button"
+                      className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                      onClick={() => setOpen(false)}>
+                      <span className="sr-only">Close sidebar</span>
+                      <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    </button>
+                  </div>
+                </Transition.Child>
 
-          <h2 className="w-full py-4 text-sm font-semibold text-gray-400">Groups</h2>
+                <div className="h-full max-h-screen">
+                  <TopNav showMenuButton={false}>Hi</TopNav>
 
-          {navItems.map((item, idx) => (
-            <SideNavMenuItem key={idx} item={item} />
-          ))}
-        </div>
-      </nav>
-      <footer className="h-12 border-t border-r">test</footer>
-    </div>
+                  <nav className="flex flex-col h-[calc(100vh-3rem-3rem)] overflow-y-auto border-r">
+                    <div className="p-3">
+                      <SideNavMenuItem
+                        item={{
+                          href: '/',
+                          label: 'Home',
+                          active: true,
+                          children: [],
+                          icon: <HomeIcon />,
+                        }}
+                      />
+
+                      <h2 className="w-full py-4 text-sm font-semibold text-gray-400">Groups</h2>
+
+                      {navItems.map((item, idx) => (
+                        <SideNavMenuItem key={idx} item={item} />
+                      ))}
+                    </div>
+                  </nav>
+                  <footer className="h-12 border-t border-r">test</footer>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+            <div className="w-14 flex-shrink-0" aria-hidden="true">
+              {/* Force sidebar to shrink to fit close icon */}
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      <div className="h-full max-h-screen hidden md:block w-60">
+        <TopNav showMenuButton={false}>Hi</TopNav>
+
+        <nav className="flex flex-col h-[calc(100vh-3rem-3rem)] overflow-y-auto border-r">
+          <div className="p-3">
+            <SideNavMenuItem
+              item={{
+                href: '/',
+                label: 'Home',
+                active: true,
+                children: [],
+                icon: <HomeIcon />,
+              }}
+            />
+
+            <h2 className="w-full py-4 text-sm font-semibold text-gray-400">Groups</h2>
+
+            {navItems.map((item, idx) => (
+              <SideNavMenuItem key={idx} item={item} />
+            ))}
+          </div>
+        </nav>
+        <footer className="h-12 border-t border-r">test</footer>
+      </div>
+    </>
   );
 };
 

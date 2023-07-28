@@ -106,3 +106,13 @@
     @apply border-2 border-transparent drop-shadow rounded-xl p-2;
   }
 }
+
+.invisble-hover-container:hover .invisble-hover-item {
+  visibility: visible;
+}
+
+@media (hover: hover) {
+  .invisble-hover-item {
+    visibility: hidden;
+  }
+}

@@ -22,7 +22,7 @@ const TopNav: FC<TopNavProps> = ({
       <div className={`mx-auto max-w-7xl ${containerClassNames}`}>
         <div className="relative flex h-12 items-center justify-between">
           {showMenuButton && (
-            <div className="inset-y-0 left-0 flex items-center sm:hidden">
+            <div className="inset-y-0 left-0 flex items-center md:hidden">
               <button type="button" className="inline-flex btn btn-ghost" onClick={toggle}>
                 <span className="sr-only">Open main menu</span>
                 <Bars3Icon className="w-5 h-5" />
