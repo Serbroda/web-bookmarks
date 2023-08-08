@@ -11,6 +11,10 @@ build-go-server:
 	GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=$(BINARY_VERSION)" -o build/${BINARY_NAME}-windows-amd64.exe ${SERVER_MAIN}
 	GOOS=linux GOARCH=arm GOARM=7 go build -ldflags "-X main.version=$(VERSION)" -o build/${BINARY_NAME}-linux-arm ${SERVER_MAIN}
 
+generate-sqlc:
+	rm -rf ./pkg/sqlc
+	cd ./pkg/db && sqlc generate && cd ../..
+
 build-angular:
 	cd "$(ANGULAR_DIR)" && npm install && npm run build
 
