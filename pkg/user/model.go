@@ -3,8 +3,13 @@ package user
 import "github.com/Serbroda/ragbag/pkg/sqlc"
 
 type User struct {
-	ID    int64 `json:"id"`
-	Roles []Role
+	ID        int64  `json:"id"`
+	Username  string `json:"username"`
+	Password  string `json:"-"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Roles     []Role `json:"roles,omitempty"`
 }
 
 type Role struct {
@@ -14,13 +19,19 @@ type Role struct {
 
 func MapUser(entity sqlc.User) User {
 	return User{
-		ID: entity.ID,
+		ID:        entity.ID,
+		Username:  entity.Username,
+		Password:  entity.Password,
+		Email:     entity.Email,
+		FirstName: entity.FirstName.String,
+		LastName:  entity.LastName.String,
 	}
 }
 
 func MapRole(entity sqlc.Role) Role {
 	return Role{
-		ID: entity.ID,
+		ID:   entity.ID,
+		Name: entity.Name,
 	}
 }
 

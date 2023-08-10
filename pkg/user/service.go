@@ -7,21 +7,43 @@ import (
 )
 
 type UserService interface {
-	FindOne(id int64) User
+	FindOne(ctx context.Context, id int64) (User, error)
+	FindByUsername(ctx context.Context, username string) (User, error)
+	Create(ctx context.Context) (User, error)
 }
 
 type UserServiceSqlc struct {
 	Queries *sqlc.Queries
 }
 
-func (s *UserServiceSqlc) FindOne(ctx context.Context, id int64) User {
+func (s *UserServiceSqlc) FindOne(ctx context.Context, id int64) (User, error) {
 	user, err := s.Queries.FindUser(ctx, id)
 	if err != nil {
-		return User{}
+		return User{}, err
 	}
 	u := MapUser(user)
 	s.appendRoles(ctx, &u)
-	return u
+	return u, nil
+}
+
+func (s *UserServiceSqlc) FindByUsername(ctx context.Context, username string) (User, error) {
+	user, err := s.Queries.FindUserByUsername(ctx, username)
+	if err != nil {
+		return User{}, err
+	}
+	u := MapUser(user)
+	s.appendRoles(ctx, &u)
+	return u, nil
+}
+
+func (s *UserServiceSqlc) Create(ctx context.Context) (User, error) {
+	user, err := s.Queries.FindUserByUsername(ctx, "username")
+	if err != nil {
+		return User{}, err
+	}
+	u := MapUser(user)
+	s.appendRoles(ctx, &u)
+	return u, nil
 }
 
 func (s *UserServiceSqlc) appendRoles(ctx context.Context, user *User) {
