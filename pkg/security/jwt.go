@@ -29,9 +29,11 @@ func GenerateJwtPair(user *user.User) (TokenPair, error) {
 	userIdStr := strconv.FormatInt(user.ID, 10)
 
 	accessToken, err := GenerateJwt(jwt.MapClaims{
-		"sub":  userIdStr,
-		"exp":  time.Now().Add(time.Minute * time.Duration(jwtAccessTokenExp)).Unix(),
-		"name": user.Username,
+		"sub":   userIdStr,
+		"exp":   time.Now().Add(time.Minute * time.Duration(jwtAccessTokenExp)).Unix(),
+		"iat":   time.Now().Unix(),
+		"name":  user.Username,
+		"roles": user.RolesAsStrings(),
 	})
 	if err != nil {
 		return TokenPair{}, err
@@ -40,6 +42,7 @@ func GenerateJwtPair(user *user.User) (TokenPair, error) {
 	refreshToken, err := GenerateJwt(jwt.MapClaims{
 		"sub": userIdStr,
 		"exp": time.Now().Add(time.Minute * time.Duration(jwtRefreshTokenExp)).Unix(),
+		"iat": time.Now().Unix(),
 	})
 	if err != nil {
 		return TokenPair{}, err

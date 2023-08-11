@@ -36,6 +36,14 @@ func (u *User) HasAnyRole(roles ...string) bool {
 	return false
 }
 
+func (u *User) RolesAsStrings() []string {
+	roles := []string{}
+	for _, role := range u.Roles {
+		roles = append(roles, role.Name)
+	}
+	return roles
+}
+
 func MapUser(entity sqlc.User) User {
 	return User{
 		ID:        entity.ID,
