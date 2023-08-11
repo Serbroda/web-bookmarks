@@ -1,6 +1,10 @@
 package user
 
-import "github.com/Serbroda/ragbag/pkg/sqlc"
+import (
+	"strings"
+
+	"github.com/Serbroda/ragbag/pkg/sqlc"
+)
 
 type User struct {
 	ID        int64  `json:"id"`
@@ -15,6 +19,21 @@ type User struct {
 type Role struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
+}
+
+func (u *User) IsAdmin() bool {
+	return u.HasAnyRole("admin")
+}
+
+func (u *User) HasAnyRole(roles ...string) bool {
+	for _, ur := range u.Roles {
+		for _, r := range roles {
+			if strings.EqualFold(ur.Name, r) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func MapUser(entity sqlc.User) User {

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Serbroda/ragbag/pkg/security"
 	"github.com/Serbroda/ragbag/pkg/user"
-	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -45,7 +45,7 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 	}
 
 	user, err := si.UserService.FindByUsername(ctx.Request().Context(), payload.Username)
-	if err != nil || user.ID < 1 || !utils.CheckBcryptHash(payload.Password, user.Password) {
+	if err != nil || user.ID < 1 || !security.CheckBcryptHash(payload.Password, user.Password) {
 		return ctx.String(http.StatusBadRequest, "invalid login")
 	}
 
@@ -53,7 +53,7 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "user not active")
 	}*/
 
-	tokenPair, err := utils.GenerateJwtPair(&user)
+	tokenPair, err := security.GenerateJwtPair(&user)
 
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, "failed to generate token")
@@ -68,7 +68,7 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	token, err := utils.ParseJwt(payload.RefreshToken)
+	token, err := security.ParseJwt(payload.RefreshToken)
 
 	if err != nil {
 		return middleware.ErrJWTInvalid
@@ -91,7 +91,7 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 		return echo.ErrUnauthorized
 	}
 
-	newTokenPair, err := utils.GenerateJwtPair(&user)
+	newTokenPair, err := security.GenerateJwtPair(&user)
 	if err != nil {
 		return err
 	}

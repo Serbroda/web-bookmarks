@@ -5,9 +5,9 @@ import (
 
 	"github.com/Serbroda/ragbag/cmd/server/handlers"
 	"github.com/Serbroda/ragbag/pkg/db"
+	"github.com/Serbroda/ragbag/pkg/security"
 	"github.com/Serbroda/ragbag/pkg/sqlc"
 	"github.com/Serbroda/ragbag/pkg/user"
-	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/Serbroda/ragbag/ui"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -34,10 +34,8 @@ func main() {
 	baseurl := "/api"
 	handlers.RegisterAuthHandlers(e, handlers.AuthHandler{UserService: &us}, baseurl)
 
-	jwtMiddleware := echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte(utils.JwtSecretKey),
-	})
-	handlers.RegisterUsersHandlers(e, handlers.UsersHandler{}, baseurl, jwtMiddleware)
+	jwtMiddleware := echojwt.WithConfig(security.CreateJwtConfig(&us))
+	handlers.RegisterUsersHandlers(e, handlers.UsersHandler{UserService: &us}, baseurl, jwtMiddleware)
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))
