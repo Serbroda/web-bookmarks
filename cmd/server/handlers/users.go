@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/Serbroda/ragbag/pkg/security"
-	"github.com/Serbroda/ragbag/pkg/user"
+	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/labstack/echo/v4"
 )
 
 type UsersHandler struct {
-	UserService user.UserService
+	UserService services.UserService
 }
 
 func RegisterUsersHandlers(e *echo.Echo, h UsersHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {

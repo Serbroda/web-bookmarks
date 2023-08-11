@@ -25,19 +25,6 @@ CREATE TABLE users_roles (
     FOREIGN KEY (role_id) REFERENCES roles (id)
 );
 -- +goose StatementEnd
--- +goose StatementBegin
-INSERT INTO users(created_at, username, password, email)
-VALUES(
-        CURRENT_TIMESTAMP,
-        'admin',
-        '$2a$12$AZqylyiMza5fhHFnHYYLduIZjaUYZool1mpdv3m2MixFkQb6zRtTC',
-        'test@example.com'
-    );
--- +goose StatementEnd
--- +goose StatementBegin
-INSERT INTO users_roles(user_id, role_id)
-VALUES(1, 1);
--- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE users_roles;

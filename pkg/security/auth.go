@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Serbroda/ragbag/pkg/user"
+	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -22,7 +22,7 @@ type Authentication struct {
 	Roles   []string
 }
 
-func CreateJwtConfig(userService user.UserService) echojwt.Config {
+func CreateJwtConfig(userService services.UserService) echojwt.Config {
 	return echojwt.Config{
 		SigningKey: []byte(JwtSecretKey),
 		ContextKey: "token",

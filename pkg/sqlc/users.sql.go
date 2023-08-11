@@ -147,3 +147,18 @@ func (q *Queries) FindUserByUsername(ctx context.Context, lower string) (User, e
 	)
 	return i, err
 }
+
+const inserUserRole = `-- name: InserUserRole :exec
+INSERT INTO users_roles (user_id, role_id, created_at)
+VALUES (?, ?, CURRENT_TIMESTAMP)
+`
+
+type InserUserRoleParams struct {
+	UserID int64 `db:"user_id"`
+	RoleID int64 `db:"role_id"`
+}
+
+func (q *Queries) InserUserRole(ctx context.Context, arg InserUserRoleParams) error {
+	_, err := q.db.ExecContext(ctx, inserUserRole, arg.UserID, arg.RoleID)
+	return err
+}

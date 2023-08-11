@@ -9,14 +9,6 @@ CREATE TABLE roles (
     description TEXT
 );
 -- +goose StatementEnd
--- +goose StatementBegin
-INSERT INTO roles(created_at, name, description)
-VALUES(CURRENT_TIMESTAMP, 'ADMIN', 'Administrator');
--- +goose StatementEnd
--- +goose StatementBegin
-INSERT INTO roles(created_at, name, description)
-VALUES(CURRENT_TIMESTAMP, 'USER', 'User');
--- +goose StatementEnd
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE roles;

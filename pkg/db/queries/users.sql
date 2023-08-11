@@ -34,3 +34,6 @@ SELECT r.*
 from roles r
     inner join users_roles ur on ur.role_id = r.id
 where ur.user_id = ?;
+-- name: InserUserRole :exec
+INSERT INTO users_roles (user_id, role_id, created_at)
+VALUES (?, ?, CURRENT_TIMESTAMP);

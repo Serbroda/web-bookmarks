@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Serbroda/ragbag/pkg/user"
+	"github.com/Serbroda/ragbag/pkg/dtos"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -25,7 +25,7 @@ type JwtCustomClaims struct {
 	Roles string `json:"roles,omitempty"`
 }
 
-func GenerateJwtPair(user *user.User) (TokenPair, error) {
+func GenerateJwtPair(user *dtos.User) (TokenPair, error) {
 	userIdStr := strconv.FormatInt(user.ID, 10)
 
 	accessToken, err := GenerateJwt(jwt.MapClaims{

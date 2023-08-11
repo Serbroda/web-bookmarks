@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Serbroda/ragbag/pkg/security"
-	"github.com/Serbroda/ragbag/pkg/user"
+	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -27,7 +27,7 @@ type RefreshTokenRequest struct {
 }
 
 type AuthHandler struct {
-	UserService user.UserService
+	UserService services.UserService
 }
 
 func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -43,13 +43,9 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 	}
 
 	user, err := si.UserService.FindByUsername(ctx.Request().Context(), payload.Username)
-	if err != nil || user.ID < 1 || !security.CheckBcryptHash(payload.Password, user.Password) {
+	if err != nil || user.ID < 1 || !user.Active || !security.CheckBcryptHash(payload.Password, user.Password) {
 		return ctx.String(http.StatusBadRequest, "invalid login")
 	}
-
-	/*if !user.Active {
-		return ctx.String(http.StatusBadRequest, "user not active")
-	}*/
 
 	tokenPair, err := security.GenerateJwtPair(&user)
 
@@ -76,7 +72,7 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	}
 
 	user, err := si.UserService.FindOne(ctx.Request().Context(), auth.Subject)
-	if err != nil || user.ID < 1 /*|| !user.Activ*/ {
+	if err != nil || user.ID < 1 || !user.Active {
 		return echo.ErrUnauthorized
 	}
 

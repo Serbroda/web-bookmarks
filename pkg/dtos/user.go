@@ -1,4 +1,4 @@
-package user
+package dtos
 
 import (
 	"strings"
@@ -14,11 +14,7 @@ type User struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Roles     []Role `json:"roles,omitempty"`
-}
-
-type Role struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	Active    bool   `json:"-"`
 }
 
 func (u *User) IsAdmin() bool {
@@ -52,20 +48,6 @@ func MapUser(entity sqlc.User) User {
 		Email:     entity.Email,
 		FirstName: entity.FirstName.String,
 		LastName:  entity.LastName.String,
+		Active:    entity.Active,
 	}
-}
-
-func MapRole(entity sqlc.Role) Role {
-	return Role{
-		ID:   entity.ID,
-		Name: entity.Name,
-	}
-}
-
-func MapRoles(entities []sqlc.Role) []Role {
-	var roles []Role
-	for _, r := range entities {
-		roles = append(roles, MapRole(r))
-	}
-	return roles
 }
