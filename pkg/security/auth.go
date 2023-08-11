@@ -14,6 +14,7 @@ import (
 
 var (
 	ContextKeyAuthentication = "authentication"
+	RoleAdmin                = "ADMIN"
 )
 
 type Authentication struct {
@@ -32,7 +33,7 @@ func CreateJwtConfig(userService user.UserService) echojwt.Config {
 			}
 			auth, err := ParseToken(token)
 			if err != nil {
-
+				return
 			}
 			c.Set(ContextKeyAuthentication, auth)
 		},
@@ -70,8 +71,7 @@ func ParseToken(token *jwt.Token) (Authentication, error) {
 func HasAnyRoleMiddleware(roles ...string) func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			u := c.Get(ContextKeyAuthentication)
-			authentication, ok := u.(Authentication)
+			authentication, ok := c.Get(ContextKeyAuthentication).(Authentication)
 			if !ok {
 				return c.String(http.StatusUnauthorized, "Unauthorized")
 			}
@@ -83,8 +83,8 @@ func HasAnyRoleMiddleware(roles ...string) func(next echo.HandlerFunc) echo.Hand
 	}
 }
 
-func IncludesAnyRole(roles []string, role ...string) bool {
-	for _, ur := range roles {
+func IncludesAnyRole(authRoles []string, roles ...string) bool {
+	for _, ur := range authRoles {
 		for _, r := range roles {
 			if strings.EqualFold(ur, r) {
 				return true

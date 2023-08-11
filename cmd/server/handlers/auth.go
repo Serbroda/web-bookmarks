@@ -2,11 +2,9 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/Serbroda/ragbag/pkg/security"
 	"github.com/Serbroda/ragbag/pkg/user"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -69,24 +67,15 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	}
 
 	token, err := security.ParseJwt(payload.RefreshToken)
-
-	if err != nil {
+	if err != nil || !token.Valid {
 		return middleware.ErrJWTInvalid
 	}
-
-	claims, ok := token.Claims.(jwt.MapClaims)
-
-	if !ok || !token.Valid {
-		return middleware.ErrJWTInvalid
-	}
-
-	sub := claims["sub"].(string)
-	id, err := strconv.ParseInt(sub, 10, 64)
+	auth, err := security.ParseToken(token)
 	if err != nil {
-		return ctx.String(http.StatusInternalServerError, "internal server error")
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
-	user, err := si.UserService.FindOne(ctx.Request().Context(), id)
 
+	user, err := si.UserService.FindOne(ctx.Request().Context(), auth.Subject)
 	if err != nil || user.ID < 1 /*|| !user.Activ*/ {
 		return echo.ErrUnauthorized
 	}

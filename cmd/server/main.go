@@ -34,8 +34,9 @@ func main() {
 	baseurl := "/api"
 	handlers.RegisterAuthHandlers(e, handlers.AuthHandler{UserService: &us}, baseurl)
 
+	baseUrlV1 := baseurl + "/v1"
 	jwtMiddleware := echojwt.WithConfig(security.CreateJwtConfig(&us))
-	handlers.RegisterUsersHandlers(e, handlers.UsersHandler{UserService: &us}, baseurl, jwtMiddleware)
+	handlers.RegisterUsersHandlers(e, handlers.UsersHandler{UserService: &us}, baseUrlV1, jwtMiddleware)
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))
