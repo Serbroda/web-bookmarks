@@ -30,7 +30,7 @@ INSERT INTO users(created_at, username, password, email)
 VALUES(
         CURRENT_TIMESTAMP,
         'admin',
-        'passwd',
+        '$2a$12$AZqylyiMza5fhHFnHYYLduIZjaUYZool1mpdv3m2MixFkQb6zRtTC',
         'test@example.com'
     );
 -- +goose StatementEnd

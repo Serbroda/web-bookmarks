@@ -1,14 +1,15 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/Serbroda/ragbag/cmd/server/handlers"
 	"github.com/Serbroda/ragbag/pkg/db"
 	"github.com/Serbroda/ragbag/pkg/sqlc"
 	"github.com/Serbroda/ragbag/pkg/user"
+	"github.com/Serbroda/ragbag/pkg/utils"
 	"github.com/Serbroda/ragbag/ui"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -21,7 +22,6 @@ func main() {
 	queries := sqlc.New(con)
 
 	us := user.UserServiceSqlc{Queries: queries}
-	fmt.Println(us.FindOne(context.Background(), 1))
 
 	e := echo.New()
 	//e.Use(middleware.Logger())
@@ -34,10 +34,10 @@ func main() {
 	baseurl := "/api"
 	handlers.RegisterAuthHandlers(e, handlers.AuthHandler{UserService: &us}, baseurl)
 
-	/*jwtMiddleware := middleware.JWTWithConfig(middleware.JWTConfig{
-		Claims:     &controllers.JwtCustomClaims{},
-		SigningKey: []byte(jwtSecretKey),
-	})*/
+	jwtMiddleware := echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(utils.JwtSecretKey),
+	})
+	handlers.RegisterUsersHandlers(e, handlers.UsersHandler{}, baseurl, jwtMiddleware)
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))

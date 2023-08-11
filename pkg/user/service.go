@@ -9,7 +9,7 @@ import (
 type UserService interface {
 	FindOne(ctx context.Context, id int64) (User, error)
 	FindByUsername(ctx context.Context, username string) (User, error)
-	Create(ctx context.Context) (User, error)
+	Create(ctx context.Context, user sqlc.CreateUserParams) (User, error)
 }
 
 type UserServiceSqlc struct {
@@ -36,14 +36,12 @@ func (s *UserServiceSqlc) FindByUsername(ctx context.Context, username string) (
 	return u, nil
 }
 
-func (s *UserServiceSqlc) Create(ctx context.Context) (User, error) {
-	user, err := s.Queries.FindUserByUsername(ctx, "username")
+func (s *UserServiceSqlc) Create(ctx context.Context, user sqlc.CreateUserParams) (User, error) {
+	id, err := s.Queries.CreateUser(ctx, user)
 	if err != nil {
 		return User{}, err
 	}
-	u := MapUser(user)
-	s.appendRoles(ctx, &u)
-	return u, nil
+	return s.FindOne(ctx, id)
 }
 
 func (s *UserServiceSqlc) appendRoles(ctx context.Context, user *User) {

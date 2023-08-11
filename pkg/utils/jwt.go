@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/Serbroda/ragbag/pkg/user"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var (
-	jwtSecretKey       = "JWT_SECRET_KEY"
+	JwtSecretKey       = "JWT_SECRET_KEY"
 	jwtAccessTokenExp  = 15
 	jwtRefreshTokenExp = 10080
 )
@@ -23,47 +23,49 @@ type TokenPair struct {
 type JwtCustomClaims struct {
 	Name  string `json:"name,omitempty"`
 	Roles string `json:"roles,omitempty"`
-	jwt.StandardClaims
 }
 
-func GenerateTokenPair(user *user.User) (TokenPair, error) {
+func GenerateJwtPair(user *user.User) (TokenPair, error) {
 	userIdStr := strconv.FormatInt(user.ID, 10)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustomClaims{
-		Name: user.Username,
-		StandardClaims: jwt.StandardClaims{
-			Subject:   userIdStr,
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(jwtAccessTokenExp)).Unix(),
-		},
+	accessToken, err := GenerateJwt(jwt.MapClaims{
+		"sub":  userIdStr,
+		"exp":  time.Now().Add(time.Minute * time.Duration(jwtAccessTokenExp)).Unix(),
+		"name": user.Username,
 	})
-	t, err := token.SignedString([]byte(jwtSecretKey))
 	if err != nil {
 		return TokenPair{}, err
 	}
 
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &JwtCustomClaims{
-		StandardClaims: jwt.StandardClaims{
-			Subject:   userIdStr,
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(jwtRefreshTokenExp)).Unix(),
-		},
+	refreshToken, err := GenerateJwt(jwt.MapClaims{
+		"sub": userIdStr,
+		"exp": time.Now().Add(time.Minute * time.Duration(jwtRefreshTokenExp)).Unix(),
 	})
-	rt, err := refreshToken.SignedString([]byte(jwtSecretKey))
 	if err != nil {
 		return TokenPair{}, err
 	}
 
 	return TokenPair{
-		AccessToken:  &t,
-		RefreshToken: &rt,
+		AccessToken:  &accessToken,
+		RefreshToken: &refreshToken,
 	}, nil
 }
 
-func ParseToken(token string) (*jwt.Token, error) {
+func GenerateJwt(claims jwt.MapClaims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenStr, err := token.SignedString([]byte(JwtSecretKey))
+	if err != nil {
+		return "", err
+	}
+	return tokenStr, nil
+}
+
+func ParseJwt(token string) (*jwt.Token, error) {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(jwtSecretKey), nil
+		return []byte(JwtSecretKey), nil
 	})
 	return t, err
 }
