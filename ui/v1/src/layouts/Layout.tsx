@@ -1,5 +1,5 @@
 import SideNav from '@components/side-nav/SideNav';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import useSideNav from '@stores/useSideNav';
 

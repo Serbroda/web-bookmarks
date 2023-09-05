@@ -14,7 +14,7 @@ export type AlertModalState = {
     openModal: (props: AlertModalProps) => void;
 }
 
-const useAlertModal = create<AlertModalState>((set, get) => ({
+const useAlertModal = create<AlertModalState>((set) => ({
     isOpen: false,
     props: {
         title: "Confirm",

@@ -13,7 +13,7 @@ export type LinkModalState = {
   openModal: (props: LinkModalProps) => void;
 };
 
-const useLinkModal = create<LinkModalState>((set, get) => ({
+const useLinkModal = create<LinkModalState>((set) => ({
   isOpen: false,
   props: {
     mode: 'new',

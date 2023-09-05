@@ -1,5 +1,4 @@
 import TopNav from '@components/TopNav';
-import Layout from '@layouts/Layout';
 
 const HomePage = () => {
   return (

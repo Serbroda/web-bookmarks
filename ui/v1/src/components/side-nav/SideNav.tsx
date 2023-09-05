@@ -1,23 +1,13 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment } from 'react';
 import SideNavMenuItem, { SideNavMenuItemData } from './SideNavMenuItem';
 import {
-  ArrowLeftOnRectangleIcon,
-  Cog6ToothIcon,
-  FolderPlusIcon,
   HomeIcon,
   NewspaperIcon,
-  PencilSquareIcon,
-  PlusIcon,
-  QuestionMarkCircleIcon,
-  WrenchScrewdriverIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import Tippy from '@tippyjs/react';
-import Logo from '../../assets/react.svg';
 import { Dialog, Transition } from '@headlessui/react';
 import useSideNav from '../../stores/useSideNav';
 import TopNav from '../TopNav';
-import SideNavLeftItem, { SideSideBarItem } from './SideNavLeftItem';
 
 const navItems: SideNavMenuItemData[] = [
   {
@@ -54,7 +44,7 @@ const navItems: SideNavMenuItemData[] = [
   },
 ];
 
-const bottomSideDideBarItems: SideSideBarItem[] = [
+/*const bottomSideDideBarItems: SideSideBarItem[] = [
   {
     tooltip: 'Help',
     content: <QuestionMarkCircleIcon className="w-6 h-6 text-gray-700" />,
@@ -72,7 +62,7 @@ const bottomSideDideBarItems: SideSideBarItem[] = [
     onClick: () => console.log('logout'),
   },
 ];
-
+*/
 const SideNav = () => {
   const { isOpen, setOpen } = useSideNav();
 

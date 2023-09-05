@@ -1,4 +1,3 @@
-import { ExclamationTriangleIcon } from '@heroicons/react/20/solid';
 import Modal from './Modal';
 import useLinkModal from '../../stores/modals/useLinkModal';
 import useAlertModal from '../../stores/modals/useAlertModal';
