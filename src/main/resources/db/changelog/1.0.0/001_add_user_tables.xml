@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2024-04-21: create table app_user" author="drottstegge">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="app_user"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="app_user">
+            <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
+                <constraints primaryKey="true" primaryKeyName="pk_app_user_id"/>
+            </column>
+            <column name="version" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
+
+            <column name="username" type="varchar(150)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uc_app_user_username"/>
+            </column>
+            <column name="password" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-04-21: create table app_role" author="drottstegge">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="app_role"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="app_role">
+            <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
+                <constraints primaryKey="true" primaryKeyName="pk_app_role_id"/>
+            </column>
+            <column name="version" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
+
+            <column name="name" type="varchar(150)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uc_app_role_name"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-04-21: create table app_user_app_role" author="drottstegge">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="app_user_app_role"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="app_user_app_role">
+            <column name="app_user_id" type="bigint">
+                <constraints nullable="false" referencedTableName="app_user" referencedColumnNames="id"
+                             foreignKeyName="fk_app_user_app_role_app_user_id"/>
+            </column>
+            <column name="roles_id" type="bigint">
+                <constraints nullable="false" referencedTableName="app_role" referencedColumnNames="id"
+                             foreignKeyName="fk_app_user_app_role_roles_id"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="app_user_app_role" columnNames="app_user_id,roles_id"
+                             constraintName="uc_app_user_app_role_app_user_id_roles_id"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: ragbag
+  liquibase:
+    change-log: db/changelog/changelog-master.xml
+  datasource:
+    username: sa
+    password:
+    url: jdbc:h2:mem:ragbag
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    hibernate:
+      ddl-auto: validate
+logging:
+  file:
+    name: ${logging.file.path}/${spring.application.name}.log
+    path: ./target/logs
