@@ -54,7 +54,7 @@ func (s *UserServiceSqlc) Create(ctx context.Context, user CreateUser) (dtos.Use
 		}
 	}
 	for _, r := range user.Roles {
-		s.Queries.InserUserRole(ctx, sqlc.InserUserRoleParams{
+		s.Queries.InsertUserRole(ctx, sqlc.InsertUserRoleParams{
 			UserID: id,
 			RoleID: r.ID,
 		})

@@ -18,7 +18,7 @@ const TopNav: FC<TopNavProps> = ({
   const { toggle } = useSideNav();
 
   return (
-    <nav className={`sticky top-0 h-12 ${navClassNames}`}>
+    <nav className={`sticky top-0 h-12 z-10 ${navClassNames}`}>
       <div className={`mx-auto max-w-7xl ${containerClassNames}`}>
         <div className="relative flex h-12 items-center justify-between">
           {showMenuButton && (

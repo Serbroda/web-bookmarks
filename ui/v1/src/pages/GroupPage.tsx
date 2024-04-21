@@ -44,7 +44,7 @@ const GroupPage = () => {
   }, [search]);
 
   return (
-    <>
+    <div>
       <TopNav showMenuButton={true}>
         <div className="h-6 w-px mr-4 bg-gray-900/10 md:hidden" aria-hidden="true"></div>
 
@@ -106,7 +106,7 @@ const GroupPage = () => {
       </div>
 
       <LinkModal />
-    </>
+    </div>
   );
 };
 

@@ -21,3 +21,7 @@ func MapRoles(entities []sqlc.Role) []Role {
 	}
 	return roles
 }
+
+func MapMany[T any]() []T {
+
+}

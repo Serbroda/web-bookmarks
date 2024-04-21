@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/Serbroda/ragbag/pkg/security"
+	"log"
 
 	"github.com/Serbroda/ragbag/pkg/services"
 	"github.com/Serbroda/ragbag/pkg/sqlc"
@@ -37,10 +39,16 @@ func (di *DataInitializer) initializeAdminUser() {
 	if err != nil {
 		panic("failed to create admin")
 	}
+	password := security.RandomString(8)
+	passwordHashed, err := security.HashBcrypt(password)
+	if err != nil {
+		log.Fatal("failed to initialize admin user")
+	}
+	fmt.Printf("admin generated with password: %s\n", password)
 	admin, err := di.UserService.Create(context.Background(), services.CreateUser{
 		CreateUserParams: sqlc.CreateUserParams{
 			Username: "admin",
-			Password: "$2a$12$AZqylyiMza5fhHFnHYYLduIZjaUYZool1mpdv3m2MixFkQb6zRtTC",
+			Password: passwordHashed,
 			Email:    "admin@example.com",
 			Active:   true,
 		},
