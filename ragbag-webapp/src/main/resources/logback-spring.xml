@@ -63,6 +63,9 @@
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDERR"/>
+    </root>
+
+    <root level="INFO">
         <springProfile name="production">
             <appender-ref ref="LOGS"/>
         </springProfile>

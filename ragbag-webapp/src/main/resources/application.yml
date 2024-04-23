@@ -17,6 +17,8 @@ spring:
             non_contextual_creation: true
     hibernate:
       ddl-auto: validate
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
 logging:
   file:
     name: ${logging.file.path}/${spring.application.name}.log
