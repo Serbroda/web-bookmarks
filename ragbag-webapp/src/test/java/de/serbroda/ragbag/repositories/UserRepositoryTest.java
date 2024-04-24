@@ -1,6 +1,5 @@
 package de.serbroda.ragbag.repositories;
 
-import de.serbroda.ragbag.models.Role;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
 import de.serbroda.ragbag.repositories.base.TransactionalProfileSpringBootTest;
