@@ -23,3 +23,6 @@ logging:
   file:
     name: ${logging.file.path}/${spring.application.name}.log
     path: ./target/logs
+springdoc:
+  api-docs:
+    path: /api/docs
