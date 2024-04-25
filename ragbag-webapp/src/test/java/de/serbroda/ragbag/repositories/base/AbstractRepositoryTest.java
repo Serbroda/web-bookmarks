@@ -8,9 +8,11 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collections;
 
+@ActiveProfiles("test")
 public abstract class AbstractRepositoryTest<T extends BaseEntity> {
 
     protected abstract JpaRepository<T, Long> getRepository();

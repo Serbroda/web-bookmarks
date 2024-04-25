@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.*;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "TUSER")
 public class User extends AbstractBaseEntity {
 
     private String username;

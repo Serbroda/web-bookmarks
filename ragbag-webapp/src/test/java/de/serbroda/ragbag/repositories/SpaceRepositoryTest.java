@@ -1,6 +1,7 @@
 package de.serbroda.ragbag.repositories;
 
 import de.serbroda.ragbag.models.Role;
+import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
 import de.serbroda.ragbag.repositories.base.TransactionalProfileSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,34 +12,34 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @SpringBootTest
 @TransactionalProfileSpringBootTest
-public class RoleRepositoryTest extends AbstractRepositoryTest<Role> {
+public class SpaceRepositoryTest extends AbstractRepositoryTest<Space> {
 
     @Autowired
-    private RoleRepository repository;
+    private SpaceRepository repository;
 
     @Override
-    protected JpaRepository<Role, Long> getRepository() {
+    protected JpaRepository<Space, Long> getRepository() {
         return repository;
     }
 
     @Override
-    protected Role getCreateEntity() {
-        Role entity = new Role();
-        entity.setName("DUMMY");
+    protected Space getCreateEntity() {
+        Space entity = new Space();
+        entity.setName("space1");
         return entity;
     }
 
     @Override
-    protected void modifyUpdateEntity(Role entity) {
-        entity.setName("EXAMPLE");
+    protected void modifyUpdateEntity(Space entity) {
+        entity.setName("space2");
     }
 
     @Override
-    protected Example<Role> getExample() {
+    protected Example<Space> getExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-        Role entity = new Role();
-        entity.setName("DUMMY");
+        Space entity = new Space();
+        entity.setName("space1");
         return Example.of(entity, matcher);
     }
 }

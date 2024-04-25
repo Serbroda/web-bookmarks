@@ -1,6 +1,7 @@
 package de.serbroda.ragbag.repositories;
 
-import de.serbroda.ragbag.models.Role;
+import de.serbroda.ragbag.models.Group;
+import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
 import de.serbroda.ragbag.repositories.base.TransactionalProfileSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,34 +12,42 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @SpringBootTest
 @TransactionalProfileSpringBootTest
-public class RoleRepositoryTest extends AbstractRepositoryTest<Role> {
+public class GroupRepositoryTest extends AbstractRepositoryTest<Group> {
 
     @Autowired
-    private RoleRepository repository;
+    private SpaceRepository spaceRepository;
+
+    @Autowired
+    private GroupRepository repository;
 
     @Override
-    protected JpaRepository<Role, Long> getRepository() {
+    protected JpaRepository<Group, Long> getRepository() {
         return repository;
     }
 
     @Override
-    protected Role getCreateEntity() {
-        Role entity = new Role();
-        entity.setName("DUMMY");
+    protected Group getCreateEntity() {
+        Space space = new Space();
+        space.setName("space");
+        space = spaceRepository.save(space);
+
+        Group entity = new Group();
+        entity.setSpace(space);
+        entity.setName("group1");
         return entity;
     }
 
     @Override
-    protected void modifyUpdateEntity(Role entity) {
-        entity.setName("EXAMPLE");
+    protected void modifyUpdateEntity(Group entity) {
+        entity.setName("group2");
     }
 
     @Override
-    protected Example<Role> getExample() {
+    protected Example<Group> getExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-        Role entity = new Role();
-        entity.setName("DUMMY");
+        Group entity = new Group();
+        entity.setName("group1");
         return Example.of(entity, matcher);
     }
 }

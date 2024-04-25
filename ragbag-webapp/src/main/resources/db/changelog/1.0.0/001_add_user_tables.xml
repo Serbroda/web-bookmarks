@@ -5,16 +5,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2024-04-21: create table app_user" author="drottstegge">
+    <changeSet id="2024-04-21: create table TUSER" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="app_user"/>
+                <tableExists tableName="TUSER"/>
             </not>
         </preConditions>
 
-        <createTable tableName="app_user">
+        <createTable tableName="TUSER">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="pk_app_user_id"/>
+                <constraints primaryKey="true" primaryKeyName="PK_TUSER_ID"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -23,7 +23,7 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="username" type="varchar(150)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="uc_app_user_username"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="UC_TUSER_USERNAME"/>
             </column>
             <column name="password" type="varchar(60)">
                 <constraints nullable="false"/>
@@ -34,16 +34,16 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2024-04-21: create table app_role" author="drottstegge">
+    <changeSet id="2024-04-21: create table TROLE" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="app_role"/>
+                <tableExists tableName="TROLE"/>
             </not>
         </preConditions>
 
-        <createTable tableName="app_role">
+        <createTable tableName="TROLE">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="pk_app_role_id"/>
+                <constraints primaryKey="true" primaryKeyName="PK_TROLE_ID"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -52,31 +52,31 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="name" type="varchar(150)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="uc_app_role_name"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="UC_TROLE_NAME"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="2024-04-21: create table app_user_app_role" author="drottstegge">
+    <changeSet id="2024-04-21: create table TUSER_TROLE" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="app_user_app_role"/>
+                <tableExists tableName="TUSER_TROLE"/>
             </not>
         </preConditions>
 
-        <createTable tableName="app_user_app_role">
-            <column name="app_user_id" type="bigint">
-                <constraints nullable="false" referencedTableName="app_user" referencedColumnNames="id"
-                             foreignKeyName="fk_app_user_app_role_app_user_id"/>
+        <createTable tableName="TUSER_TROLE">
+            <column name="tuser_id" type="bigint">
+                <constraints nullable="false" referencedTableName="TUSER" referencedColumnNames="id"
+                             foreignKeyName="FK_TUSER_TROLE_TUSER_ID"/>
             </column>
             <column name="roles_id" type="bigint">
-                <constraints nullable="false" referencedTableName="app_role" referencedColumnNames="id"
-                             foreignKeyName="fk_app_user_app_role_roles_id"/>
+                <constraints nullable="false" referencedTableName="TROLE" referencedColumnNames="id"
+                             foreignKeyName="FK_TUSER_TROLE_ROLES_ID"/>
             </column>
         </createTable>
 
-        <addUniqueConstraint tableName="app_user_app_role" columnNames="app_user_id,roles_id"
-                             constraintName="uc_app_user_app_role_app_user_id_roles_id"/>
+        <addUniqueConstraint tableName="TUSER_TROLE" columnNames="tuser_id,roles_id"
+                             constraintName="UC_TUSER_TROLE_TUSER_ID_ROLES_ID"/>
     </changeSet>
 
 </databaseChangeLog>
