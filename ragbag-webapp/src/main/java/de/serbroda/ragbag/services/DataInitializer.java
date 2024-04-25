@@ -18,12 +18,12 @@ import java.util.Optional;
 public class DataInitializer {
 
     private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(RoleRepository roleRepository, UserService userService, PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -33,7 +33,7 @@ public class DataInitializer {
     }
 
     private void initializeAdmin() {
-        Optional<User> adminOptional = userRepository.findByUsernameIgnoreCase("admin");
+        Optional<User> adminOptional = userService.getUserByUsername("admin");
         if (adminOptional.isPresent()) {
             return;
         }
@@ -44,7 +44,7 @@ public class DataInitializer {
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode(password));
         admin.setRoles(new HashSet<>(Collections.singletonList(roleRepository.findByNameIgnoreCase(Roles.ADMIN.name()))));
-        userRepository.save(admin);
+        userService.createUser(admin);
 
         System.out.println("Initialized admin user with password: " + password);
     }
