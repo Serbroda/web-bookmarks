@@ -13,7 +13,8 @@ public class LinkService {
     private final GroupRepository groupRepository;
     private final LinkRepository linkRepository;
 
-    public LinkService(SpaceRepository spaceRepository, GroupRepository groupRepository, LinkRepository linkRepository) {
+    public LinkService(SpaceRepository spaceRepository, GroupRepository groupRepository,
+        LinkRepository linkRepository) {
         this.spaceRepository = spaceRepository;
         this.groupRepository = groupRepository;
         this.linkRepository = linkRepository;

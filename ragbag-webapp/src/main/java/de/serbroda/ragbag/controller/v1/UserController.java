@@ -5,11 +5,10 @@ import de.serbroda.ragbag.dtos.UserDto;
 import de.serbroda.ragbag.mappers.UserMapper;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.repositories.UserRepository;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")

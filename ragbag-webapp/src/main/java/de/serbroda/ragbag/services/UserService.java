@@ -1,14 +1,11 @@
 package de.serbroda.ragbag.services;
 
-import de.serbroda.ragbag.models.Role;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.repositories.UserRepository;
 import jakarta.persistence.EntityExistsException;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
-import java.util.Set;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {

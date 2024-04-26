@@ -4,15 +4,12 @@ import de.serbroda.ragbag.models.Role;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.shared.Roles;
 import de.serbroda.ragbag.repositories.RoleRepository;
-import de.serbroda.ragbag.repositories.UserRepository;
 import de.serbroda.ragbag.utils.RandomUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DataInitializer {
@@ -21,7 +18,8 @@ public class DataInitializer {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(RoleRepository roleRepository, UserService userService, PasswordEncoder passwordEncoder) {
+    public DataInitializer(RoleRepository roleRepository, UserService userService,
+        PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -43,7 +41,8 @@ public class DataInitializer {
         User admin = new User();
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode(password));
-        admin.setRoles(new HashSet<>(Collections.singletonList(roleRepository.findByNameIgnoreCase(Roles.ADMIN.name()))));
+        admin.setRoles(new HashSet<>(
+            Collections.singletonList(roleRepository.findByNameIgnoreCase(Roles.ADMIN.name()))));
         userService.createUser(admin);
 
         System.out.println("Initialized admin user with password: " + password);

@@ -1,7 +1,12 @@
 package de.serbroda.ragbag.models.base;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.Version;
 import java.util.Date;
 import java.util.Objects;
 
@@ -71,8 +76,12 @@ public abstract class AbstractBaseEntity implements BaseEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         AbstractBaseEntity that = (AbstractBaseEntity) o;
         return Objects.equals(id, that.id);
     }
