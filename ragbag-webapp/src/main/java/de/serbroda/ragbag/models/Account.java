@@ -18,13 +18,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Entity
-@Table(name = "TUSER")
-public class User extends AbstractBaseEntity {
+@Table(name = "account")
+public class Account extends AbstractBaseEntity {
 
     private String username;
     private String password;
     private boolean active = true;
-    private Set<Role> roles = new HashSet<>();
+    private Set<AccountRole> accountRoles = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,18 +58,18 @@ public class User extends AbstractBaseEntity {
     }
 
     @ManyToMany(fetch = FetchType.EAGER)
-    public Set<Role> getRoles() {
-        return roles;
+    public Set<AccountRole> getRoles() {
+        return accountRoles;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRoles(Set<AccountRole> accountRoles) {
+        this.accountRoles = accountRoles;
     }
 
     @Transient
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        for (Role r : roles) {
+        for (AccountRole r : accountRoles) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + r.getName()));
         }
         return authorities;

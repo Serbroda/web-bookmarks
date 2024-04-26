@@ -1,6 +1,6 @@
 package de.serbroda.ragbag.repositories;
 
-import de.serbroda.ragbag.models.Space;
+import de.serbroda.ragbag.models.AccountPermission;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
 import de.serbroda.ragbag.repositories.base.TransactionalProfileSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,34 +11,34 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @SpringBootTest
 @TransactionalProfileSpringBootTest
-public class SpaceRepositoryTest extends AbstractRepositoryTest<Space> {
+public class AccountPermissionRepositoryTest extends AbstractRepositoryTest<AccountPermission> {
 
     @Autowired
-    private SpaceRepository repository;
+    private AccountPermissionRepository repository;
 
     @Override
-    protected JpaRepository<Space, Long> getRepository() {
+    protected JpaRepository<AccountPermission, Long> getRepository() {
         return repository;
     }
 
     @Override
-    protected Space getCreateEntity() {
-        Space entity = new Space();
-        entity.setName("space1");
+    protected AccountPermission getCreateEntity() {
+        AccountPermission entity = new AccountPermission();
+        entity.setName("DUMMY");
         return entity;
     }
 
     @Override
-    protected void modifyUpdateEntity(Space entity) {
-        entity.setName("space2");
+    protected void modifyUpdateEntity(AccountPermission entity) {
+        entity.setName("EXAMPLE");
     }
 
     @Override
-    protected Example<Space> getExample() {
+    protected Example<AccountPermission> getExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-        Space entity = new Space();
-        entity.setName("space1");
+        AccountPermission entity = new AccountPermission();
+        entity.setName("DUMMY");
         return Example.of(entity, matcher);
     }
 }

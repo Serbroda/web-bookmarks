@@ -10,12 +10,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "TLINK")
+@Table(name = "link")
 public class Link extends AbstractBaseEntity {
 
     private String name;
     private String url;
-    private Group group;
+    private Page page;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,11 +41,11 @@ public class Link extends AbstractBaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.EAGER)
-    public Group getGroup() {
-        return group;
+    public Page getPage() {
+        return page;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setPage(Page page) {
+        this.page = page;
     }
 }

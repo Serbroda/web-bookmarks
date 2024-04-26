@@ -5,16 +5,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2024-04-21: create table TUSER" author="drottstegge">
+    <changeSet id="2024-04-21: create table account" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="TUSER"/>
+                <tableExists tableName="account"/>
             </not>
         </preConditions>
 
-        <createTable tableName="TUSER">
+        <createTable tableName="account">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="PK_TUSER_ID"/>
+                <constraints primaryKey="true" primaryKeyName="pk_account_id"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -23,7 +23,7 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="username" type="varchar(150)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="UC_TUSER_USERNAME"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="UC_ACCOUNT_USERNAME"/>
             </column>
             <column name="password" type="varchar(60)">
                 <constraints nullable="false"/>
@@ -34,16 +34,16 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2024-04-21: create table TROLE" author="drottstegge">
+    <changeSet id="2024-04-21: create table accountrole" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="TROLE"/>
+                <tableExists tableName="accountrole"/>
             </not>
         </preConditions>
 
-        <createTable tableName="TROLE">
+        <createTable tableName="accountrole">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="PK_TROLE_ID"/>
+                <constraints primaryKey="true" primaryKeyName="pk_accountrole_id"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -52,31 +52,76 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="name" type="varchar(150)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="UC_TROLE_NAME"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="uc_accountrole_name"/>
             </column>
         </createTable>
     </changeSet>
 
-    <changeSet id="2024-04-21: create table TUSER_TROLE" author="drottstegge">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="TUSER_TROLE"/>
-            </not>
-        </preConditions>
+    <changeSet id="2024-04-21: create table accountpermission" author="drottstegge">
+      <preConditions onFail="MARK_RAN">
+          <not>
+              <tableExists tableName="accountpermission"/>
+          </not>
+      </preConditions>
 
-        <createTable tableName="TUSER_TROLE">
-            <column name="tuser_id" type="bigint">
-                <constraints nullable="false" referencedTableName="TUSER" referencedColumnNames="id"
-                             foreignKeyName="FK_TUSER_TROLE_TUSER_ID"/>
-            </column>
-            <column name="roles_id" type="bigint">
-                <constraints nullable="false" referencedTableName="TROLE" referencedColumnNames="id"
-                             foreignKeyName="FK_TUSER_TROLE_ROLES_ID"/>
-            </column>
-        </createTable>
+      <createTable tableName="accountpermission">
+        <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
+          <constraints primaryKey="true" primaryKeyName="pk_accountpermission_id"/>
+        </column>
+        <column name="version" type="int" defaultValueNumeric="0">
+          <constraints nullable="false"/>
+        </column>
+        <column name="created" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
-        <addUniqueConstraint tableName="TUSER_TROLE" columnNames="tuser_id,roles_id"
-                             constraintName="UC_TUSER_TROLE_TUSER_ID_ROLES_ID"/>
+        <column name="name" type="varchar(150)">
+          <constraints nullable="false" unique="true" uniqueConstraintName="uc_accountpermission_name"/>
+        </column>
+      </createTable>
     </changeSet>
+
+  <changeSet id="2024-04-21: create table accountrole_accountpermission" author="drottstegge">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="accountrole_accountpermission"/>
+      </not>
+    </preConditions>
+
+    <createTable tableName="accountrole_accountpermission">
+      <column name="accountrole_id" type="bigint">
+        <constraints nullable="false" referencedTableName="accountrole" referencedColumnNames="id"
+          foreignKeyName="fk_accrol_accperm_role_id"/>
+      </column>
+      <column name="permissions_id" type="bigint">
+        <constraints nullable="false" referencedTableName="accountpermission" referencedColumnNames="id"
+          foreignKeyName="fk_accrol_accperm_permission_id"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint tableName="accountrole_accountpermission" columnNames="accountrole_id,permissions_id"
+      constraintName="uc_accrol_accperm_role_id_permission_id"/>
+  </changeSet>
+
+  <changeSet id="2024-04-21: create table account_accountrole" author="drottstegge">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="account_accountrole"/>
+      </not>
+    </preConditions>
+
+    <createTable tableName="account_accountrole">
+      <column name="account_id" type="bigint">
+        <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
+          foreignKeyName="fk_account_accountrole_account_id"/>
+      </column>
+      <column name="roles_id" type="bigint">
+        <constraints nullable="false" referencedTableName="accountrole" referencedColumnNames="id"
+          foreignKeyName="fk_account_accountrole_roles_id"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint tableName="account_accountrole" columnNames="account_id,roles_id"
+      constraintName="uc_account_accountrole_account_id_roles_id"/>
+  </changeSet>
 
 </databaseChangeLog>

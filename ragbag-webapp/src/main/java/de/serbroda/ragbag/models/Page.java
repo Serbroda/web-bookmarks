@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "TGROUP")
-public class Group extends AbstractBaseEntity {
+@Table(name = "page")
+public class Page extends AbstractBaseEntity {
 
     private String name;
     private Space space;
-    private Group parent;
-    private List<Group> subGroups = new ArrayList<>();
+    private Page parent;
+    private List<Page> subPages = new ArrayList<>();
     private List<Link> links = new ArrayList<>();
 
     @Id
@@ -47,24 +47,24 @@ public class Group extends AbstractBaseEntity {
     }
 
     @ManyToOne(fetch = FetchType.EAGER)
-    public Group getParent() {
+    public Page getParent() {
         return parent;
     }
 
-    public void setParent(Group parent) {
+    public void setParent(Page parent) {
         this.parent = parent;
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent")
-    public List<Group> getSubGroups() {
-        return subGroups;
+    public List<Page> getSubPages() {
+        return subPages;
     }
 
-    public void setSubGroups(List<Group> subGroups) {
-        this.subGroups = subGroups;
+    public void setSubPages(List<Page> subPages) {
+        this.subPages = subPages;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "group")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "page")
     public List<Link> getLinks() {
         return links;
     }

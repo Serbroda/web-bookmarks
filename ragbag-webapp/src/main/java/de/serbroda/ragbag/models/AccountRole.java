@@ -1,22 +1,23 @@
 package de.serbroda.ragbag.models;
 
 import de.serbroda.ragbag.models.base.AbstractBaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "space")
-public class Space extends AbstractBaseEntity {
+@Table(name = "accountrole")
+public class AccountRole extends AbstractBaseEntity {
 
     private String name;
-    private List<Page> pages = new ArrayList<>();
+    private Set<AccountPermission> permissions = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,12 +34,12 @@ public class Space extends AbstractBaseEntity {
         this.name = name;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space")
-    public List<Page> getPages() {
-        return pages;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
+    public Set<AccountPermission> getPermissions() {
+        return permissions;
     }
 
-    public void setPages(List<Page> pages) {
-        this.pages = pages;
+    public void setPermissions(Set<AccountPermission> permissions) {
+        this.permissions = permissions;
     }
 }

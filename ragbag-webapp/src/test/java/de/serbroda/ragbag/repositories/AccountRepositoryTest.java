@@ -1,6 +1,6 @@
 package de.serbroda.ragbag.repositories;
 
-import de.serbroda.ragbag.models.Role;
+import de.serbroda.ragbag.models.Account;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
 import de.serbroda.ragbag.repositories.base.TransactionalProfileSpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,34 +11,35 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @SpringBootTest
 @TransactionalProfileSpringBootTest
-public class RoleRepositoryTest extends AbstractRepositoryTest<Role> {
+public class AccountRepositoryTest extends AbstractRepositoryTest<Account> {
 
     @Autowired
-    private RoleRepository repository;
+    private AccountRepository repository;
 
     @Override
-    protected JpaRepository<Role, Long> getRepository() {
+    protected JpaRepository<Account, Long> getRepository() {
         return repository;
     }
 
     @Override
-    protected Role getCreateEntity() {
-        Role entity = new Role();
-        entity.setName("DUMMY");
+    protected Account getCreateEntity() {
+        Account entity = new Account();
+        entity.setUsername("Fritz");
+        entity.setPassword("s3cr3t");
         return entity;
     }
 
     @Override
-    protected void modifyUpdateEntity(Role entity) {
-        entity.setName("EXAMPLE");
+    protected void modifyUpdateEntity(Account entity) {
+        entity.setUsername("Max");
     }
 
     @Override
-    protected Example<Role> getExample() {
+    protected Example<Account> getExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-        Role entity = new Role();
-        entity.setName("DUMMY");
+        Account entity = new Account();
+        entity.setUsername("John");
         return Example.of(entity, matcher);
     }
 }

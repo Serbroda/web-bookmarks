@@ -5,16 +5,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2024-04-25: create table TGROUP" author="drottstegge">
+    <changeSet id="2024-04-25: create table page" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="TGROUP"/>
+                <tableExists tableName="page"/>
             </not>
         </preConditions>
 
-        <createTable tableName="TGROUP">
+        <createTable tableName="page">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="PK_TGROUP_ID"/>
+                <constraints primaryKey="true" primaryKeyName="PK_PAGE_ID"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -27,12 +27,12 @@
             </column>
 
             <column name="space_id" type="bigint">
-                <constraints nullable="false" referencedTableName="TSPACE" referencedColumnNames="id"
-                             foreignKeyName="FK_TGROUP_SPACE_ID"/>
+                <constraints nullable="false" referencedTableName="SPACE" referencedColumnNames="id"
+                             foreignKeyName="fk_page_space_id"/>
             </column>
             <column name="parent_id" type="bigint">
-                <constraints nullable="true" referencedTableName="TGROUP" referencedColumnNames="id"
-                             foreignKeyName="FK_TGROUP_PARENT_ID"/>
+                <constraints nullable="true" referencedTableName="PAGE" referencedColumnNames="id"
+                             foreignKeyName="fk_page_parent_id"/>
             </column>
         </createTable>
     </changeSet>

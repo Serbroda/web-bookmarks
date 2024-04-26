@@ -1,8 +1,8 @@
 package de.serbroda.ragbag.services;
 
+import de.serbroda.ragbag.models.Account;
 import de.serbroda.ragbag.models.Space;
-import de.serbroda.ragbag.models.User;
-import de.serbroda.ragbag.repositories.UserRepository;
+import de.serbroda.ragbag.repositories.AccountRepository;
 import jakarta.persistence.EntityExistsException;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -10,24 +10,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final LinkService linkService;
 
-    public UserService(UserRepository userRepository, LinkService linkService) {
-        this.userRepository = userRepository;
+    public UserService(AccountRepository accountRepository, LinkService linkService) {
+        this.accountRepository = accountRepository;
         this.linkService = linkService;
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsernameIgnoreCase(username);
+    public Optional<Account> getUserByUsername(String username) {
+        return accountRepository.findByUsernameIgnoreCase(username);
     }
 
-    public User createUser(User user) {
-        if (getUserByUsername(user.getUsername()).isPresent()) {
-            throw new EntityExistsException("User " + user.getUsername() + " already exists");
+    public Account createAccount(Account account) {
+        if (getUserByUsername(account.getUsername()).isPresent()) {
+            throw new EntityExistsException("User " + account.getUsername() + " already exists");
         }
 
-        User entity = userRepository.save(user);
+        Account entity = accountRepository.save(account);
 
         Space defaultSpace = new Space();
         defaultSpace.setName(entity.getUsername() + "'s Space");

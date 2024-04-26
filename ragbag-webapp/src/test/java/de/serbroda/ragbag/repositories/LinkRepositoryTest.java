@@ -1,6 +1,6 @@
 package de.serbroda.ragbag.repositories;
 
-import de.serbroda.ragbag.models.Group;
+import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.Link;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
@@ -19,7 +19,7 @@ public class LinkRepositoryTest extends AbstractRepositoryTest<Link> {
     private SpaceRepository spaceRepository;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private PageRepository pageRepository;
 
     @Autowired
     private LinkRepository repository;
@@ -35,15 +35,15 @@ public class LinkRepositoryTest extends AbstractRepositoryTest<Link> {
         space.setName("space");
         space = spaceRepository.save(space);
 
-        Group group = new Group();
-        group.setSpace(space);
-        group.setName("group");
-        group = groupRepository.save(group);
+        Page page = new Page();
+        page.setSpace(space);
+        page.setName("page");
+        page = pageRepository.save(page);
 
         Link entity = new Link();
         entity.setName("link1");
         entity.setUrl("http://example.com");
-        entity.setGroup(group);
+        entity.setPage(page);
         return entity;
     }
 

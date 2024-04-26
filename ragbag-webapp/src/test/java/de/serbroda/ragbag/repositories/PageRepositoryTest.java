@@ -1,6 +1,6 @@
 package de.serbroda.ragbag.repositories;
 
-import de.serbroda.ragbag.models.Group;
+import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
 import de.serbroda.ragbag.repositories.base.TransactionalProfileSpringBootTest;
@@ -12,42 +12,42 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @SpringBootTest
 @TransactionalProfileSpringBootTest
-public class GroupRepositoryTest extends AbstractRepositoryTest<Group> {
+public class PageRepositoryTest extends AbstractRepositoryTest<Page> {
 
     @Autowired
     private SpaceRepository spaceRepository;
 
     @Autowired
-    private GroupRepository repository;
+    private PageRepository repository;
 
     @Override
-    protected JpaRepository<Group, Long> getRepository() {
+    protected JpaRepository<Page, Long> getRepository() {
         return repository;
     }
 
     @Override
-    protected Group getCreateEntity() {
+    protected Page getCreateEntity() {
         Space space = new Space();
         space.setName("space");
         space = spaceRepository.save(space);
 
-        Group entity = new Group();
+        Page entity = new Page();
         entity.setSpace(space);
-        entity.setName("group1");
+        entity.setName("page1");
         return entity;
     }
 
     @Override
-    protected void modifyUpdateEntity(Group entity) {
-        entity.setName("group2");
+    protected void modifyUpdateEntity(Page entity) {
+        entity.setName("page2");
     }
 
     @Override
-    protected Example<Group> getExample() {
+    protected Example<Page> getExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-        Group entity = new Group();
-        entity.setName("group1");
+        Page entity = new Page();
+        entity.setName("page1");
         return Example.of(entity, matcher);
     }
 }

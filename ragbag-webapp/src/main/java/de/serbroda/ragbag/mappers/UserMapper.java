@@ -1,7 +1,7 @@
 package de.serbroda.ragbag.mappers;
 
 import de.serbroda.ragbag.dtos.UserDto;
-import de.serbroda.ragbag.models.User;
+import de.serbroda.ragbag.models.Account;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -11,7 +11,7 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    UserDto map(User user);
+    UserDto map(Account account);
 
-    List<UserDto> mapAll(List<User> users);
+    List<UserDto> mapAll(List<Account> accounts);
 }

@@ -3,8 +3,8 @@ package de.serbroda.ragbag.controller.v1;
 import de.serbroda.ragbag.controller.v1.api.UserApi;
 import de.serbroda.ragbag.dtos.UserDto;
 import de.serbroda.ragbag.mappers.UserMapper;
-import de.serbroda.ragbag.models.User;
-import de.serbroda.ragbag.repositories.UserRepository;
+import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.repositories.AccountRepository;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class UserController implements UserApi {
 
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     @Override
     public ResponseEntity<List<UserDto>> getUsers() {
-        List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(UserMapper.INSTANCE.mapAll(users));
+        List<Account> accounts = accountRepository.findAll();
+        return ResponseEntity.ok(UserMapper.INSTANCE.mapAll(accounts));
     }
 }

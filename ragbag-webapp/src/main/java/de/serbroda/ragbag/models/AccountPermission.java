@@ -8,8 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "TROLE")
-public class Role extends AbstractBaseEntity {
+@Table(name = "accountpermission")
+public class AccountPermission extends AbstractBaseEntity {
 
     private String name;
 
