@@ -22,16 +22,15 @@
             <column name="created" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
+            <column name="page_id" type="bigint">
+                <constraints nullable="false" referencedTableName="PAGE" referencedColumnNames="id"
+                  foreignKeyName="fk_link_page_id"/>
+            </column>
             <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
             <column name="url" type="varchar(max)">
                 <constraints nullable="false" />
-            </column>
-
-            <column name="page_id" type="bigint">
-                <constraints nullable="false" referencedTableName="PAGE" referencedColumnNames="id"
-                             foreignKeyName="fk_link_page_id"/>
             </column>
         </createTable>
     </changeSet>

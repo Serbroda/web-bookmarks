@@ -28,23 +28,26 @@
         </createTable>
     </changeSet>
 
-<!--    <changeSet id="2024-04-24: create table TUSER_SPACEROLE" author="drottstegge">-->
-<!--        <preConditions onFail="MARK_RAN">-->
-<!--            <not>-->
-<!--                <tableExists tableName="TUSER_SPACEROLE"/>-->
-<!--            </not>-->
-<!--        </preConditions>-->
+    <changeSet id="2024-04-21: create table space_account" author="drottstegge">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="space_account"/>
+            </not>
+        </preConditions>
 
-<!--        <createTable tableName="SPACE_TUSER">-->
-<!--            <column name="space_id" type="bigint">-->
-<!--                <constraints nullable="false" referencedTableName="SPACE" referencedColumnNames="id"-->
-<!--                  foreignKeyName="FK_SPACE_TUSER_SPACE_ID"/>-->
-<!--            </column>-->
-<!--            <column name="user_id" type="bigint">-->
-<!--                <constraints nullable="false" referencedTableName="TUSER" referencedColumnNames="id"-->
-<!--                  foreignKeyName="FK_SPACE_TUSER_USER_ID"/>-->
-<!--            </column>-->
-<!--        </createTable>-->
-<!--    </changeSet>-->
+        <createTable tableName="space_account">
+            <column name="space_id" type="bigint">
+                <constraints nullable="false" referencedTableName="space" referencedColumnNames="id"
+                  foreignKeyName="fk_space_account_space_id"/>
+            </column>
+            <column name="account_id" type="bigint">
+                <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
+                  foreignKeyName="fk_space_account_account_id"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="space_account" columnNames="space_id,account_id"
+          constraintName="uc_space_account_space_id_account_id"/>
+    </changeSet>
 
 </databaseChangeLog>

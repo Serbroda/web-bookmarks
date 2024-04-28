@@ -5,6 +5,7 @@ import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.repositories.AccountRepository;
 import jakarta.persistence.EntityExistsException;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,8 +31,9 @@ public class UserService {
         Account entity = accountRepository.save(account);
 
         Space defaultSpace = new Space();
-        defaultSpace.setName(entity.getUsername() + "'s Space");
-        defaultSpace = linkService.createSpace(defaultSpace);
+        defaultSpace.setName(
+            StringUtils.capitalize(entity.getUsername().toLowerCase()) + "'s Space");
+        linkService.createSpace(defaultSpace);
 
         return entity;
     }

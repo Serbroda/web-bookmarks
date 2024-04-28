@@ -6,6 +6,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -25,6 +27,7 @@ public class Account extends AbstractBaseEntity {
     private String password;
     private boolean active = true;
     private Set<AccountRole> accountRoles = new HashSet<>();
+    private Set<Space> spaces = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,13 +60,30 @@ public class Account extends AbstractBaseEntity {
         this.active = active;
     }
 
+    @JoinTable(name = "account_accountrole", joinColumns = {
+        @JoinColumn(name = "account_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "role_id", referencedColumnName = "id")
+    })
     @ManyToMany(fetch = FetchType.EAGER)
-    public Set<AccountRole> getRoles() {
+    public Set<AccountRole> getAccountRoles() {
         return accountRoles;
     }
 
-    public void setRoles(Set<AccountRole> accountRoles) {
+    public void setAccountRoles(Set<AccountRole> accountRoles) {
         this.accountRoles = accountRoles;
+    }
+
+    @JoinTable(name = "space_account", joinColumns = {
+        @JoinColumn(name = "account_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "space_id", referencedColumnName = "id")
+    })
+    @ManyToMany(fetch = FetchType.EAGER)
+    public Set<Space> getSpaces() {
+        return spaces;
+    }
+
+    public void setSpaces(Set<Space> spaces) {
+        this.spaces = spaces;
     }
 
     @Transient

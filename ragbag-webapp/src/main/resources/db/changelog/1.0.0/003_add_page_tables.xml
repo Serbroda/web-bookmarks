@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2024-04-25: create table page" author="drottstegge">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="page"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="page">
+            <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
+                <constraints primaryKey="true" primaryKeyName="pk_page_id"/>
+            </column>
+            <column name="version" type="int" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
+
+            <column name="space_id" type="bigint">
+                <constraints nullable="false" referencedTableName="space" referencedColumnNames="id"
+                  foreignKeyName="fk_page_space_id"/>
+            </column>
+            <column name="parent_id" type="bigint">
+                <constraints nullable="true" referencedTableName="page" referencedColumnNames="id"
+                  foreignKeyName="fk_page_parent_id"/>
+            </column>
+            <column name="name" type="varchar(150)">
+                <constraints nullable="false" />
+            </column>
+            <column name="visibility" type="varchar(80)" defaultValue="PUBLIC">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2024-04-21: create table page_account" author="drottstegge">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="page_account"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="page_account">
+            <column name="page_id" type="bigint">
+                <constraints nullable="false" referencedTableName="page" referencedColumnNames="id"
+                  foreignKeyName="fk_page_account_page_id"/>
+            </column>
+            <column name="account_id" type="bigint">
+                <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
+                  foreignKeyName="fk_page_account_accounts_id"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint tableName="page_account" columnNames="page_id,account_id"
+          constraintName="uc_page_account_page_id_account_id"/>
+    </changeSet>
+
+</databaseChangeLog>

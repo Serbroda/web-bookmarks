@@ -17,7 +17,6 @@ import java.util.Set;
 public class AccountRole extends AbstractBaseEntity {
 
     private String name;
-    private Set<AccountPermission> permissions = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,12 +33,4 @@ public class AccountRole extends AbstractBaseEntity {
         this.name = name;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
-    public Set<AccountPermission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Set<AccountPermission> permissions) {
-        this.permissions = permissions;
-    }
 }
