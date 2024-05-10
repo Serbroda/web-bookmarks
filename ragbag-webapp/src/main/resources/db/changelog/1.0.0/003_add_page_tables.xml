@@ -55,6 +55,9 @@
                 <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
                   foreignKeyName="fk_page_account_accounts_id"/>
             </column>
+            <column name="role" type="varchar(40)">
+                <constraints nullable="false" />
+            </column>
         </createTable>
 
         <addUniqueConstraint tableName="page_account" columnNames="page_id,account_id"

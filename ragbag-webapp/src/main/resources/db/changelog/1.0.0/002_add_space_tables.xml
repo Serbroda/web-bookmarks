@@ -44,6 +44,9 @@
                 <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
                   foreignKeyName="fk_space_account_account_id"/>
             </column>
+            <column name="role" type="varchar(40)">
+                <constraints nullable="false" />
+            </column>
         </createTable>
 
         <addUniqueConstraint tableName="space_account" columnNames="space_id,account_id"

@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.util.ArrayList;
@@ -27,7 +28,8 @@ public class Account extends AbstractBaseEntity {
     private String password;
     private boolean active = true;
     private Set<AccountRole> accountRoles = new HashSet<>();
-    private Set<Space> spaces = new HashSet<>();
+    private Set<SpaceAccount> spaces = new HashSet<>();
+    private Set<PageAccount> pages = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,17 +75,31 @@ public class Account extends AbstractBaseEntity {
         this.accountRoles = accountRoles;
     }
 
-    @JoinTable(name = "space_account", joinColumns = {
-        @JoinColumn(name = "account_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "space_id", referencedColumnName = "id")
-    })
-    @ManyToMany(fetch = FetchType.EAGER)
-    public Set<Space> getSpaces() {
+//    @JoinTable(name = "space_account", joinColumns = {
+//        @JoinColumn(name = "account_id", referencedColumnName = "id")}, inverseJoinColumns = {
+//        @JoinColumn(name = "space_id", referencedColumnName = "id")
+//    })
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    public Set<SpaceAccount> getSpaces() {
+//        return spaces;
+//    }
+
+    @OneToMany(mappedBy = "account")
+    public Set<SpaceAccount> getSpaces() {
         return spaces;
     }
 
-    public void setSpaces(Set<Space> spaces) {
+    public void setSpaces(Set<SpaceAccount> spaces) {
         this.spaces = spaces;
+    }
+
+    @OneToMany(mappedBy = "account")
+    public Set<PageAccount> getPages() {
+        return pages;
+    }
+
+    public void setPages(Set<PageAccount> pages) {
+        this.pages = pages;
     }
 
     @Transient

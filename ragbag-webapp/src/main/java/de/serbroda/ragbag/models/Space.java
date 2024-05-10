@@ -9,14 +9,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "space")
 public class Space extends AbstractBaseEntity {
 
     private String name;
-    private List<Page> pages = new ArrayList<>();
+    private Set<Page> pages = new HashSet<>();
+    private Set<SpaceAccount> accounts = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,11 +37,20 @@ public class Space extends AbstractBaseEntity {
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space")
-    public List<Page> getPages() {
+    public Set<Page> getPages() {
         return pages;
     }
 
-    public void setPages(List<Page> pages) {
+    public void setPages(Set<Page> pages) {
         this.pages = pages;
+    }
+
+    @OneToMany(mappedBy = "space")
+    public Set<SpaceAccount> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(Set<SpaceAccount> accounts) {
+        this.accounts = accounts;
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DataInitializer {
 
+    private static final String ADMIN_USERNAME = "admin";
+
     private final AccountRoleRepository accountRoleRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -31,7 +33,7 @@ public class DataInitializer {
     }
 
     private void initializeAdmin() {
-        Optional<Account> adminOptional = userService.getUserByUsername("admin");
+        Optional<Account> adminOptional = userService.getUserByUsername(ADMIN_USERNAME);
         if (adminOptional.isPresent()) {
             return;
         }
@@ -39,14 +41,14 @@ public class DataInitializer {
         final String password = RandomUtils.randomString(10);
 
         Account admin = new Account();
-        admin.setUsername("admin");
+        admin.setUsername(ADMIN_USERNAME);
         admin.setPassword(passwordEncoder.encode(password));
         admin.setAccountRoles(new HashSet<>(
             Collections.singletonList(
                 accountRoleRepository.findByNameIgnoreCase(AccountRoles.ADMIN.name()))));
         userService.createAccount(admin);
 
-        System.out.println("Initialized admin user with password: " + password);
+        System.out.println("Initialized '" + ADMIN_USERNAME + "' user with password: " + password);
     }
 
     private void initializeRoles() {
