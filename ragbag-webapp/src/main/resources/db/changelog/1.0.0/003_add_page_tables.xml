@@ -53,7 +53,7 @@
             </column>
             <column name="account_id" type="bigint">
                 <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
-                  foreignKeyName="fk_page_account_accounts_id"/>
+                  foreignKeyName="fk_page_account_account_id"/>
             </column>
             <column name="role" type="varchar(40)">
                 <constraints nullable="false" />

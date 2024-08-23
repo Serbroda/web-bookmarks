@@ -1,24 +1,8 @@
 package de.serbroda.ragbag.models;
 
-import de.serbroda.ragbag.models.base.AbstractBaseEntity;
 import de.serbroda.ragbag.models.keys.SpaceAccountKey;
 import de.serbroda.ragbag.models.shared.SpaceRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "space_account")

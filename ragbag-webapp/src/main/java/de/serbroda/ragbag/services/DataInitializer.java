@@ -5,11 +5,12 @@ import de.serbroda.ragbag.models.AccountRole;
 import de.serbroda.ragbag.models.shared.AccountRoles;
 import de.serbroda.ragbag.repositories.AccountRoleRepository;
 import de.serbroda.ragbag.utils.RandomUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class DataInitializer {
@@ -21,7 +22,7 @@ public class DataInitializer {
     private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(AccountRoleRepository accountRoleRepository, UserService userService,
-        PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder) {
         this.accountRoleRepository = accountRoleRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -44,8 +45,8 @@ public class DataInitializer {
         admin.setUsername(ADMIN_USERNAME);
         admin.setPassword(passwordEncoder.encode(password));
         admin.setAccountRoles(new HashSet<>(
-            Collections.singletonList(
-                accountRoleRepository.findByNameIgnoreCase(AccountRoles.ADMIN.name()))));
+                Collections.singletonList(
+                        accountRoleRepository.findByNameIgnoreCase(AccountRoles.ADMIN.name()))));
         userService.createAccount(admin);
 
         System.out.println("Initialized '" + ADMIN_USERNAME + "' user with password: " + password);

@@ -23,10 +23,10 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
-            .build();
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .build();
     }
 
 }

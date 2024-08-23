@@ -2,20 +2,13 @@ package de.serbroda.ragbag.models;
 
 import de.serbroda.ragbag.models.keys.PageAccountKey;
 import de.serbroda.ragbag.models.shared.PageRole;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "page_account")
 public class PageAccount {
 
-    private PageAccountKey id;
+    private PageAccountKey id = new PageAccountKey();
     private Page page;
     private Account account;
     private PageRole role;

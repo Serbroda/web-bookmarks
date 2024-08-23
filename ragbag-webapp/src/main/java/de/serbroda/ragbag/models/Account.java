@@ -1,24 +1,11 @@
 package de.serbroda.ragbag.models;
 
 import de.serbroda.ragbag.models.base.AbstractBaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.*;
 
 @Entity
 @Table(name = "account")
@@ -63,8 +50,8 @@ public class Account extends AbstractBaseEntity {
     }
 
     @JoinTable(name = "account_accountrole", joinColumns = {
-        @JoinColumn(name = "account_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "role_id", referencedColumnName = "id")
+            @JoinColumn(name = "account_id", referencedColumnName = "id")}, inverseJoinColumns = {
+            @JoinColumn(name = "role_id", referencedColumnName = "id")
     })
     @ManyToMany(fetch = FetchType.EAGER)
     public Set<AccountRole> getAccountRoles() {
