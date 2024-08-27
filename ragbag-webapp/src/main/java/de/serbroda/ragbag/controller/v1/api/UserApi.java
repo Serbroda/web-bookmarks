@@ -1,7 +1,7 @@
 package de.serbroda.ragbag.controller.v1.api;
 
-import de.serbroda.ragbag.dtos.CreateUserDto;
 import de.serbroda.ragbag.dtos.UserDto;
+import de.serbroda.ragbag.dtos.auth.RegisterUserDto;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,7 +70,7 @@ public interface UserApi {
             consumes = {"application/json"}
     )
     default ResponseEntity<UserDto> createUser(
-            @Parameter(required = true) @RequestBody @Valid CreateUserDto createUserDto) {
+            @Parameter(required = true) @RequestBody @Valid RegisterUserDto createUserDto) {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }

@@ -1,0 +1,10 @@
+### Login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{user}}",
+  "password": "{{password}}"
+}
+
+###

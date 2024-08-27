@@ -4,12 +4,13 @@ import de.serbroda.ragbag.models.base.AbstractBaseEntity;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
 @Entity
 @Table(name = "account")
-public class Account extends AbstractBaseEntity {
+public class Account extends AbstractBaseEntity implements UserDetails {
 
     private String username;
     private String password;
@@ -25,6 +26,7 @@ public class Account extends AbstractBaseEntity {
         return doGetId();
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -33,6 +35,7 @@ public class Account extends AbstractBaseEntity {
         this.username = username;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -90,6 +93,7 @@ public class Account extends AbstractBaseEntity {
     }
 
     @Transient
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (AccountRole r : accountRoles) {

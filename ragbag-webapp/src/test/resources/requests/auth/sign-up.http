@@ -1,0 +1,11 @@
+### GET request to example server
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "{{user}}",
+  "fullName": "Max Mustermann",
+  "password": "{{password}}"
+}
+
+###

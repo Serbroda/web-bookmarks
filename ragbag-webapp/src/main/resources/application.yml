@@ -7,7 +7,6 @@ spring:
     username: sa
     password:
     url: jdbc:h2:mem:ragbag
-    #url: jdbc:h2:file:./ragbag-webapp/target/ragbag;AUTO_SERVER=true
     driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
@@ -27,3 +26,8 @@ logging:
 springdoc:
   api-docs:
     path: /api/docs
+
+security:
+  jwt:
+    secret-key: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+    expiration-time: 3600000
