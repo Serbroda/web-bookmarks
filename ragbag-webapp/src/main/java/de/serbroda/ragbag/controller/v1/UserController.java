@@ -4,10 +4,10 @@ import de.serbroda.ragbag.dtos.UserDto;
 import de.serbroda.ragbag.mappers.UserMapper;
 import de.serbroda.ragbag.models.Account;
 import de.serbroda.ragbag.repositories.AccountRepository;
+import de.serbroda.ragbag.utils.SessionUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,11 +33,10 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> authenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        Account currentUser = (Account) authentication.getPrincipal();
-
-        return ResponseEntity.ok(UserMapper.INSTANCE.map(currentUser));
+        return SessionUtils.getAuthenticatedAccount()
+                .map(UserMapper.INSTANCE::map)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
 }
