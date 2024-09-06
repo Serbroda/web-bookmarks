@@ -5,7 +5,7 @@ import de.serbroda.ragbag.dtos.page.PageDto;
 import de.serbroda.ragbag.mappers.PageMapper;
 import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.services.PageService;
-import de.serbroda.ragbag.utils.SessionUtils;
+import de.serbroda.ragbag.utils.AuthorizationUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +26,7 @@ public class PageController {
 
     @PostMapping
     public ResponseEntity<PageDto> createSpace(@RequestBody CreatePageDto dto) throws AccessDeniedException {
-        Page entity = pageService.createPage(dto, SessionUtils.getAuthenticatedAccountRequired());
+        Page entity = pageService.createPage(dto, AuthorizationUtil.getAuthenticatedAccountRequired());
         return ResponseEntity.ok(PageMapper.INSTANCE.map(entity));
     }
 }

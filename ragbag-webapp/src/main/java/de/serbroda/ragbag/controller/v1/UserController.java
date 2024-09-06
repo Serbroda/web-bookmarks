@@ -4,7 +4,7 @@ import de.serbroda.ragbag.dtos.UserDto;
 import de.serbroda.ragbag.mappers.UserMapper;
 import de.serbroda.ragbag.models.Account;
 import de.serbroda.ragbag.repositories.AccountRepository;
-import de.serbroda.ragbag.utils.SessionUtils;
+import de.serbroda.ragbag.utils.AuthorizationUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,7 +33,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> authenticatedUser() {
-        return SessionUtils.getAuthenticatedAccount()
+        return AuthorizationUtil.getAuthenticatedAccount()
                 .map(UserMapper.INSTANCE::map)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());

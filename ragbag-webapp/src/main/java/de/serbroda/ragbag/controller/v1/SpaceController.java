@@ -4,7 +4,7 @@ import de.serbroda.ragbag.dtos.space.CreateSpaceDto;
 import de.serbroda.ragbag.mappers.SpaceMapper;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.services.SpaceService;
-import de.serbroda.ragbag.utils.SessionUtils;
+import de.serbroda.ragbag.utils.AuthorizationUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +23,7 @@ public class SpaceController {
 
     @PostMapping
     public ResponseEntity createSpace(@RequestBody CreateSpaceDto dto) {
-        Space space = spaceService.createSpace(dto, SessionUtils.getAuthenticatedAccountRequired());
+        Space space = spaceService.createSpace(dto, AuthorizationUtil.getAuthenticatedAccountRequired());
         return ResponseEntity.ok(SpaceMapper.INSTANCE.map(space));
     }
 }

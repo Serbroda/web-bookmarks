@@ -8,14 +8,18 @@ import de.serbroda.ragbag.models.PageAccount;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.models.shared.PageRole;
 import de.serbroda.ragbag.models.shared.PageVisibility;
+import de.serbroda.ragbag.models.shared.SpaceRole;
 import de.serbroda.ragbag.repositories.PageAccountRepository;
 import de.serbroda.ragbag.repositories.PageRepository;
 import de.serbroda.ragbag.repositories.SpaceRepository;
+import de.serbroda.ragbag.utils.AuthorizationUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
+
+import static de.serbroda.ragbag.utils.AuthorizationUtil.checkAccessAllowed;
 
 @Service
 public class PageService {
@@ -36,10 +40,7 @@ public class PageService {
     public Page createPage(CreatePageDto createPageDto, Account account) throws AccessDeniedException {
         Space space = spaceRepository.findById(createPageDto.getSpaceId())
                 .orElseThrow(() -> new EntityNotFoundException("Space with id " + createPageDto.getSpaceId() + " not found"));
-
-        if (!account.getSpaces().stream().map(sa -> sa.getSpace()).anyMatch(a -> a.equals(space))) {
-            throw new AccessDeniedException("Not allowed to access space " + space.getId());
-        }
+        checkAccessAllowed(account, space, SpaceRole.OWNER, SpaceRole.CONTRIBUTOR);
 
         Page page = PageMapper.INSTANCE.map(createPageDto);
         page.setSpace(space);
@@ -48,7 +49,7 @@ public class PageService {
                     .orElseThrow(() -> new EntityNotFoundException("Page with id " + createPageDto.getParentPageId() + " not found"));
             page.setParent(parent);
         }
-        page.setVisibility(PageVisibility.PUBLIC);
+        page.setVisibility(PageVisibility.PRIVATE);
         return createPage(page, account);
     }
 
