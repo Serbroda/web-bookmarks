@@ -46,4 +46,12 @@ public class Space extends AbstractBaseEntity {
     public void setAccounts(Set<SpaceAccount> accounts) {
         this.accounts = accounts;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Space) {
+            return super.equals(obj);
+        }
+        return false;
+    }
 }

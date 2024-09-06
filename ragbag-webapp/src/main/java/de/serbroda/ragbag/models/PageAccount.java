@@ -52,4 +52,12 @@ public class PageAccount {
     public void setRole(PageRole role) {
         this.role = role;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PageAccount) {
+            return super.equals(obj);
+        }
+        return false;
+    }
 }

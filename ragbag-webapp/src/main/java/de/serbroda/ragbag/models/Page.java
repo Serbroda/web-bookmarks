@@ -87,4 +87,12 @@ public class Page extends AbstractBaseEntity {
     public void setAccounts(Set<PageAccount> accounts) {
         this.accounts = accounts;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Page) {
+            return super.equals(obj);
+        }
+        return false;
+    }
 }

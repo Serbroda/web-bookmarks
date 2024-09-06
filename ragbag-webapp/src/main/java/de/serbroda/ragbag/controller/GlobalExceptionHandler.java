@@ -1,10 +1,13 @@
 package de.serbroda.ragbag.controller;
 
+import de.serbroda.ragbag.exceptions.UnauthorizedException;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,6 +17,24 @@ import java.security.SignatureException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ProblemDetail handleEntityNotFoundException(Exception exception) {
+        return createProblemDetails(
+                exception,
+                HttpStatus.NOT_FOUND,
+                "Entity not found"
+        );
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ProblemDetail handleUnauthorizedException(Exception exception) {
+        return createProblemDetails(
+                exception,
+                HttpStatus.UNAUTHORIZED,
+                "Unauthorized"
+        );
+    }
 
     @ExceptionHandler({UsernameNotFoundException.class, BadCredentialsException.class})
     public ProblemDetail handleBadCredentialsException(Exception exception) {
@@ -33,7 +54,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({AuthorizationDeniedException.class, AccessDeniedException.class})
     public ProblemDetail handleAccessDeniedException(Exception exception) {
         return createProblemDetails(
                 exception,

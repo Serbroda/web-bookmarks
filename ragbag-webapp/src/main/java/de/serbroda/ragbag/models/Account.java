@@ -4,6 +4,7 @@ import de.serbroda.ragbag.models.base.AbstractBaseEntity;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
@@ -74,7 +75,7 @@ public class Account extends AbstractBaseEntity implements UserDetails {
 //        return spaces;
 //    }
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
     public Set<SpaceAccount> getSpaces() {
         return spaces;
     }
@@ -100,5 +101,13 @@ public class Account extends AbstractBaseEntity implements UserDetails {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + r.getName()));
         }
         return authorities;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Account) {
+            return super.equals(obj);
+        }
+        return false;
     }
 }

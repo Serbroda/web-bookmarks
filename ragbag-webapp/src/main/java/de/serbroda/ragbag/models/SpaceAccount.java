@@ -52,4 +52,12 @@ public class SpaceAccount {
     public void setRole(SpaceRole role) {
         this.role = role;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SpaceAccount) {
+            return super.equals(obj);
+        }
+        return false;
+    }
 }

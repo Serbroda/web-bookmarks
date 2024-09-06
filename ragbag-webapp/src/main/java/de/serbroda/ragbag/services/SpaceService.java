@@ -1,5 +1,7 @@
 package de.serbroda.ragbag.services;
 
+import de.serbroda.ragbag.dtos.space.CreateSpaceDto;
+import de.serbroda.ragbag.mappers.SpaceMapper;
 import de.serbroda.ragbag.models.Account;
 import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.Space;
@@ -25,15 +27,20 @@ public class SpaceService {
         this.spaceAccountRepository = spaceAccountRepository;
         this.pageService = pageService;
     }
+    public Space createSpace(CreateSpaceDto createSpaceDto, Account account) {
+        Space space = SpaceMapper.INSTANCE.map(createSpaceDto);
+        return createSpace(space, account);
+    }
 
     public Space createSpace(Space space, Account account) {
         space = spaceRepository.save(space);
         addAccountToSpace(space, account, SpaceRole.OWNER);
 
         Page defaultPage = new Page();
+        defaultPage.setSpace(space);
         defaultPage.setName("Default");
         defaultPage.setVisibility(PageVisibility.PUBLIC);
-        pageService.createPage(space, defaultPage, account);
+        pageService.createPage(defaultPage, account);
         return space;
     }
 
@@ -45,7 +52,11 @@ public class SpaceService {
         return spaceAccountRepository.save(spaceAccount);
     }
 
-    private void removeAccountFromSpace(Space space, Account account) {
+    public Optional<Space> getSpaceById(long id) {
+        return spaceRepository.findById(id);
+    }
+
+    public void removeAccountFromSpace(Space space, Account account) {
         Optional<SpaceAccount> spaceAccount = spaceAccountRepository.findBySpaceAndAccount(space, account);
         spaceAccount.ifPresent(value -> spaceAccountRepository.delete(value));
     }

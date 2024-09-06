@@ -24,4 +24,12 @@ public class AccountRole extends AbstractBaseEntity {
         this.name = name;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof AccountRole) {
+            return super.equals(obj);
+        }
+        return false;
+    }
+
 }

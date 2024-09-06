@@ -42,4 +42,12 @@ public class Link extends AbstractBaseEntity {
     public void setPage(Page page) {
         this.page = page;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Link) {
+            return super.equals(obj);
+        }
+        return false;
+    }
 }

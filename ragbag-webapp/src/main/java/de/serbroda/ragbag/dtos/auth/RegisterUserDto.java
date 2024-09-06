@@ -1,8 +1,16 @@
 package de.serbroda.ragbag.dtos.auth;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RegisterUserDto {
+
+    @JsonProperty("email")
     private String email;
+
+    @JsonProperty("password")
     private String password;
+
+    @JsonProperty("fullName")
     private String fullName;
 
     public String getEmail() {
