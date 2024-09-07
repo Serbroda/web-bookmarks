@@ -4,8 +4,8 @@ import de.serbroda.ragbag.models.base.AbstractBaseEntity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "link")
-public class Link extends AbstractBaseEntity {
+@Table(name = "bookmarks")
+public class Bookmark extends AbstractBaseEntity {
 
     private String name;
     private String url;
@@ -45,7 +45,7 @@ public class Link extends AbstractBaseEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Link) {
+        if (obj instanceof Bookmark) {
             return super.equals(obj);
         }
         return false;

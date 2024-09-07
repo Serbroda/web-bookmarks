@@ -1,7 +1,7 @@
 package de.serbroda.ragbag.repositories;
 
 import de.serbroda.ragbag.models.Page;
-import de.serbroda.ragbag.models.Link;
+import de.serbroda.ragbag.models.Bookmark;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;
 import de.serbroda.ragbag.repositories.base.TransactionalProfileSpringBootTest;
@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @SpringBootTest
 @TransactionalProfileSpringBootTest
-public class LinkRepositoryTest extends AbstractRepositoryTest<Link> {
+public class BookmarkRepositoryTest extends AbstractRepositoryTest<Bookmark> {
 
     @Autowired
     private SpaceRepository spaceRepository;
@@ -22,15 +22,15 @@ public class LinkRepositoryTest extends AbstractRepositoryTest<Link> {
     private PageRepository pageRepository;
 
     @Autowired
-    private LinkRepository repository;
+    private BookmarkRepository repository;
 
     @Override
-    protected JpaRepository<Link, Long> getRepository() {
+    protected JpaRepository<Bookmark, Long> getRepository() {
         return repository;
     }
 
     @Override
-    protected Link getCreateEntity() {
+    protected Bookmark getCreateEntity() {
         Space space = new Space();
         space.setName("space");
         space = spaceRepository.save(space);
@@ -40,24 +40,24 @@ public class LinkRepositoryTest extends AbstractRepositoryTest<Link> {
         page.setName("page");
         page = pageRepository.save(page);
 
-        Link entity = new Link();
-        entity.setName("link1");
+        Bookmark entity = new Bookmark();
+        entity.setName("bookmark1");
         entity.setUrl("http://example.com");
         entity.setPage(page);
         return entity;
     }
 
     @Override
-    protected void modifyUpdateEntity(Link entity) {
-        entity.setName("link2");
+    protected void modifyUpdateEntity(Bookmark entity) {
+        entity.setName("bookmark2");
     }
 
     @Override
-    protected Example<Link> getExample() {
+    protected Example<Bookmark> getExample() {
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase());
-        Link entity = new Link();
-        entity.setName("link1");
+        Bookmark entity = new Bookmark();
+        entity.setName("bookmark1");
         return Example.of(entity, matcher);
     }
 }

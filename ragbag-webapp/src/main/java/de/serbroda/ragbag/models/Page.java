@@ -16,7 +16,7 @@ public class Page extends AbstractBaseEntity {
     private Page parent;
     private PageVisibility visibility;
     private Set<Page> subPages = new HashSet<>();
-    private Set<Link> links = new HashSet<>();
+    private Set<Bookmark> bookmarks = new HashSet<>();
     private Set<PageAccount> accounts = new HashSet<>();
 
     @Id
@@ -71,12 +71,12 @@ public class Page extends AbstractBaseEntity {
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "page")
-    public Set<Link> getLinks() {
-        return links;
+    public Set<Bookmark> getBookmarks() {
+        return bookmarks;
     }
 
-    public void setLinks(Set<Link> links) {
-        this.links = links;
+    public void setBookmarks(Set<Bookmark> bookmarks) {
+        this.bookmarks = bookmarks;
     }
 
     @OneToMany(mappedBy = "page")

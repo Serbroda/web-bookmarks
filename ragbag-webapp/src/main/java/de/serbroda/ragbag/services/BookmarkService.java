@@ -1,23 +1,23 @@
 package de.serbroda.ragbag.services;
 
 import de.serbroda.ragbag.models.Space;
-import de.serbroda.ragbag.repositories.LinkRepository;
+import de.serbroda.ragbag.repositories.BookmarkRepository;
 import de.serbroda.ragbag.repositories.PageRepository;
 import de.serbroda.ragbag.repositories.SpaceRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LinkService {
+public class BookmarkService {
 
     private final SpaceRepository spaceRepository;
     private final PageRepository pageRepository;
-    private final LinkRepository linkRepository;
+    private final BookmarkRepository bookmarkRepository;
 
-    public LinkService(SpaceRepository spaceRepository, PageRepository pageRepository,
-                       LinkRepository linkRepository) {
+    public BookmarkService(SpaceRepository spaceRepository, PageRepository pageRepository,
+                           BookmarkRepository bookmarkRepository) {
         this.spaceRepository = spaceRepository;
         this.pageRepository = pageRepository;
-        this.linkRepository = linkRepository;
+        this.bookmarkRepository = bookmarkRepository;
     }
 
     public Space createSpace(Space space) {

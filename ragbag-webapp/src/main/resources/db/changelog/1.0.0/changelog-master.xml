@@ -8,6 +8,6 @@
     <include file="db/changelog/1.0.0/001_add_user_tables.xml"/>
     <include file="db/changelog/1.0.0/002_add_space_tables.xml"/>
     <include file="/db/changelog/1.0.0/003_add_page_tables.xml"/>
-    <include file="db/changelog/1.0.0/004_add_link_tables.xml"/>
+    <include file="/db/changelog/1.0.0/004_add_bookmark_tables.xml"/>
 
 </databaseChangeLog>
