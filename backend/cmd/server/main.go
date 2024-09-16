@@ -2,6 +2,8 @@ package main
 
 import (
 	"backend/internal/db"
+	"backend/internal/model"
+	"backend/internal/repository"
 	"context"
 	"errors"
 	"fmt"
@@ -20,11 +22,14 @@ type Person struct {
 
 // https://golang.withcodeexample.com/blog/top-databases-with-golang-in-2024/#:~:text=for%20more%20examples-,MongoDB,or%20Not%20only%20SQL%20database.
 func main() {
+	db.Connect("mongodb://localhost:27017")
+	defer db.CloseConnection()
+
+	checkDB2(db.Database)
+
 	e := echo.New()
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
-
-	checkDB()
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))
@@ -37,10 +42,42 @@ func printRoutes(e *echo.Echo) {
 	}
 }
 
-func checkDB() {
-	database, client, ctx, cancel := db.Connect("mongodb://localhost:27017")
-	defer db.CloseConnection(client, ctx, cancel)
+func checkDB2(db *mongo.Database) {
+	spaceRepo := repository.NewMongoSpaceRepository(db.Collection("spaces"))
+	pageRepo := repository.NewMongoPageRepository(db.Collection("pages"))
 
+	// Ein neues Space-Dokument einfügen
+	space := model.Space{
+		Name:        "Development Resources",
+		Description: "A space for developers",
+	}
+	err := spaceRepo.Insert(context.TODO(), &space)
+	if err != nil {
+		log.Fatal("Failed to insert space:", err)
+	}
+
+	fmt.Println("Space successfully inserted")
+
+	// Space anhand des Namens suchen
+	foundSpace, err := spaceRepo.FindBySpaceName(context.TODO(), "Development Resources")
+	if err != nil {
+		log.Fatal("Failed to find space:", err)
+	}
+	fmt.Println("Found space:", foundSpace)
+
+	page := model.Page{
+		Name:    "Development Resources2",
+		SpaceID: foundSpace.ID,
+	}
+	err = pageRepo.Insert(context.TODO(), &page)
+	if err != nil {
+		log.Fatal("Failed to insert page:", err)
+	}
+
+	fmt.Println("Page successfully inserted")
+}
+
+func checkDB(database *mongo.Database) {
 	collection := database.Collection("people")
 
 	// Insert a document
