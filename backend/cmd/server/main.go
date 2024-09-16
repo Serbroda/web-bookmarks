@@ -51,7 +51,7 @@ func checkDB2(db *mongo.Database) {
 		Name:        "Development Resources",
 		Description: "A space for developers",
 	}
-	err := spaceRepo.Insert(context.TODO(), &space)
+	err := spaceRepo.Save(context.TODO(), &space)
 	if err != nil {
 		log.Fatal("Failed to insert space:", err)
 	}
@@ -65,11 +65,32 @@ func checkDB2(db *mongo.Database) {
 	}
 	fmt.Println("Found space:", foundSpace)
 
+	foundSpace.Name = "Danny"
+	err = spaceRepo.Save(context.TODO(), foundSpace)
+	if err != nil {
+		log.Fatal("Failed to update space space:", err)
+	}
+	// Space anhand des Namens suchen
+	foundSpace, err = spaceRepo.FindBySpaceName(context.TODO(), "Danny")
+	if err != nil {
+		log.Fatal("Failed to find space:", err)
+	}
+	fmt.Println("Found space:", foundSpace)
+
+	space2 := model.Space{
+		Name:        "222",
+		Description: "222",
+	}
+	err = spaceRepo.Save(context.TODO(), &space2)
+	if err != nil {
+		log.Fatal("Failed to insert space:", err)
+	}
+
 	page := model.Page{
 		Name:    "Development Resources2",
 		SpaceID: foundSpace.ID,
 	}
-	err = pageRepo.Insert(context.TODO(), &page)
+	err = pageRepo.Save(context.TODO(), &page)
 	if err != nil {
 		log.Fatal("Failed to insert page:", err)
 	}
