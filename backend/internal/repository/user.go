@@ -9,19 +9,19 @@ import (
 	"log"
 )
 
-type PageRepository interface {
-	GenericRepository[model.Page] // Inklusive der CRUD-Methoden
-	FindByPageName(ctx context.Context, name string) (*model.Page, error)
+type UserRepository interface {
+	GenericRepository[model.User] // Inklusive der CRUD-Methoden
+	FindByUserName(ctx context.Context, name string) (*model.User, error)
 }
 
-type MongoPageRepository struct {
-	*MongoRepository[model.Page] // Embedding des generischen Repositories
+type MongoUserRepository struct {
+	*MongoRepository[model.User] // Embedding des generischen Repositories
 	collection                   *mongo.Collection
 }
 
-func NewMongoPageRepository(collection *mongo.Collection) *MongoPageRepository {
-	repo := &MongoPageRepository{
-		MongoRepository: NewMongoRepository[model.Page](collection),
+func NewMongoUserRepository(collection *mongo.Collection) *MongoUserRepository {
+	repo := &MongoUserRepository{
+		MongoRepository: NewMongoRepository[model.User](collection),
 		collection:      collection,
 	}
 
@@ -34,10 +34,12 @@ func NewMongoPageRepository(collection *mongo.Collection) *MongoPageRepository {
 	return repo
 }
 
-func (r *MongoPageRepository) createIndexes() error {
+func (r *MongoUserRepository) createIndexes() error {
 	indexModel := mongo.IndexModel{
-		Keys:    bson.M{"spaceId": 1}, // 1 für aufsteigender Index
-		Options: options.Index().SetName("idx_pages_spaceId"),
+		Keys: bson.M{"username": 1}, // 1 für aufsteigender Index
+		Options: options.Index().
+			SetName("uc_users_username").
+			SetUnique(true),
 	}
 	_, err := r.collection.Indexes().CreateOne(context.TODO(), indexModel)
 	if err != nil {

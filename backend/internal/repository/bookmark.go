@@ -36,7 +36,7 @@ func NewMongoBookmarkRepository(collection *mongo.Collection) *MongoBookmarkRepo
 func (r *MongoBookmarkRepository) createIndexes() error {
 	indexModel := mongo.IndexModel{
 		Keys:    bson.M{"pageId": 1},
-		Options: options.Index().SetName("idx_pageId"),
+		Options: options.Index().SetName("idx_bookmarks_pageId"),
 	}
 	_, err := r.collection.Indexes().CreateOne(context.TODO(), indexModel)
 	if err != nil {

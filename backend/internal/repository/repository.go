@@ -6,14 +6,13 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"log"
+	"time"
 )
 
 type GenericRepository[T any] interface {
 	Save(ctx context.Context, entity *T) error
-	Insert(ctx context.Context, entity *T) error
 	FindByID(ctx context.Context, id string) (*T, error)
 	FindAll(ctx context.Context) ([]T, error)
-	Update(ctx context.Context, id string, entity *T) error
 	Delete(ctx context.Context, id string) error
 }
 
@@ -38,6 +37,9 @@ func (r *MongoRepository[T]) SaveWithId(ctx context.Context, entity *T, idField 
 		return err
 	}
 
+	now := time.Now()
+	doc["updatedAt"] = now
+
 	// Überprüfen, ob eine ID vorhanden ist
 	if id, ok := doc[idField]; ok {
 		// Update durch Upsert (falls das Dokument existiert, wird es aktualisiert)
@@ -51,7 +53,8 @@ func (r *MongoRepository[T]) SaveWithId(ctx context.Context, entity *T, idField 
 		}
 		log.Println("Document updated successfully")
 	} else {
-		// Insert, falls keine ID vorhanden ist
+		doc["createdAt"] = now
+
 		_, err := r.collection.InsertOne(ctx, doc)
 		if err != nil {
 			log.Printf("Failed to insert document: %v", err)
