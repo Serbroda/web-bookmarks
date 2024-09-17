@@ -3,7 +3,10 @@ package model
 import "go.mongodb.org/mongo-driver/v2/bson"
 
 type Space struct {
-	BaseEntity `bson:",inline"` // Inline macht die Felder von BaseEntity direkt verfügbar
-	Name       string           `bson:"name" json:"name"`
-	OwnerID    bson.ObjectID    `bson:"ownerId" json:"ownerId"`
+	BaseEntity  `bson:",inline" json:",inline"`
+	Name        string          `bson:"name" json:"name"`
+	Description string          `bson:"description" json:"description"`
+	OwnerID     bson.ObjectID   `bson:"ownerId" json:"ownerId"`
+	Pages       []bson.ObjectID `bson:"pages,omitempty" json:"pages,omitempty"`
+	SharedWith  []bson.ObjectID `bson:"sharedWith,omitempty" json:"sharedWith,omitempty"`
 }

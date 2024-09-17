@@ -9,9 +9,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"log"
 )
 
 // https://golang.withcodeexample.com/blog/top-databases-with-golang-in-2024/#:~:text=for%20more%20examples-,MongoDB,or%20Not%20only%20SQL%20database.
@@ -44,38 +42,46 @@ func printRoutes(e *echo.Echo) {
 
 func tryDB(database *mongo.Database) {
 	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"))
+	pageRepo := repository.NewPageRepository(database.Collection("pages"))
+	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
 
-	// Neues Space-Objekt erstellen
-	newSpace := &model.Space{
-		Name:    "New Space",
-		OwnerID: bson.NewObjectID(),
+	space := model.Space{
+		Name: "Test Space",
+	}
+	spaceRepo.Save(context.TODO(), &space)
+
+	page := model.Page{
+		Name:    "Test Page",
+		SpaceID: space.ID,
+	}
+	pageRepo.Save(context.TODO(), &page)
+
+	bookmark := model.Bookmark{
+		Title:  "Test Bookmark",
+		URL:    "http://google.de",
+		PageId: page.ID,
+	}
+	bookmarkRepo.Save(context.TODO(), &bookmark)
+
+	// Search
+	spaces, err := spaceRepo.FindAll(context.TODO())
+	if err == nil {
+		for _, space := range spaces {
+			fmt.Printf(" - %v\n", space.Pages)
+		}
 	}
 
-	// Speichern (Insert oder Update)
-	err := spaceRepo.Save(context.TODO(), newSpace)
-	if err != nil {
-		log.Fatalf("Failed to save space: %v", err)
+	pages, err := pageRepo.FindAll(context.TODO())
+	if err == nil {
+		for _, page := range pages {
+			fmt.Printf(" - %v\n", page)
+		}
 	}
 
-	fmt.Printf("Space saved with ID: %s\n", newSpace.ID.Hex())
-
-	found, err := spaceRepo.FindByID(context.TODO(), newSpace.ID)
-	if err != nil {
-		log.Fatalf("Failed to save space: %v", err)
+	bookmarks, err := bookmarkRepo.FindAll(context.TODO())
+	if err == nil {
+		for _, bookmark := range bookmarks {
+			fmt.Printf(" - %v\n", bookmark)
+		}
 	}
-
-	fmt.Printf("Found : %v\n", found)
-
-	found.Name = "New name"
-	err = spaceRepo.Save(context.TODO(), found)
-	if err != nil {
-		log.Fatalf("Failed to save space: %v", err)
-	}
-
-	found, err = spaceRepo.FindByID(context.TODO(), newSpace.ID)
-	if err != nil {
-		log.Fatalf("Failed to save space: %v", err)
-	}
-
-	fmt.Printf("Found : %v\n", found)
 }
