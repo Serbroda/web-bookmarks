@@ -9,17 +9,14 @@ import (
 	"time"
 )
 
-// GenericRepository verwendet *T als generischen Typ
 type GenericRepository[T model.BaseEntityInterface] struct {
 	collection *mongo.Collection
 }
 
-// NewGenericRepository erstellt ein neues generisches Repository
 func NewGenericRepository[T model.BaseEntityInterface](collection *mongo.Collection) *GenericRepository[T] {
 	return &GenericRepository[T]{collection: collection}
 }
 
-// Save führt entweder ein Insert oder ein Update durch
 func (r *GenericRepository[T]) Save(ctx context.Context, entity T) error {
 	now := time.Now()
 	entity.SetUpdatedAt(now)
@@ -37,14 +34,12 @@ func (r *GenericRepository[T]) Save(ctx context.Context, entity T) error {
 	return err
 }
 
-// FindByID findet ein Dokument anhand der ID
 func (r *GenericRepository[T]) FindByID(ctx context.Context, id bson.ObjectID) (T, error) {
 	var entity T
 	err := r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&entity)
 	return entity, err
 }
 
-// FindAll gibt alle Dokumente in der Sammlung zurück
 func (r *GenericRepository[T]) FindAll(ctx context.Context) ([]T, error) {
 	cursor, err := r.collection.Find(ctx, bson.M{})
 	if err != nil {
@@ -59,8 +54,21 @@ func (r *GenericRepository[T]) FindAll(ctx context.Context) ([]T, error) {
 	return entities, nil
 }
 
-// Delete löscht ein Dokument anhand der ID
 func (r *GenericRepository[T]) Delete(ctx context.Context, id bson.ObjectID) error {
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
+}
+
+func (r *GenericRepository[T]) Find(ctx context.Context, filter interface{}) ([]T, error) {
+	cursor, err := r.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var entities []T
+	if err = cursor.All(ctx, &entities); err != nil {
+		return nil, err
+	}
+
+	return entities, nil
 }

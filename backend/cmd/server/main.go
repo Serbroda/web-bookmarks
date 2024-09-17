@@ -41,8 +41,8 @@ func printRoutes(e *echo.Echo) {
 }
 
 func tryDB(database *mongo.Database) {
-	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"))
 	pageRepo := repository.NewPageRepository(database.Collection("pages"))
+	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"), pageRepo)
 	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
 
 	space := model.Space{
@@ -69,6 +69,11 @@ func tryDB(database *mongo.Database) {
 		for _, space := range spaces {
 			fmt.Printf(" - %v\n", space.Pages)
 		}
+	}
+
+	foundSpace, err := spaceRepo.FindByIdWithPages(context.TODO(), space.ID)
+	if err == nil {
+		fmt.Printf(" - %v\n", foundSpace.Pages)
 	}
 
 	pages, err := pageRepo.FindAll(context.TODO())

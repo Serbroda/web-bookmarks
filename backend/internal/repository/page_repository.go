@@ -26,6 +26,22 @@ func NewPageRepository(collection *mongo.Collection) *PageRepository {
 	return repo
 }
 
+func (r *PageRepository) FindBySpaceId(ctx context.Context, spaceID bson.ObjectID) ([]model.Page, error) {
+	// Ruft die Find-Methode auf, die Pointer zurückgibt
+	pointerPages, err := r.Find(ctx, bson.M{"spaceId": spaceID})
+	if err != nil {
+		return nil, err
+	}
+
+	// Wandelt die Liste von *model.Page zu []model.Page um
+	pages := make([]model.Page, len(pointerPages))
+	for i, p := range pointerPages {
+		pages[i] = *p // Dereferenzierung des Pointers
+	}
+
+	return pages, nil
+}
+
 func (r *PageRepository) createIndexes() error {
 	indexModel := mongo.IndexModel{
 		Keys:    bson.M{"spaceId": 1}, // 1 für aufsteigender Index
