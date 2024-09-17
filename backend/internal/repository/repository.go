@@ -10,7 +10,8 @@ import (
 )
 
 type GenericRepository[T any] interface {
-	Save(ctx context.Context, entity *T) error
+	Save(ctx context.Context, entity *T) (string, error)
+	SaveWithId(ctx context.Context, entity *T) (string, error)
 	FindByID(ctx context.Context, id string) (*T, error)
 	FindAll(ctx context.Context) ([]T, error)
 	Delete(ctx context.Context, id string) error
@@ -24,17 +25,17 @@ func NewMongoRepository[T any](collection *mongo.Collection) *MongoRepository[T]
 	return &MongoRepository[T]{collection: collection}
 }
 
-func (r *MongoRepository[T]) Save(ctx context.Context, entity *T) error {
+func (r *MongoRepository[T]) Save(ctx context.Context, entity *T) (string, error) {
 	return r.SaveWithId(ctx, entity, "_id")
 }
 
-func (r *MongoRepository[T]) SaveWithId(ctx context.Context, entity *T, idField string) error {
-	// Reflexion, um die _id des Objekts zu ermitteln
+func (r *MongoRepository[T]) SaveWithId(ctx context.Context, entity *T, idField string) (string, error) {
+	// Marshal the entity into a BSON document
 	doc := bson.M{}
 	data, _ := bson.Marshal(entity)
 	err := bson.Unmarshal(data, &doc)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	now := time.Now()
@@ -46,23 +47,37 @@ func (r *MongoRepository[T]) SaveWithId(ctx context.Context, entity *T, idField 
 		filter := bson.M{idField: id}
 		update := bson.M{"$set": doc}
 		opts := options.Update().SetUpsert(true)
-		_, err := r.collection.UpdateOne(ctx, filter, update, opts)
+		res, err := r.collection.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
 			log.Printf("Failed to upsert document: %v", err)
-			return err
+			return "", err
 		}
+
+		// Überprüfen, ob ein neues Dokument eingefügt wurde (Upsert)
+		if res.UpsertedID != nil {
+			upsertedID := res.UpsertedID.(bson.ObjectID).Hex()
+			log.Println("Document upserted successfully with ID:", upsertedID)
+			return upsertedID, nil
+		}
+
 		log.Println("Document updated successfully")
+		return id.(bson.ObjectID).Hex(), nil
+
 	} else {
+		// Neue Dokumente einfügen
 		doc["createdAt"] = now
 
-		_, err := r.collection.InsertOne(ctx, doc)
+		res, err := r.collection.InsertOne(ctx, doc)
 		if err != nil {
 			log.Printf("Failed to insert document: %v", err)
-			return err
+			return "", err
 		}
-		log.Println("Document inserted successfully")
+
+		// Gebe die InsertedID als Hex-String zurück
+		insertedID := res.InsertedID.(bson.ObjectID).Hex()
+		log.Println("Document inserted successfully with ID:", insertedID)
+		return insertedID, nil
 	}
-	return nil
 }
 
 func (r *MongoRepository[T]) FindByID(ctx context.Context, id string) (*T, error) {
