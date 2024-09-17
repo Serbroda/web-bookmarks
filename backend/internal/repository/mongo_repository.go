@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"backend/internal/events"
 	"backend/internal/model"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -11,13 +12,19 @@ import (
 
 type GenericRepository[T model.BaseEntityInterface] struct {
 	collection *mongo.Collection
+	dispatcher *events.EventDispatcher
+	saveEvent  string
 }
 
-func NewGenericRepository[T model.BaseEntityInterface](collection *mongo.Collection) *GenericRepository[T] {
-	return &GenericRepository[T]{collection: collection}
+func NewGenericRepository[T model.BaseEntityInterface](collection *mongo.Collection, dispatcher *events.EventDispatcher, saveEvent string) *GenericRepository[T] {
+	return &GenericRepository[T]{
+		collection: collection,
+		dispatcher: dispatcher,
+		saveEvent:  saveEvent,
+	}
 }
 
-func (r *GenericRepository[T]) Save(ctx context.Context, entity T, afterHandler func([]T)) error {
+func (r *GenericRepository[T]) Save(ctx context.Context, entity T) error {
 	now := time.Now()
 	entity.SetUpdatedAt(now)
 
@@ -32,9 +39,10 @@ func (r *GenericRepository[T]) Save(ctx context.Context, entity T, afterHandler 
 
 	_, err := r.collection.UpdateOne(ctx, filter, update, opts)
 
-	if afterHandler != nil {
-		afterHandler([]T{entity})
-	}
+	r.dispatcher.Dispatch(events.Event{
+		Name: r.saveEvent,
+		Data: entity,
+	})
 	return err
 }
 

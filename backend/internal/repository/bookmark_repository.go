@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"backend/internal/events"
 	"backend/internal/model"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -13,9 +14,9 @@ type BookmarkRepository struct {
 	*GenericRepository[*model.Bookmark]
 }
 
-func NewBookmarkRepository(collection *mongo.Collection) *BookmarkRepository {
+func NewBookmarkRepository(collection *mongo.Collection, dispatcher *events.EventDispatcher) *BookmarkRepository {
 	repo := &BookmarkRepository{
-		GenericRepository: NewGenericRepository[*model.Bookmark](collection),
+		GenericRepository: NewGenericRepository[*model.Bookmark](collection, dispatcher, "BookmarkSaved"),
 	}
 
 	err := repo.createIndexes()

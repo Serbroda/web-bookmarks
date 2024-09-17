@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"backend/internal/events"
 	"backend/internal/model"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -13,9 +14,9 @@ type UserRepository struct {
 	*GenericRepository[*model.User]
 }
 
-func NewUserRepository(collection *mongo.Collection) *UserRepository {
+func NewUserRepository(collection *mongo.Collection, dispatcher *events.EventDispatcher) *UserRepository {
 	repo := &UserRepository{
-		GenericRepository: NewGenericRepository[*model.User](collection),
+		GenericRepository: NewGenericRepository[*model.User](collection, dispatcher, "UserSaved"),
 	}
 
 	err := repo.createIndexes()

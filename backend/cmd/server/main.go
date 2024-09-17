@@ -3,8 +3,10 @@ package main
 import (
 	"backend/cmd/server/handlers"
 	"backend/internal/db"
+	"backend/internal/events"
 	"backend/internal/model"
 	"backend/internal/repository"
+	"backend/internal/service"
 	"context"
 	"fmt"
 	"github.com/labstack/echo/v4"
@@ -41,9 +43,11 @@ func printRoutes(e *echo.Echo) {
 }
 
 func tryDB(database *mongo.Database) {
-	pageRepo := repository.NewPageRepository(database.Collection("pages"))
-	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"), pageRepo)
-	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
+	dispatcher := events.NewEventDispatcher()
+
+	pageRepo := repository.NewPageRepository(database.Collection("pages"), dispatcher)
+	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"), dispatcher)
+	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"), dispatcher)
 
 	space := model.Space{
 		Name: "Test Space",
@@ -71,11 +75,6 @@ func tryDB(database *mongo.Database) {
 		}
 	}
 
-	foundSpace, err := spaceRepo.FindByIdWithPages(context.TODO(), space.ID)
-	if err == nil {
-		fmt.Printf(" - %v\n", foundSpace.Pages)
-	}
-
 	pages, err := pageRepo.FindAll(context.TODO())
 	if err == nil {
 		for _, page := range pages {
@@ -89,4 +88,12 @@ func tryDB(database *mongo.Database) {
 			fmt.Printf(" - %v\n", bookmark)
 		}
 	}
+
+	// Feature Service
+	featureService := service.NewFeatureService(spaceRepo, pageRepo)
+	spaceById, err := featureService.GetSpaceById(context.TODO(), space.ID)
+	if err != nil {
+		return
+	}
+	fmt.Printf(" - %v\n", spaceById)
 }
