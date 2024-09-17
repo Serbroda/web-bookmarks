@@ -5,6 +5,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"log"
 )
 
 type SpaceRepository struct {
@@ -41,4 +42,22 @@ func (r *SpaceRepository) FindByIdWithPages(ctx context.Context, id bson.ObjectI
 	}
 
 	return space, nil
+}
+
+func (r *SpaceRepository) SaveSpace(ctx context.Context, space *model.Space) error {
+	return r.Save(ctx, space, func(entities []*model.Space) {
+		if len(entities) > 0 {
+			// Lade die Pages nach dem Speichern des Space
+			pages, err := r.pageRepo.FindBySpaceId(ctx, entities[0].ID)
+			if err != nil {
+				log.Printf("Failed to load pages for space: %v", err)
+			} else {
+				entities[0].Pages = make([]bson.ObjectID, len(pages))
+				for i, page := range pages {
+					entities[0].Pages[i] = page.ID
+				}
+				log.Printf("Successfully loaded and set pages for space: %v", entities[0].ID)
+			}
+		}
+	})
 }

@@ -17,7 +17,7 @@ func NewGenericRepository[T model.BaseEntityInterface](collection *mongo.Collect
 	return &GenericRepository[T]{collection: collection}
 }
 
-func (r *GenericRepository[T]) Save(ctx context.Context, entity T) error {
+func (r *GenericRepository[T]) Save(ctx context.Context, entity T, afterHandler func([]T)) error {
 	now := time.Now()
 	entity.SetUpdatedAt(now)
 
@@ -31,6 +31,10 @@ func (r *GenericRepository[T]) Save(ctx context.Context, entity T) error {
 	opts := options.Update().SetUpsert(true)
 
 	_, err := r.collection.UpdateOne(ctx, filter, update, opts)
+
+	if afterHandler != nil {
+		afterHandler([]T{entity})
+	}
 	return err
 }
 
