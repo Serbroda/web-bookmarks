@@ -1,0 +1,10 @@
+### GET request to example server
+GET {{host}}/api/v1/me
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjY2ODc5NjQsImlhdCI6MTcyNjY4NzA2NCwibmFtZSI6ImRhbm55MiIsInN1YiI6IjY2ZWIxZTAwN2QzNmE0MDdmNjcxNGIyMCJ9.FukgK6KMCuCDMXNKSkASoet4AcMLgYVDq9r1VaMy6YM
+
+{
+
+}
+
+###

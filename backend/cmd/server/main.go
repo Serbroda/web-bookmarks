@@ -6,9 +6,11 @@ import (
 	"backend/internal/model"
 	"backend/internal/repository"
 	"backend/internal/service"
+	"backend/internal/utils"
 	"context"
 	"errors"
 	"fmt"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -21,7 +23,6 @@ func main() {
 	defer db.CloseConnection()
 
 	userRepo := repository.NewUserRepository(database.Collection("users"))
-
 	userService := service.NewUserService(userRepo)
 
 	e := echo.New()
@@ -32,9 +33,9 @@ func main() {
 		UserService: userService,
 	}, "")
 
-	//baseUrlV1 := "/api/v1"
-	//jwtMiddleware := echojwt.WithConfig(security.CreateJwtConfig(userService))
-	//handlers.RegisterUsersHandlers(e, handlers.UsersHandler{UserService: userService}, baseUrlV1, jwtMiddleware)
+	api := e.Group("/api")
+	api.Use(echojwt.WithConfig(utils.CreateJwtConfig()))
+	handlers.RegisterUsersHandlers(api, handlers.UsersHandler{UserService: userService}, "/v1")
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))
