@@ -40,3 +40,11 @@ func (r *UserRepository) createIndexes() error {
 	log.Println("Index created successfully for username")
 	return nil
 }
+
+func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*model.User, error) {
+	found, err := r.FindOne(ctx, bson.M{"username": username})
+	if err != nil {
+		return nil, err
+	}
+	return *found, err
+}

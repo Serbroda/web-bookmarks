@@ -7,10 +7,12 @@ import (
 	"backend/internal/repository"
 	"backend/internal/service"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"log"
 )
 
 // https://golang.withcodeexample.com/blog/top-databases-with-golang-in-2024/#:~:text=for%20more%20examples-,MongoDB,or%20Not%20only%20SQL%20database.
@@ -18,13 +20,17 @@ func main() {
 	_, database := db.Connect("mongodb://localhost:27017")
 	defer db.CloseConnection()
 
-	tryDB(database)
+	userRepo := repository.NewUserRepository(database.Collection("users"))
+
+	userService := service.NewUserService(userRepo)
 
 	e := echo.New()
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	handlers.RegisterAuthHandlers(e, handlers.AuthHandler{}, "")
+	handlers.RegisterAuthHandlers(e, handlers.AuthHandler{
+		UserService: userService,
+	}, "")
 
 	//baseUrlV1 := "/api/v1"
 	//jwtMiddleware := echojwt.WithConfig(security.CreateJwtConfig(userService))
@@ -42,9 +48,26 @@ func printRoutes(e *echo.Echo) {
 }
 
 func tryDB(database *mongo.Database) {
+	userRepo := repository.NewUserRepository(database.Collection("users"))
 	pageRepo := repository.NewPageRepository(database.Collection("pages"))
 	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"))
 	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
+
+	name := "admin"
+	user, err := userRepo.FindByUsername(context.TODO(), name)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			user = &model.User{
+				Username: name,
+			}
+			userRepo.Save(context.Background(), user)
+			fmt.Println("created user")
+		} else {
+			log.Fatal(err)
+		}
+	} else {
+		fmt.Printf("Found user with username: %v\n", user.Username)
+	}
 
 	space := model.Space{
 		Name: "Test Space",

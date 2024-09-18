@@ -3,10 +3,15 @@ package repository
 import (
 	"backend/internal/model"
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"time"
+)
+
+var (
+	ErrMoreThanOneEntity = errors.New("more than one entity found")
 )
 
 type GenericRepository[T model.BaseEntityInterface] struct {
@@ -73,4 +78,18 @@ func (r *GenericRepository[T]) Find(ctx context.Context, filter interface{}) ([]
 	}
 
 	return entities, nil
+}
+
+func (r *GenericRepository[T]) FindOne(ctx context.Context, filter interface{}) (*T, error) {
+	entities, err := r.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	size := len(entities)
+	if size == 0 {
+		return nil, mongo.ErrNoDocuments
+	} else if size > 1 {
+		return nil, ErrMoreThanOneEntity
+	}
+	return &entities[0], nil
 }

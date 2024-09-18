@@ -16,8 +16,8 @@ type BaseEntityInterface interface {
 // BaseEntity enthält die allgemeinen Felder und Methoden
 type BaseEntity struct {
 	ID        bson.ObjectID `bson:"_id,omitempty" json:"id"`
-	CreatedAt time.Time     `bson:"createdAt" json:"createdAt"`
-	UpdatedAt time.Time     `bson:"updatedAt" json:"updatedAt"`
+	CreatedAt time.Time     `bson:"createdAt" json:"-"`
+	UpdatedAt time.Time     `bson:"updatedAt" json:"-"`
 }
 
 // SetID implementiert BaseEntityInterface.SetID
