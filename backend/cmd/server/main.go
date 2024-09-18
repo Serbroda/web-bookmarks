@@ -3,7 +3,6 @@ package main
 import (
 	"backend/cmd/server/handlers"
 	"backend/internal/db"
-	"backend/internal/events"
 	"backend/internal/model"
 	"backend/internal/repository"
 	"backend/internal/service"
@@ -43,11 +42,9 @@ func printRoutes(e *echo.Echo) {
 }
 
 func tryDB(database *mongo.Database) {
-	dispatcher := events.NewEventDispatcher()
-
-	pageRepo := repository.NewPageRepository(database.Collection("pages"), dispatcher)
-	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"), dispatcher)
-	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"), dispatcher)
+	pageRepo := repository.NewPageRepository(database.Collection("pages"))
+	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"))
+	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
 
 	space := model.Space{
 		Name: "Test Space",

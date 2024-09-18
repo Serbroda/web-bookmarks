@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"backend/internal/events"
 	"backend/internal/model"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -14,9 +13,9 @@ type PageRepository struct {
 	*GenericRepository[*model.Page]
 }
 
-func NewPageRepository(collection *mongo.Collection, dispatcher *events.EventDispatcher) *PageRepository {
+func NewPageRepository(collection *mongo.Collection) *PageRepository {
 	repo := &PageRepository{
-		GenericRepository: NewGenericRepository[*model.Page](collection, dispatcher, "Page"),
+		GenericRepository: NewGenericRepository[*model.Page](collection),
 	}
 
 	err := repo.createIndexes()
