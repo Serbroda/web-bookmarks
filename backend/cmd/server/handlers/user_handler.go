@@ -15,7 +15,7 @@ type UsersHandler struct {
 }
 
 func RegisterUsersHandlers(e *echo.Group, h UsersHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
-	e.GET(baseUrl+"/me", h.GetMe, append(middlewares)...)
+	e.GET(baseUrl+"/me", h.GetMe, middlewares...)
 }
 
 func (h *UsersHandler) GetMe(ctx echo.Context) error {

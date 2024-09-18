@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	ErrUserAlreadyExists = errors.New("User already exists")
+	ErrEmailAlreadyExists    = errors.New("email already exists")
+	ErrUsernameAlreadyExists = errors.New("username already exists")
 )
 
 type UserService struct {
@@ -24,11 +25,20 @@ func NewUserService(userRepo *repository.UserRepository) *UserService {
 }
 
 func (s *UserService) CreateUser(user *model.User) error {
-	exists, err := s.ExistsUserByUsername(user.Username)
+	exists, err := s.ExistsByEmail(user.Email)
 	if err != nil {
 		return err
 	} else if exists {
-		return ErrUserAlreadyExists
+		return ErrUsernameAlreadyExists
+	}
+
+	if user.Username != "" {
+		exists, err = s.ExistsUserByUsername(user.Username)
+		if err != nil {
+			return err
+		} else if exists {
+			return ErrUsernameAlreadyExists
+		}
 	}
 
 	return s.userRepo.Save(context.TODO(), user)
@@ -42,12 +52,34 @@ func (s *UserService) GetUserById(id string) (*model.User, error) {
 	return s.userRepo.FindByID(context.TODO(), objectID)
 }
 
+func (s *UserService) GetUserByEmailOrUsername(emailOrUsername string) (*model.User, error) {
+	user, err := s.GetUserByEmail(emailOrUsername)
+	if err != nil {
+		user, err = s.GetUserByUsername(emailOrUsername)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return user, nil
+}
+
 func (s *UserService) GetUserByUsername(username string) (*model.User, error) {
 	return s.userRepo.FindByUsername(context.TODO(), username)
 }
 
+func (s *UserService) GetUserByEmail(email string) (*model.User, error) {
+	return s.userRepo.FindByEmail(context.TODO(), email)
+}
+
 func (s *UserService) ExistsUserByUsername(username string) (bool, error) {
-	user, err := s.GetUserByUsername(username)
+	return s.exists(s.GetUserByUsername(username))
+}
+
+func (s *UserService) ExistsByEmail(username string) (bool, error) {
+	return s.exists(s.GetUserByEmail(username))
+}
+
+func (s *UserService) exists(user *model.User, err error) (bool, error) {
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return false, nil

@@ -12,14 +12,14 @@ import (
 )
 
 type LoginRequest struct {
-	Username string `json:"username"`
+	User     string `json:"user"`
 	Password string `json:"password"`
 }
 
 type RegistrationRequest struct {
-	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Username string `json:"username"`
 }
 
 type RefreshTokenRequest struct {
@@ -39,7 +39,7 @@ func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewar
 func (si *AuthHandler) Register(ctx echo.Context) error {
 	var payload RegistrationRequest
 	err := ctx.Bind(&payload)
-	if err != nil || payload.Username == "" || payload.Password == "" {
+	if err != nil || payload.Email == "" || payload.Password == "" {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
@@ -49,32 +49,35 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 	}
 
 	user := &model.User{
-		Username: payload.Username,
-		Password: hashedPassword,
 		Email:    payload.Email,
+		Password: hashedPassword,
+	}
+
+	if payload.Username != "" {
+		user.Username = payload.Username
 	}
 
 	err = si.UserService.CreateUser(user)
 
 	if err != nil {
-		if errors.Is(err, service.ErrUserAlreadyExists) {
+		if errors.Is(err, service.ErrUsernameAlreadyExists) {
 			return ctx.String(http.StatusConflict, err.Error())
 		} else {
 			return ctx.String(http.StatusInternalServerError, err.Error())
 		}
 	}
 
-	return ctx.JSON(http.StatusInternalServerError, user)
+	return ctx.JSON(http.StatusOK, user)
 }
 
 func (si *AuthHandler) Login(ctx echo.Context) error {
 	var payload LoginRequest
 	err := ctx.Bind(&payload)
-	if err != nil || payload.Username == "" || payload.Password == "" {
+	if err != nil || payload.User == "" || payload.Password == "" {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	user, err := si.UserService.GetUserByUsername(payload.Username)
+	user, err := si.UserService.GetUserByEmailOrUsername(payload.User)
 	if err != nil || !security.CheckBcryptHash(payload.Password, user.Password) {
 		return ctx.String(http.StatusBadRequest, "invalid login")
 	}
