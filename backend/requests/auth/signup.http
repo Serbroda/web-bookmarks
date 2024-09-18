@@ -3,8 +3,8 @@ POST {{host}}/auth/signup
 Content-Type: application/json
 
 {
-  "username": "danny2",
-  "password": "test123"
+  "username": "{{username}}",
+  "password": "{{password}}"
 }
 
 ###

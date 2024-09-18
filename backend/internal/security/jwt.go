@@ -1,4 +1,4 @@
-package utils
+package security
 
 import (
 	"backend/internal/model"
@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+type Jwt = string
+
 var (
 	JwtSecretKey       = "JWT_SECRET_KEY"
 	jwtAccessTokenExp  = 15
@@ -14,8 +16,8 @@ var (
 )
 
 type TokenPair struct {
-	AccessToken  *string `json:"accessToken"`
-	RefreshToken *string `json:"refreshToken"`
+	AccessToken  *Jwt `json:"accessToken"`
+	RefreshToken *Jwt `json:"refreshToken"`
 }
 
 type JwtCustomClaims struct {

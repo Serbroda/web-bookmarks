@@ -1,0 +1,14 @@
+### GET request to example server
+POST {{host}}/auth/refresh_token
+Content-Type: application/json
+
+{
+  "refresh_token": "{{refreshToken}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+###

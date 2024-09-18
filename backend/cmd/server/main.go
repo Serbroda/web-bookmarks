@@ -5,8 +5,8 @@ import (
 	"backend/internal/db"
 	"backend/internal/model"
 	"backend/internal/repository"
+	"backend/internal/security"
 	"backend/internal/service"
-	"backend/internal/utils"
 	"context"
 	"errors"
 	"fmt"
@@ -34,7 +34,7 @@ func main() {
 	}, "")
 
 	api := e.Group("/api")
-	api.Use(echojwt.WithConfig(utils.CreateJwtConfig()))
+	api.Use(echojwt.WithConfig(security.CreateJwtConfig()))
 	handlers.RegisterUsersHandlers(api, handlers.UsersHandler{UserService: userService}, "/v1")
 
 	printRoutes(e)
@@ -111,7 +111,7 @@ func tryDB(database *mongo.Database) {
 	}
 
 	// Feature Service
-	featureService := service.NewFeatureService(spaceRepo, pageRepo)
+	featureService := service.NewFeatureService(spaceRepo, pageRepo, bookmarkRepo)
 	spaceById, err := featureService.GetSpaceById(context.TODO(), space.ID)
 	if err != nil {
 		return

@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"backend/internal/model"
+	"backend/internal/security"
 	"backend/internal/service"
-	"backend/internal/utils"
 	"errors"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"net/http"
 )
 
@@ -18,6 +20,10 @@ type RegistrationRequest struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type RefreshTokenRequest struct {
+	RefreshToken security.Jwt `json:"refresh_token"`
 }
 
 type AuthHandler struct {
@@ -37,7 +43,7 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusBadRequest, "bad request")
 	}
 
-	hashedPassword, err := utils.HashBcrypt(payload.Password)
+	hashedPassword, err := security.HashBcrypt(payload.Password)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
@@ -69,11 +75,11 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 	}
 
 	user, err := si.UserService.GetUserByUsername(payload.Username)
-	if err != nil || !utils.CheckBcryptHash(payload.Password, user.Password) {
+	if err != nil || !security.CheckBcryptHash(payload.Password, user.Password) {
 		return ctx.String(http.StatusBadRequest, "invalid login")
 	}
 
-	tokenPair, err := utils.GenerateJwtPair(user)
+	tokenPair, err := security.GenerateJwtPair(user)
 
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, "failed to generate token")
@@ -82,5 +88,35 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 }
 
 func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
-	return ctx.String(http.StatusInternalServerError, "Not Implemented")
+	var payload RefreshTokenRequest
+	err := ctx.Bind(&payload)
+	if err != nil || payload.RefreshToken == "" {
+		return ctx.String(http.StatusBadRequest, "bad request")
+	}
+
+	token, err := security.ParseJwt(payload.RefreshToken)
+
+	if err != nil {
+		return middleware.ErrJWTInvalid
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return middleware.ErrJWTInvalid
+	}
+
+	sub := claims["sub"].(string)
+	user, err := si.UserService.GetUserById(sub)
+
+	if err != nil {
+		return echo.ErrUnauthorized
+	}
+
+	tokenPair, err := security.GenerateJwtPair(user)
+	if err != nil {
+		return ctx.String(http.StatusInternalServerError, "failed to generate token")
+	}
+
+	return ctx.JSON(http.StatusOK, tokenPair)
 }
