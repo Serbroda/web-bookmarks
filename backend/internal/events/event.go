@@ -1,8 +1,9 @@
 package events
 
 type Event struct {
-	Name string
-	Data interface{}
+	Name    string
+	OldData interface{}
+	Data    interface{}
 }
 
 type EventListener func(event Event)
@@ -17,12 +18,10 @@ func NewEventDispatcher() *EventDispatcher {
 	}
 }
 
-// Registriere einen Listener für ein Event
 func (ed *EventDispatcher) RegisterListener(eventName string, listener EventListener) {
 	ed.listeners[eventName] = append(ed.listeners[eventName], listener)
 }
 
-// Löse ein Event aus
 func (ed *EventDispatcher) Dispatch(event Event) {
 	if listeners, exists := ed.listeners[event.Name]; exists {
 		for _, listener := range listeners {

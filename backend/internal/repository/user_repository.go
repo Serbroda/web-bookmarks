@@ -16,7 +16,7 @@ type UserRepository struct {
 
 func NewUserRepository(collection *mongo.Collection, dispatcher *events.EventDispatcher) *UserRepository {
 	repo := &UserRepository{
-		GenericRepository: NewGenericRepository[*model.User](collection, dispatcher, "UserSaved"),
+		GenericRepository: NewGenericRepository[*model.User](collection, dispatcher, "User"),
 	}
 
 	err := repo.createIndexes()

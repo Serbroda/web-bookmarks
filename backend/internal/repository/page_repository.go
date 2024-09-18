@@ -16,7 +16,7 @@ type PageRepository struct {
 
 func NewPageRepository(collection *mongo.Collection, dispatcher *events.EventDispatcher) *PageRepository {
 	repo := &PageRepository{
-		GenericRepository: NewGenericRepository[*model.Page](collection, dispatcher, "PageSaved"),
+		GenericRepository: NewGenericRepository[*model.Page](collection, dispatcher, "Page"),
 	}
 
 	err := repo.createIndexes()

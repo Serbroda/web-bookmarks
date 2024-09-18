@@ -16,7 +16,7 @@ type BookmarkRepository struct {
 
 func NewBookmarkRepository(collection *mongo.Collection, dispatcher *events.EventDispatcher) *BookmarkRepository {
 	repo := &BookmarkRepository{
-		GenericRepository: NewGenericRepository[*model.Bookmark](collection, dispatcher, "BookmarkSaved"),
+		GenericRepository: NewGenericRepository[*model.Bookmark](collection, dispatcher, "Bookmark"),
 	}
 
 	err := repo.createIndexes()
