@@ -38,3 +38,13 @@ func (s *ContentService) GetSpaceById(ctx context.Context, id bson.ObjectID) (mo
 	}
 	return *space, nil
 }
+
+func (s *ContentService) GetSpacesByUserId(userId bson.ObjectID) ([]*model.Space, error) {
+	founds, err := s.spaceRepo.Find(context.TODO(), bson.M{
+		"shared.userId": userId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return founds, nil
+}
