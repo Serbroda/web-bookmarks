@@ -13,7 +13,7 @@ type ContentService struct {
 	bookmarkRepo *repository.BookmarkRepository
 }
 
-func NewFeatureService(spaceRepo *repository.SpaceRepository, pageRepo *repository.PageRepository, bookmarkRepo *repository.BookmarkRepository) *ContentService {
+func NewContentService(spaceRepo *repository.SpaceRepository, pageRepo *repository.PageRepository, bookmarkRepo *repository.BookmarkRepository) *ContentService {
 	return &ContentService{
 		spaceRepo:    spaceRepo,
 		pageRepo:     pageRepo,

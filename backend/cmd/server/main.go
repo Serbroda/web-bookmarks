@@ -8,13 +8,11 @@ import (
 	"backend/internal/security"
 	"backend/internal/service"
 	"context"
-	"errors"
 	"fmt"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/v2/mongo"
-	"log"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 // https://golang.withcodeexample.com/blog/top-databases-with-golang-in-2024/#:~:text=for%20more%20examples-,MongoDB,or%20Not%20only%20SQL%20database.
@@ -23,7 +21,14 @@ func main() {
 	defer db.CloseConnection()
 
 	userRepo := repository.NewUserRepository(database.Collection("users"))
+	pageRepo := repository.NewPageRepository(database.Collection("pages"))
+	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"))
+	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
+
 	userService := service.NewUserService(userRepo)
+	contentService := service.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
+
+	tryDB(spaceRepo)
 
 	e := echo.New()
 	e.Use(middleware.Recover())
@@ -36,6 +41,7 @@ func main() {
 	api := e.Group("/api")
 	api.Use(echojwt.WithConfig(security.CreateJwtConfig()))
 	handlers.RegisterUsersHandlers(api, handlers.UsersHandler{UserService: userService}, "/v1")
+	handlers.RegisterContentHandlers(api, handlers.ContentHandler{ContentService: contentService}, "/v1")
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))
@@ -48,73 +54,33 @@ func printRoutes(e *echo.Echo) {
 	}
 }
 
-func tryDB(database *mongo.Database) {
-	userRepo := repository.NewUserRepository(database.Collection("users"))
-	pageRepo := repository.NewPageRepository(database.Collection("pages"))
-	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"))
-	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
+func tryDB(spaceRepo *repository.SpaceRepository) {
+	space := &model.Space{
+		Name:   "test struct",
+		Shared: make([]model.UserIdWithRole, 0),
+	}
 
-	name := "admin"
-	user, err := userRepo.FindByUsername(context.TODO(), name)
+	userId, err := bson.ObjectIDFromHex("66eb41a0829447497723b259")
 	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			user = &model.User{
-				Username: name,
-			}
-			userRepo.Save(context.Background(), user)
-			fmt.Println("created user")
-		} else {
-			log.Fatal(err)
-		}
-	} else {
-		fmt.Printf("Found user with username: %v\n", user.Username)
+		panic(err)
 	}
 
-	space := model.Space{
-		Name: "Test Space",
-	}
-	spaceRepo.Save(context.TODO(), &space)
+	space.Shared = append(space.Shared, model.UserIdWithRole{
+		UserID: userId,
+		Role:   "OWNER",
+	})
 
-	page := model.Page{
-		Name:    "Test Page",
-		SpaceID: space.ID,
-	}
-	pageRepo.Save(context.TODO(), &page)
-
-	bookmark := model.Bookmark{
-		Title:  "Test Bookmark",
-		URL:    "http://google.de",
-		PageId: page.ID,
-	}
-	bookmarkRepo.Save(context.TODO(), &bookmark)
-
-	// Search
-	spaces, err := spaceRepo.FindAll(context.TODO())
-	if err == nil {
-		for _, space := range spaces {
-			fmt.Printf(" - %v\n", space.Pages)
-		}
-	}
-
-	pages, err := pageRepo.FindAll(context.TODO())
-	if err == nil {
-		for _, page := range pages {
-			fmt.Printf(" - %v\n", page)
-		}
-	}
-
-	bookmarks, err := bookmarkRepo.FindAll(context.TODO())
-	if err == nil {
-		for _, bookmark := range bookmarks {
-			fmt.Printf(" - %v\n", bookmark)
-		}
-	}
-
-	// Feature Service
-	featureService := service.NewFeatureService(spaceRepo, pageRepo, bookmarkRepo)
-	spaceById, err := featureService.GetSpaceById(context.TODO(), space.ID)
+	err = spaceRepo.Save(context.TODO(), space)
 	if err != nil {
-		return
+		panic(err)
 	}
-	fmt.Printf(" - %v\n", spaceById)
+
+	founds, err := spaceRepo.Find(context.TODO(), bson.M{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, found := range founds {
+		fmt.Printf(" - %v\n", found)
+	}
 }
