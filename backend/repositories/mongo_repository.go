@@ -1,7 +1,7 @@
-package repository
+package repositories
 
 import (
-	"backend/internal/model"
+	"backend/models"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -14,11 +14,11 @@ var (
 	ErrMoreThanOneEntity = errors.New("more than one entity found")
 )
 
-type GenericRepository[T model.BaseEntityInterface] struct {
+type GenericRepository[T models.BaseEntityInterface] struct {
 	collection *mongo.Collection
 }
 
-func NewGenericRepository[T model.BaseEntityInterface](collection *mongo.Collection) *GenericRepository[T] {
+func NewGenericRepository[T models.BaseEntityInterface](collection *mongo.Collection) *GenericRepository[T] {
 	return &GenericRepository[T]{
 		collection: collection,
 	}

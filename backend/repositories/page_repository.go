@@ -1,7 +1,7 @@
-package repository
+package repositories
 
 import (
-	"backend/internal/model"
+	"backend/models"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -10,12 +10,12 @@ import (
 )
 
 type PageRepository struct {
-	*GenericRepository[*model.Page]
+	*GenericRepository[*models.Page]
 }
 
 func NewPageRepository(collection *mongo.Collection) *PageRepository {
 	repo := &PageRepository{
-		GenericRepository: NewGenericRepository[*model.Page](collection),
+		GenericRepository: NewGenericRepository[*models.Page](collection),
 	}
 
 	err := repo.createIndexes()
@@ -26,15 +26,15 @@ func NewPageRepository(collection *mongo.Collection) *PageRepository {
 	return repo
 }
 
-func (r *PageRepository) FindBySpaceId(ctx context.Context, spaceID bson.ObjectID) ([]model.Page, error) {
+func (r *PageRepository) FindBySpaceId(ctx context.Context, spaceID bson.ObjectID) ([]models.Page, error) {
 	// Ruft die Find-Methode auf, die Pointer zurückgibt
 	pointerPages, err := r.Find(ctx, bson.M{"spaceId": spaceID})
 	if err != nil {
 		return nil, err
 	}
 
-	// Wandelt die Liste von *model.Page zu []model.Page um
-	pages := make([]model.Page, len(pointerPages))
+	// Wandelt die Liste von *models.Page zu []models.Page um
+	pages := make([]models.Page, len(pointerPages))
 	for i, p := range pointerPages {
 		pages[i] = *p // Dereferenzierung des Pointers
 	}

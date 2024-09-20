@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"backend/internal/model"
-	"backend/internal/security"
-	"backend/internal/service"
+	"backend/models"
+	"backend/security"
+	"backend/services"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -27,7 +27,7 @@ type RefreshTokenRequest struct {
 }
 
 type AuthHandler struct {
-	UserService *service.UserService
+	UserService *services.UserService
 }
 
 func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -48,7 +48,7 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	user := &model.User{
+	user := &models.User{
 		Email:    payload.Email,
 		Password: hashedPassword,
 	}
@@ -60,7 +60,7 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 	err = si.UserService.CreateUser(user)
 
 	if err != nil {
-		if errors.Is(err, service.ErrUsernameAlreadyExists) {
+		if errors.Is(err, services.ErrUsernameAlreadyExists) {
 			return ctx.String(http.StatusConflict, err.Error())
 		} else {
 			return ctx.String(http.StatusInternalServerError, err.Error())

@@ -9,3 +9,12 @@ Content-Type: application/json
 }
 
 ###
+### GET request to example server
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "{{email}}-2",
+  "password": "{{password}}-2",
+  "username": "{{username}}-2"
+}

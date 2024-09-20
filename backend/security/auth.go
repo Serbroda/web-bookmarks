@@ -5,6 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"net/http"
 	"strings"
 )
@@ -16,6 +17,7 @@ var (
 
 type Authentication struct {
 	Subject string
+	UserId  bson.ObjectID
 	Roles   []string
 }
 
@@ -47,6 +49,12 @@ func ParseToken(token *jwt.Token) (Authentication, error) {
 	if !ok {
 		return Authentication{}, errors.New("failed to get sub from claims")
 	}
+
+	userId, err := bson.ObjectIDFromHex(sub)
+	if err != nil {
+		return Authentication{}, errors.New("failed to create ObjectID from sub")
+	}
+
 	/*userId, err := strconv.ParseInt(sub, 10, 64)
 	if err != nil {
 		return Authentication{}, errors.New("failed parse int of sub")
@@ -61,6 +69,7 @@ func ParseToken(token *jwt.Token) (Authentication, error) {
 	}*/
 	return Authentication{
 		Subject: sub,
+		UserId:  userId,
 		//Roles:   roles,
 	}, nil
 }

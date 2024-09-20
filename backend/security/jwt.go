@@ -1,7 +1,7 @@
 package security
 
 import (
-	"backend/internal/model"
+	"backend/models"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
@@ -25,7 +25,7 @@ type JwtCustomClaims struct {
 	Roles string `json:"roles,omitempty"`
 }
 
-func GenerateJwtPair(user *model.User) (TokenPair, error) {
+func GenerateJwtPair(user *models.User) (TokenPair, error) {
 	accessToken, err := GenerateJwt(jwt.MapClaims{
 		"sub":  user.ID.Hex(),
 		"exp":  time.Now().Add(time.Minute * time.Duration(jwtAccessTokenExp)).Unix(),

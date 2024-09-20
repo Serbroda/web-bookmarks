@@ -1,7 +1,7 @@
-package repository
+package repositories
 
 import (
-	"backend/internal/model"
+	"backend/models"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -10,12 +10,12 @@ import (
 )
 
 type UserRepository struct {
-	*GenericRepository[*model.User]
+	*GenericRepository[*models.User]
 }
 
 func NewUserRepository(collection *mongo.Collection) *UserRepository {
 	repo := &UserRepository{
-		GenericRepository: NewGenericRepository[*model.User](collection),
+		GenericRepository: NewGenericRepository[*models.User](collection),
 	}
 
 	err := repo.createIndexes()
@@ -53,7 +53,7 @@ func (r *UserRepository) createIndexes() error {
 	return nil
 }
 
-func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*model.User, error) {
+func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
 	found, err := r.FindOne(ctx, bson.M{"username": username})
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*
 	return *found, err
 }
 
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
 	found, err := r.FindOne(ctx, bson.M{"email": email})
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package model
+package models
 
 type User struct {
 	BaseEntity `bson:",inline" json:",inline"`

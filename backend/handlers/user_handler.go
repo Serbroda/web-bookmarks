@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"backend/internal/security"
-	"backend/internal/service"
+	"backend/security"
+	"backend/services"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -11,7 +11,7 @@ type UserHandler struct {
 }
 
 type UsersHandler struct {
-	UserService *service.UserService
+	UserService *services.UserService
 }
 
 func RegisterUsersHandlers(e *echo.Group, h UsersHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {

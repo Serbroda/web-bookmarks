@@ -1,12 +1,12 @@
 package main
 
 import (
-	"backend/cmd/server/handlers"
-	"backend/internal/db"
-	"backend/internal/model"
-	"backend/internal/repository"
-	"backend/internal/security"
-	"backend/internal/service"
+	"backend/db"
+	"backend/handlers"
+	"backend/models"
+	"backend/repositories"
+	"backend/security"
+	"backend/services"
 	"context"
 	"fmt"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -20,13 +20,13 @@ func main() {
 	_, database := db.Connect("mongodb://localhost:27017")
 	defer db.CloseConnection()
 
-	userRepo := repository.NewUserRepository(database.Collection("users"))
-	pageRepo := repository.NewPageRepository(database.Collection("pages"))
-	spaceRepo := repository.NewSpaceRepository(database.Collection("spaces"))
-	bookmarkRepo := repository.NewBookmarkRepository(database.Collection("bookmarks"))
+	userRepo := repositories.NewUserRepository(database.Collection("users"))
+	pageRepo := repositories.NewPageRepository(database.Collection("pages"))
+	spaceRepo := repositories.NewSpaceRepository(database.Collection("spaces"))
+	bookmarkRepo := repositories.NewBookmarkRepository(database.Collection("bookmarks"))
 
-	userService := service.NewUserService(userRepo)
-	contentService := service.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
+	userService := services.NewUserService(userRepo)
+	contentService := services.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
 
 	tryDB(spaceRepo)
 
@@ -41,7 +41,7 @@ func main() {
 	api := e.Group("/api")
 	api.Use(echojwt.WithConfig(security.CreateJwtConfig()))
 	handlers.RegisterUsersHandlers(api, handlers.UsersHandler{UserService: userService}, "/v1")
-	handlers.RegisterContentHandlers(api, handlers.ContentHandler{ContentService: contentService}, "/v1")
+	handlers.RegisterSpaceHandlers(api, handlers.SpaceHandler{ContentService: contentService}, "/v1")
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))
@@ -54,10 +54,10 @@ func printRoutes(e *echo.Echo) {
 	}
 }
 
-func tryDB(spaceRepo *repository.SpaceRepository) {
-	space := &model.Space{
+func tryDB(spaceRepo *repositories.SpaceRepository) {
+	space := &models.Space{
 		Name:   "test struct",
-		Shared: make([]model.UserIdWithRole, 0),
+		Shared: make([]models.UserIdWithRole, 0),
 	}
 
 	userId, err := bson.ObjectIDFromHex("66eb41a0829447497723b259")
@@ -65,7 +65,7 @@ func tryDB(spaceRepo *repository.SpaceRepository) {
 		panic(err)
 	}
 
-	space.Shared = append(space.Shared, model.UserIdWithRole{
+	space.Shared = append(space.Shared, models.UserIdWithRole{
 		UserID: userId,
 		Role:   "OWNER",
 	})

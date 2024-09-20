@@ -1,8 +1,8 @@
-package service
+package services
 
 import (
-	"backend/internal/model"
-	"backend/internal/repository"
+	"backend/models"
+	"backend/repositories"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -15,16 +15,16 @@ var (
 )
 
 type UserService struct {
-	userRepo *repository.UserRepository
+	userRepo *repositories.UserRepository
 }
 
-func NewUserService(userRepo *repository.UserRepository) *UserService {
+func NewUserService(userRepo *repositories.UserRepository) *UserService {
 	return &UserService{
 		userRepo: userRepo,
 	}
 }
 
-func (s *UserService) CreateUser(user *model.User) error {
+func (s *UserService) CreateUser(user *models.User) error {
 	exists, err := s.ExistsByEmail(user.Email)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (s *UserService) CreateUser(user *model.User) error {
 	return s.userRepo.Save(context.TODO(), user)
 }
 
-func (s *UserService) GetUserById(id string) (*model.User, error) {
+func (s *UserService) GetUserById(id string) (*models.User, error) {
 	objectID, err := bson.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (s *UserService) GetUserById(id string) (*model.User, error) {
 	return s.userRepo.FindByID(context.TODO(), objectID)
 }
 
-func (s *UserService) GetUserByEmailOrUsername(emailOrUsername string) (*model.User, error) {
+func (s *UserService) GetUserByEmailOrUsername(emailOrUsername string) (*models.User, error) {
 	user, err := s.GetUserByEmail(emailOrUsername)
 	if err != nil {
 		user, err = s.GetUserByUsername(emailOrUsername)
@@ -63,11 +63,11 @@ func (s *UserService) GetUserByEmailOrUsername(emailOrUsername string) (*model.U
 	return user, nil
 }
 
-func (s *UserService) GetUserByUsername(username string) (*model.User, error) {
+func (s *UserService) GetUserByUsername(username string) (*models.User, error) {
 	return s.userRepo.FindByUsername(context.TODO(), username)
 }
 
-func (s *UserService) GetUserByEmail(email string) (*model.User, error) {
+func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
 	return s.userRepo.FindByEmail(context.TODO(), email)
 }
 
@@ -79,7 +79,7 @@ func (s *UserService) ExistsByEmail(username string) (bool, error) {
 	return s.exists(s.GetUserByEmail(username))
 }
 
-func (s *UserService) exists(user *model.User, err error) (bool, error) {
+func (s *UserService) exists(user *models.User, err error) (bool, error) {
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return false, nil
