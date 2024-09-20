@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"backend/models"
+	"backend/security"
 	"backend/services"
 	"context"
 	"errors"
@@ -99,10 +100,8 @@ func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 		return handleError(ctx, err, http.StatusInternalServerError)
 	}
 
-	if space.OwnerID != auth.UserId && !contains(space.Shared, func(s models.UserIdWithRole) bool {
-		return s.UserID == auth.UserId
-	}) {
-		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	if err := h.checkPermission(&space, auth, false); err != nil {
+		return err
 	}
 
 	return ctx.JSON(http.StatusOK, space)
@@ -127,10 +126,8 @@ func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {
 		return handleError(ctx, err, http.StatusInternalServerError)
 	}
 
-	if space.OwnerID != auth.UserId && !contains(space.Shared, func(s models.UserIdWithRole) bool {
-		return s.UserID == auth.UserId && s.Role == "ADMIN"
-	}) {
-		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	if err := h.checkPermission(&space, auth, true); err != nil {
+		return err
 	}
 
 	err = h.ContentService.DeleteSpace(context.TODO(), id)
@@ -148,4 +145,13 @@ func contains[T any](slice []T, compare func(T) bool) bool {
 		}
 	}
 	return false
+}
+
+func (h *SpaceHandler) checkPermission(space *models.Space, auth security.Authentication, requireAdmin bool) error {
+	if space.OwnerID != auth.UserId && !contains(space.Shared, func(s models.UserIdWithRole) bool {
+		return s.UserID == auth.UserId && (!requireAdmin || s.Role == "ADMIN")
+	}) {
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+	return nil
 }
