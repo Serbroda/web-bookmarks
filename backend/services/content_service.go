@@ -46,10 +46,15 @@ func (s *ContentService) GetSpaceById(ctx context.Context, id bson.ObjectID) (mo
 	return *space, nil
 }
 
-func (s *ContentService) GetSpacesByUserId(userId bson.ObjectID) ([]*models.Space, error) {
-	founds, err := s.spaceRepo.Find(context.TODO(), bson.M{
-		"shared.userId": userId,
-	})
+func (s *ContentService) GetSpacesForUser(userId bson.ObjectID) ([]*models.Space, error) {
+	filter := bson.M{
+		"$or": []bson.M{
+			{"ownerId": userId},
+			{"shared.userId": userId},
+		},
+	}
+
+	founds, err := s.spaceRepo.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
 	}

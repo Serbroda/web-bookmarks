@@ -74,7 +74,7 @@ func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
 	if err != nil {
 		return handleError(ctx, err, http.StatusUnauthorized)
 	}
-	spaces, err := h.ContentService.GetSpacesByUserId(auth.UserId)
+	spaces, err := h.ContentService.GetSpacesForUser(auth.UserId)
 	if err != nil {
 		return handleError(ctx, err, http.StatusUnauthorized)
 	}
