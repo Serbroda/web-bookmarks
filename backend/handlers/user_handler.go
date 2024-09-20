@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"backend/security"
 	"backend/services"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -19,9 +18,9 @@ func RegisterUsersHandlers(e *echo.Group, h UsersHandler, baseUrl string, middle
 }
 
 func (h *UsersHandler) GetMe(ctx echo.Context) error {
-	auth, ok := ctx.Get(security.ContextKeyAuthentication).(security.Authentication)
-	if !ok {
-		return ctx.String(http.StatusUnauthorized, "Unauthorized")
+	auth, err := getAuthenticatedUser(ctx)
+	if err != nil {
+		return handleError(ctx, err, http.StatusUnauthorized)
 	}
 	return ctx.JSON(http.StatusOK, auth)
 }

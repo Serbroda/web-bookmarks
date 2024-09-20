@@ -26,19 +26,3 @@ func (e *ConstraintViolationError) Error() string {
 	}
 	return sb.String()
 }
-
-func validateUser(username string, age int) *ConstraintViolationError {
-	var violations ConstraintViolationError
-
-	if len(username) == 0 {
-		violations.AddViolation("Username", "Username darf nicht leer sein")
-	}
-	if age < 18 {
-		violations.AddViolation("Age", "Alter muss mindestens 18 sein")
-	}
-
-	if len(violations.Violations) > 0 {
-		return &violations
-	}
-	return nil
-}

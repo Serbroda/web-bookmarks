@@ -12,7 +12,8 @@ import (
 )
 
 type CreateSpaceRequest struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
 }
 
 func (j *CreateSpaceRequest) Validate() *ConstraintViolationError {
@@ -36,6 +37,7 @@ func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middle
 	e.POST(baseUrl+"/spaces", h.CreateSpace, middlewares...)
 	e.GET(baseUrl+"/spaces", h.GetSpaces, middlewares...)
 	e.GET(baseUrl+"/spaces/:id", h.GetSpaceById, middlewares...)
+	e.DELETE(baseUrl+"/spaces/:id", h.DeleteSpace, middlewares...)
 }
 
 func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
@@ -53,14 +55,10 @@ func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
 		return handleError(ctx, err, http.StatusBadRequest)
 	}
 
-	id, err := bson.ObjectIDFromHex(auth.Subject)
-	if err != nil {
-		return handleError(ctx, err, http.StatusInternalServerError)
-	}
-
 	space := &models.Space{
-		Name:    payload.Name,
-		OwnerID: id,
+		Name:        payload.Name,
+		Description: payload.Description,
+		OwnerID:     auth.UserId,
 	}
 
 	if err := h.ContentService.CreateSpace(context.TODO(), space); err != nil {
@@ -90,7 +88,7 @@ func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 
 	id, err := bson.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
-		return handleError(ctx, err, http.StatusUnauthorized)
+		return handleError(ctx, err, http.StatusBadRequest)
 	}
 
 	space, err := h.ContentService.GetSpaceById(context.TODO(), id)
@@ -108,6 +106,39 @@ func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, space)
+}
+
+func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {
+	auth, err := getAuthenticatedUser(ctx)
+	if err != nil {
+		return handleError(ctx, err, http.StatusUnauthorized)
+	}
+
+	id, err := bson.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
+	}
+
+	space, err := h.ContentService.GetSpaceById(context.TODO(), id)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return handleError(ctx, err, http.StatusNotFound)
+		}
+		return handleError(ctx, err, http.StatusInternalServerError)
+	}
+
+	if space.OwnerID != auth.UserId && !contains(space.Shared, func(s models.UserIdWithRole) bool {
+		return s.UserID == auth.UserId && s.Role == "ADMIN"
+	}) {
+		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
+	}
+
+	err = h.ContentService.DeleteSpace(context.TODO(), id)
+	if err != nil {
+		return handleError(ctx, err, http.StatusInternalServerError)
+	}
+
+	return ctx.String(http.StatusOK, "ok")
 }
 
 func contains[T any](slice []T, compare func(T) bool) bool {

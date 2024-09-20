@@ -1,10 +1,9 @@
+@ID = 66edfb7f4820b1ca66e73959
+
 ### GET request to example server
-POST {{host}}/api/v1/spaces
+DELETE {{host}}/api/v1/spaces/{{ID}}
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
-{
-  "name": "Test"
-}
 
 ###

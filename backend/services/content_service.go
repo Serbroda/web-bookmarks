@@ -55,3 +55,7 @@ func (s *ContentService) GetSpacesByUserId(userId bson.ObjectID) ([]*models.Spac
 	}
 	return founds, nil
 }
+
+func (s *ContentService) DeleteSpace(ctx context.Context, id bson.ObjectID) error {
+	return s.spaceRepo.Delete(ctx, id)
+}

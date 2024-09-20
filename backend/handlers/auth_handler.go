@@ -16,14 +16,59 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+func (j *LoginRequest) Validate() *ConstraintViolationError {
+	var violations ConstraintViolationError
+
+	if len(j.User) == 0 {
+		violations.AddViolation("user", "user must be set")
+	}
+	if len(j.Password) == 0 {
+		violations.AddViolation("password", "password must be set")
+	}
+
+	if len(violations.Violations) > 0 {
+		return &violations
+	}
+	return nil
+}
+
 type RegistrationRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Email    string  `json:"email"`
+	Password string  `json:"password"`
+	Username *string `json:"username,omitempty"`
+}
+
+func (j *RegistrationRequest) Validate() *ConstraintViolationError {
+	var violations ConstraintViolationError
+
+	if len(j.Email) == 0 {
+		violations.AddViolation("user", "user must be set")
+	}
+	if len(j.Password) == 0 {
+		violations.AddViolation("password", "password must be set")
+	}
+
+	if len(violations.Violations) > 0 {
+		return &violations
+	}
+	return nil
 }
 
 type RefreshTokenRequest struct {
-	RefreshToken security.Jwt `json:"refresh_token"`
+	RefreshToken security.Jwt `json:"refreshToken"`
+}
+
+func (j *RefreshTokenRequest) Validate() *ConstraintViolationError {
+	var violations ConstraintViolationError
+
+	if len(j.RefreshToken) == 0 {
+		violations.AddViolation("refreshToken", "refreshToken must be set")
+	}
+
+	if len(violations.Violations) > 0 {
+		return &violations
+	}
+	return nil
 }
 
 type AuthHandler struct {
@@ -39,13 +84,17 @@ func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewar
 func (si *AuthHandler) Register(ctx echo.Context) error {
 	var payload RegistrationRequest
 	err := ctx.Bind(&payload)
-	if err != nil || payload.Email == "" || payload.Password == "" {
-		return ctx.String(http.StatusBadRequest, "bad request")
+	if err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
+	}
+
+	if err := payload.Validate(); err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
 	}
 
 	hashedPassword, err := security.HashBcrypt(payload.Password)
 	if err != nil {
-		return ctx.String(http.StatusInternalServerError, err.Error())
+		return handleError(ctx, err, http.StatusInternalServerError)
 	}
 
 	user := &models.User{
@@ -53,17 +102,17 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		Password: hashedPassword,
 	}
 
-	if payload.Username != "" {
-		user.Username = payload.Username
+	if payload.Username != nil && *payload.Username != "" {
+		user.Username = *payload.Username
 	}
 
 	err = si.UserService.CreateUser(user)
 
 	if err != nil {
 		if errors.Is(err, services.ErrUsernameAlreadyExists) {
-			return ctx.String(http.StatusConflict, err.Error())
+			return handleError(ctx, err, http.StatusConflict)
 		} else {
-			return ctx.String(http.StatusInternalServerError, err.Error())
+			return handleError(ctx, err, http.StatusInternalServerError)
 		}
 	}
 
@@ -73,19 +122,23 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 func (si *AuthHandler) Login(ctx echo.Context) error {
 	var payload LoginRequest
 	err := ctx.Bind(&payload)
-	if err != nil || payload.User == "" || payload.Password == "" {
-		return ctx.String(http.StatusBadRequest, "bad request")
+	if err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
+	}
+
+	if err := payload.Validate(); err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
 	}
 
 	user, err := si.UserService.GetUserByEmailOrUsername(payload.User)
 	if err != nil || !security.CheckBcryptHash(payload.Password, user.Password) {
-		return ctx.String(http.StatusBadRequest, "invalid login")
+		return handleError(ctx, err, http.StatusUnauthorized)
 	}
 
 	tokenPair, err := security.GenerateJwtPair(user)
 
 	if err != nil {
-		return ctx.String(http.StatusInternalServerError, "failed to generate token")
+		return handleError(ctx, err, http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusOK, tokenPair)
 }
@@ -93,8 +146,12 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	var payload RefreshTokenRequest
 	err := ctx.Bind(&payload)
-	if err != nil || payload.RefreshToken == "" {
-		return ctx.String(http.StatusBadRequest, "bad request")
+	if err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
+	}
+
+	if err := payload.Validate(); err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
 	}
 
 	token, err := security.ParseJwt(payload.RefreshToken)
@@ -118,7 +175,7 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 
 	tokenPair, err := security.GenerateJwtPair(user)
 	if err != nil {
-		return ctx.String(http.StatusInternalServerError, "failed to generate token")
+		return handleError(ctx, err, http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, tokenPair)
