@@ -46,6 +46,14 @@ func (s *ContentService) GetSpaceById(ctx context.Context, id bson.ObjectID) (mo
 	return *space, nil
 }
 
+func (s *ContentService) GetPagesBySpaceId(ctx context.Context, spaceId bson.ObjectID) ([]models.Page, error) {
+	return s.pageRepo.FindBySpaceId(ctx, spaceId)
+}
+
+func (s *ContentService) BuildPageTree(pages []*models.Page) []*models.Page {
+	return s.pageRepo.BuildPageTree(pages)
+}
+
 func (s *ContentService) GetSpacesForUser(userId bson.ObjectID) ([]*models.Space, error) {
 	filter := bson.M{
 		"$or": []bson.M{

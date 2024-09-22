@@ -42,6 +42,37 @@ func (r *PageRepository) FindBySpaceId(ctx context.Context, spaceID bson.ObjectI
 	return pages, nil
 }
 
+func (r *PageRepository) BuildPageTree(pages []*models.Page) []*models.Page {
+	// Map pages by ParentPageID
+	pageMap := make(map[bson.ObjectID][]*models.Page)
+	var rootPages []*models.Page
+
+	for _, page := range pages {
+		if page.ParentPageID != nil {
+			pageMap[*page.ParentPageID] = append(pageMap[*page.ParentPageID], page)
+		} else {
+			rootPages = append(rootPages, page)
+		}
+	}
+
+	// Recursively build the tree
+	var buildSubPages func(*models.Page)
+	buildSubPages = func(parent *models.Page) {
+		if subPages, ok := pageMap[parent.ID]; ok {
+			parent.SubPages = subPages
+			for _, subPage := range subPages {
+				buildSubPages(subPage)
+			}
+		}
+	}
+
+	for _, root := range rootPages {
+		buildSubPages(root)
+	}
+
+	return rootPages
+}
+
 func (r *PageRepository) createIndexes() error {
 	indexModel := mongo.IndexModel{
 		Keys:    bson.M{"spaceId": 1}, // 1 für aufsteigender Index

@@ -1,6 +1,15 @@
 package models
 
-import "go.mongodb.org/mongo-driver/v2/bson"
+import (
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
+
+type SpaceVisibility = string
+
+const (
+	SpaceVisibilityPublic  SpaceVisibility = "public"
+	SpaceVisibilityPrivate SpaceVisibility = "private"
+)
 
 type UserIdWithRole struct {
 	UserID bson.ObjectID `bson:"userId" json:"userId"`
@@ -11,6 +20,7 @@ type Space struct {
 	BaseEntity  `bson:",inline" json:",inline"`
 	Name        string           `bson:"name" json:"name"`
 	Description string           `bson:"description" json:"description"`
+	Visibility  SpaceVisibility  `bson:"visibility" json:"visibility"`
 	OwnerID     bson.ObjectID    `bson:"ownerId" json:"ownerId"`
 	Pages       []bson.ObjectID  `bson:"pages,omitempty" json:"pages,omitempty"`
 	Shared      []UserIdWithRole `bson:"shared"`

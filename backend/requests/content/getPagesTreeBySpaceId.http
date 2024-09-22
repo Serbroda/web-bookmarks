@@ -1,0 +1,9 @@
+@SPACE_ID = 66f07f6b23af4e8de2c9159c
+
+### GET request to example server
+GET {{host}}/api/v1/spaces/{{SPACE_ID}}/pages/tree
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+
+###

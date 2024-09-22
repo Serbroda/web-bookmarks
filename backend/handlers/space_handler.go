@@ -4,6 +4,7 @@ import (
 	"backend/models"
 	"backend/security"
 	"backend/services"
+	"backend/utils"
 	"context"
 	"errors"
 	"github.com/labstack/echo/v4"
@@ -39,6 +40,7 @@ func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middle
 	e.GET(baseUrl+"/spaces", h.GetSpaces, middlewares...)
 	e.GET(baseUrl+"/spaces/:id", h.GetSpaceById, middlewares...)
 	e.DELETE(baseUrl+"/spaces/:id", h.DeleteSpace, middlewares...)
+	e.GET(baseUrl+"/spaces/:id/pages/tree", h.GetPagesTreeBySpaceId, middlewares...)
 }
 
 func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
@@ -138,17 +140,41 @@ func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {
 	return ctx.String(http.StatusOK, "ok")
 }
 
-func contains[T any](slice []T, compare func(T) bool) bool {
-	for _, v := range slice {
-		if compare(v) {
-			return true
-		}
+func (h *SpaceHandler) GetPagesTreeBySpaceId(ctx echo.Context) error {
+	auth, err := getAuthenticatedUser(ctx)
+	if err != nil {
+		return handleError(ctx, err, http.StatusUnauthorized)
 	}
-	return false
+
+	id, err := bson.ObjectIDFromHex(ctx.Param("id"))
+	if err != nil {
+		return handleError(ctx, err, http.StatusBadRequest)
+	}
+
+	space, err := h.ContentService.GetSpaceById(context.TODO(), id)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return handleError(ctx, err, http.StatusNotFound)
+		}
+		return handleError(ctx, err, http.StatusInternalServerError)
+	}
+
+	if err := h.checkPermission(&space, auth, false); err != nil {
+		return err
+	}
+
+	pages, err := h.ContentService.GetPagesBySpaceId(context.TODO(), space.ID)
+	if err != nil {
+		return handleError(ctx, err, http.StatusInternalServerError)
+	}
+	pagesPointers := utils.ConvertToPointerSlice(pages)
+
+	pagesTree := h.ContentService.BuildPageTree(pagesPointers)
+	return ctx.JSON(http.StatusOK, pagesTree)
 }
 
 func (h *SpaceHandler) checkPermission(space *models.Space, auth security.Authentication, requireAdmin bool) error {
-	if space.OwnerID != auth.UserId && !contains(space.Shared, func(s models.UserIdWithRole) bool {
+	if space.OwnerID != auth.UserId && !utils.ContainsFiltered(space.Shared, func(s models.UserIdWithRole) bool {
 		return s.UserID == auth.UserId && (!requireAdmin || s.Role == "ADMIN")
 	}) {
 		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")

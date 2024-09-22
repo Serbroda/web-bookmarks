@@ -28,7 +28,7 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	contentService := services.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
 
-	tryDB(spaceRepo)
+	tryDB(spaceRepo, pageRepo)
 
 	e := echo.New()
 	e.Use(middleware.Recover())
@@ -54,13 +54,13 @@ func printRoutes(e *echo.Echo) {
 	}
 }
 
-func tryDB(spaceRepo *repositories.SpaceRepository) {
+func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageRepository) {
 	space := &models.Space{
-		Name:   "test struct",
+		Name:   "Space 1",
 		Shared: make([]models.UserIdWithRole, 0),
 	}
 
-	userId, err := bson.ObjectIDFromHex("66eb41a0829447497723b259")
+	userId, err := bson.ObjectIDFromHex("66f07f396e64446f862e37da")
 	if err != nil {
 		panic(err)
 	}
@@ -82,5 +82,49 @@ func tryDB(spaceRepo *repositories.SpaceRepository) {
 
 	for _, found := range founds {
 		fmt.Printf(" - %v\n", found)
+	}
+
+	page0 := &models.Page{
+		Name:    "Page R0",
+		SpaceID: space.ID,
+	}
+	err = pageRepo.Save(context.TODO(), page0)
+	if err != nil {
+		panic(err)
+	}
+	page1 := &models.Page{
+		Name:    "Page R1",
+		SpaceID: space.ID,
+	}
+	err = pageRepo.Save(context.TODO(), page1)
+	if err != nil {
+		panic(err)
+	}
+	page11 := &models.Page{
+		Name:         "Page R21.1",
+		SpaceID:      space.ID,
+		ParentPageID: &page1.ID,
+	}
+	err = pageRepo.Save(context.TODO(), page11)
+	if err != nil {
+		panic(err)
+	}
+	page12 := &models.Page{
+		Name:         "Page R21.2",
+		SpaceID:      space.ID,
+		ParentPageID: &page1.ID,
+	}
+	err = pageRepo.Save(context.TODO(), page12)
+	if err != nil {
+		panic(err)
+	}
+	page121 := &models.Page{
+		Name:         "Page R21.2.1",
+		SpaceID:      space.ID,
+		ParentPageID: &page12.ID,
+	}
+	err = pageRepo.Save(context.TODO(), page121)
+	if err != nil {
+		panic(err)
 	}
 }
