@@ -1,6 +1,6 @@
 ### GET request to example server
 POST {{host}}/api/v1/pages
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {

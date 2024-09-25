@@ -7,6 +7,6 @@ Content-Type: application/json
   "password": "{{password}}"
 }
 
-> {% client.global.set("access_token", response.body.access_token); %}
+> {% client.global.set("accessToken", response.body.accessToken); %}
 
 ###

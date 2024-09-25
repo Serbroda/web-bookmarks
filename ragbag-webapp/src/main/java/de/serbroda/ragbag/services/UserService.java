@@ -28,6 +28,10 @@ public class UserService {
         return accountRepository.findByUsernameIgnoreCase(username);
     }
 
+    public Optional<Account> getUserById(long userId) {
+        return accountRepository.findById(userId);
+    }
+
     @Transactional
     public Account createAccount(Account account) {
         if (getUserByUsername(account.getUsername()).isPresent()) {

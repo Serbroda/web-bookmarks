@@ -6,6 +6,8 @@ import de.serbroda.ragbag.models.Space;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface SpaceMapper {
 
@@ -14,4 +16,6 @@ public interface SpaceMapper {
     Space map(CreateSpaceDto source);
 
     SpaceDto map(Space source);
+
+    List<SpaceDto> mapAll(List<Space> source);
 }

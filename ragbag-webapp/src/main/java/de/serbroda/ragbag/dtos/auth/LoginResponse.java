@@ -3,10 +3,10 @@ package de.serbroda.ragbag.dtos.auth;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LoginResponse {
-    @JsonProperty("access_token")
+    @JsonProperty("accessToken")
     private String accessToken;
 
-    @JsonProperty("expires_in")
+    @JsonProperty("expiresIn")
     private long expiresIn;
 
     public String getAccessToken() {

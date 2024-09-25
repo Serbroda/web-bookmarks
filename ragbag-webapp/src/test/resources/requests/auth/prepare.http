@@ -3,8 +3,8 @@ POST {{host}}/auth/signup
 Content-Type: application/json
 
 {
-  "email": "{{user}}",
-  "fullName": "Max Mustermann",
+  "email": "{{user}}-2",
+  "fullName": "Max Mustermann-2",
   "password": "{{password}}"
 }
 
@@ -13,10 +13,10 @@ POST {{host}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "{{user}}",
+  "email": "{{user}}-2",
   "password": "{{password}}"
 }
 
-> {% client.global.set("access_token", response.body.access_token); %}
+> {% client.global.set("accessToken", response.body.accessToken); %}
 
 ###

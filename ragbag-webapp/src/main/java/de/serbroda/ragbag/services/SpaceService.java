@@ -12,6 +12,7 @@ import de.serbroda.ragbag.repositories.SpaceAccountRepository;
 import de.serbroda.ragbag.repositories.SpaceRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +28,7 @@ public class SpaceService {
         this.spaceAccountRepository = spaceAccountRepository;
         this.pageService = pageService;
     }
+
     public Space createSpace(CreateSpaceDto createSpaceDto, Account account) {
         Space space = SpaceMapper.INSTANCE.map(createSpaceDto);
         return createSpace(space, account);
@@ -50,6 +52,10 @@ public class SpaceService {
         spaceAccount.setAccount(account);
         spaceAccount.setRole(role);
         return spaceAccountRepository.save(spaceAccount);
+    }
+
+    public List<Space> getSpaces(Account account) {
+        return spaceRepository.findAllByAccount(account);
     }
 
     public Optional<Space> getSpaceById(long id) {

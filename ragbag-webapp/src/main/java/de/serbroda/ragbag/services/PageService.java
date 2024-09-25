@@ -12,14 +12,13 @@ import de.serbroda.ragbag.models.shared.SpaceRole;
 import de.serbroda.ragbag.repositories.PageAccountRepository;
 import de.serbroda.ragbag.repositories.PageRepository;
 import de.serbroda.ragbag.repositories.SpaceRepository;
-import de.serbroda.ragbag.utils.AuthorizationUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
-import static de.serbroda.ragbag.utils.AuthorizationUtil.checkAccessAllowed;
+import static de.serbroda.ragbag.security.AuthorizationService.checkAccessAllowed;
 
 @Service
 public class PageService {

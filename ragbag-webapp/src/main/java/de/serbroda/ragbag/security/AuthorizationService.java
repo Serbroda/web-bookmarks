@@ -1,4 +1,4 @@
-package de.serbroda.ragbag.utils;
+package de.serbroda.ragbag.security;
 
 import de.serbroda.ragbag.exceptions.UnauthorizedException;
 import de.serbroda.ragbag.models.Account;
@@ -13,7 +13,11 @@ import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class AuthorizationUtil {
+public class AuthorizationService {
+
+    private AuthorizationService() {
+
+    }
 
     public static Optional<Account> getAuthenticatedAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -22,6 +26,14 @@ public class AuthorizationUtil {
 
     public static Account getAuthenticatedAccountRequired() {
         return getAuthenticatedAccount().orElseThrow(() -> new UnauthorizedException("User is not authenticated"));
+    }
+
+    public static void checkAccessAllowed(Space space, SpaceRole... roles) throws AccessDeniedException {
+        checkAccessAllowed(getAuthenticatedAccountRequired(), space, roles);
+    }
+
+    public static void checkAccessAllowed(Page page, PageRole... roles) throws AccessDeniedException {
+        checkAccessAllowed(getAuthenticatedAccountRequired(), page, roles);
     }
 
     public static void checkAccessAllowed(Account account, Space space, SpaceRole... roles) throws AccessDeniedException {
