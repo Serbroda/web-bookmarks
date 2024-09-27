@@ -14,21 +14,8 @@ import (
 )
 
 type CreateSpaceRequest struct {
-	Name        string `json:"name"`
+	Name        string `json:"name" validate:"required"`
 	Description string `json:"description,omitempty"`
-}
-
-func (j *CreateSpaceRequest) Validate() *ConstraintViolationError {
-	var violations ConstraintViolationError
-
-	if len(j.Name) == 0 {
-		violations.AddViolation("name", "name must be set")
-	}
-
-	if violations.HasErrors() {
-		return &violations
-	}
-	return nil
 }
 
 type SpaceHandler struct {
@@ -50,12 +37,8 @@ func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
 	}
 
 	var payload CreateSpaceRequest
-	if err := ctx.Bind(&payload); err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
-	}
-
-	if err := payload.Validate(); err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
+	if err := BindAndValidate(ctx, &payload); err != nil {
+		return err
 	}
 
 	space := &internal.Space{

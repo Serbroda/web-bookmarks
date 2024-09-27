@@ -8,11 +8,20 @@ import (
 	"backend/internal/security"
 	"context"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
+}
 
 // https://golang.withcodeexample.com/blog/top-databases-with-golang-in-2024/#:~:text=for%20more%20examples-,MongoDB,or%20Not%20only%20SQL%20database.
 func main() {
@@ -30,6 +39,7 @@ func main() {
 	tryDB(spaceRepo, pageRepo)
 
 	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 

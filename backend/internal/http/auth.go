@@ -3,7 +3,7 @@ package http
 import (
 	"backend/internal"
 	"backend/internal/product"
-	security2 "backend/internal/security"
+	"backend/internal/security"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -13,63 +13,18 @@ import (
 )
 
 type LoginRequest struct {
-	User     string `json:"user"`
-	Password string `json:"password"`
-}
-
-func (j *LoginRequest) Validate() *ConstraintViolationError {
-	var violations ConstraintViolationError
-
-	if len(j.User) == 0 {
-		violations.AddViolation("user", "user must be set")
-	}
-	if len(j.Password) == 0 {
-		violations.AddViolation("password", "password must be set")
-	}
-
-	if len(violations.Violations) > 0 {
-		return &violations
-	}
-	return nil
+	User     string `json:"user" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type RegistrationRequest struct {
-	Email    string  `json:"email"`
-	Password string  `json:"password"`
+	Email    string  `json:"email" validate:"email,required"`
+	Password string  `json:"password" validate:"required"`
 	Username *string `json:"username,omitempty"`
 }
 
-func (j *RegistrationRequest) Validate() *ConstraintViolationError {
-	var violations ConstraintViolationError
-
-	if len(j.Email) == 0 {
-		violations.AddViolation("user", "user must be set")
-	}
-	if len(j.Password) == 0 {
-		violations.AddViolation("password", "password must be set")
-	}
-
-	if len(violations.Violations) > 0 {
-		return &violations
-	}
-	return nil
-}
-
 type RefreshTokenRequest struct {
-	RefreshToken security2.Jwt `json:"refreshToken"`
-}
-
-func (j *RefreshTokenRequest) Validate() *ConstraintViolationError {
-	var violations ConstraintViolationError
-
-	if len(j.RefreshToken) == 0 {
-		violations.AddViolation("refreshToken", "refreshToken must be set")
-	}
-
-	if len(violations.Violations) > 0 {
-		return &violations
-	}
-	return nil
+	RefreshToken security.Jwt `json:"refreshToken" validate:"required"`
 }
 
 type AuthHandler struct {
@@ -84,16 +39,11 @@ func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewar
 
 func (si *AuthHandler) Register(ctx echo.Context) error {
 	var payload RegistrationRequest
-	err := ctx.Bind(&payload)
-	if err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
+	if err := BindAndValidate(ctx, &payload); err != nil {
+		return err
 	}
 
-	if err := payload.Validate(); err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
-	}
-
-	hashedPassword, err := security2.HashBcrypt(payload.Password)
+	hashedPassword, err := security.HashBcrypt(payload.Password)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
@@ -122,13 +72,8 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 
 func (si *AuthHandler) Login(ctx echo.Context) error {
 	var payload LoginRequest
-	err := ctx.Bind(&payload)
-	if err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
-	}
-
-	if err := payload.Validate(); err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
+	if err := BindAndValidate(ctx, &payload); err != nil {
+		return err
 	}
 
 	entity, err := si.UserService.GetUserByEmailOrUsername(payload.User)
@@ -138,11 +83,11 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 		}
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
-	if !security2.CheckBcryptHash(payload.Password, entity.Password) {
+	if !security.CheckBcryptHash(payload.Password, entity.Password) {
 		return ctx.String(http.StatusUnauthorized, "bad login credentials")
 	}
 
-	tokenPair, err := security2.GenerateJwtPair(entity)
+	tokenPair, err := security.GenerateJwtPair(entity)
 
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
@@ -152,16 +97,11 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 
 func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	var payload RefreshTokenRequest
-	err := ctx.Bind(&payload)
-	if err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
+	if err := BindAndValidate(ctx, &payload); err != nil {
+		return err
 	}
 
-	if err := payload.Validate(); err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
-	}
-
-	token, err := security2.ParseJwt(payload.RefreshToken)
+	token, err := security.ParseJwt(payload.RefreshToken)
 
 	if err != nil {
 		return middleware.ErrJWTInvalid
@@ -180,7 +120,7 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 		return echo.ErrUnauthorized
 	}
 
-	tokenPair, err := security2.GenerateJwtPair(entity)
+	tokenPair, err := security.GenerateJwtPair(entity)
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
