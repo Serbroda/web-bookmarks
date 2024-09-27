@@ -1,6 +1,8 @@
-package models
+package internal
 
-import "go.mongodb.org/mongo-driver/v2/bson"
+import (
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
 
 type Page struct {
 	BaseEntity   `bson:",inline" json:",inline"`

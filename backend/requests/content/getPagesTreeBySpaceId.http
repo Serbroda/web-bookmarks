@@ -1,4 +1,4 @@
-@SPACE_ID = 66f07f6b23af4e8de2c9159c
+@SPACE_ID = 66f6c4850a9e788a978ea5c8
 
 ### GET request to example server
 GET {{host}}/api/v1/spaces/{{SPACE_ID}}/pages/tree

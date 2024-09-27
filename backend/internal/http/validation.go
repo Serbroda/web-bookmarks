@@ -1,4 +1,4 @@
-package handlers
+package http
 
 import (
 	"fmt"
@@ -17,6 +17,10 @@ type ConstraintViolationError struct {
 func (e *ConstraintViolationError) AddViolation(field string, message string) {
 	violation := ConstraintViolation{Field: field, Message: message}
 	e.Violations = append(e.Violations, violation)
+}
+
+func (e *ConstraintViolationError) HasErrors() bool {
+	return len(e.Violations) > 0
 }
 
 func (e *ConstraintViolationError) Error() string {

@@ -1,4 +1,4 @@
-package models
+package internal
 
 import (
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -7,8 +7,8 @@ import (
 type SpaceVisibility = string
 
 const (
-	SpaceVisibilityPublic  SpaceVisibility = "public"
-	SpaceVisibilityPrivate SpaceVisibility = "private"
+	SpaceVisibilityPublic  SpaceVisibility = "PUBLIC"
+	SpaceVisibilityPrivate SpaceVisibility = "PRIVATE"
 )
 
 type UserIdWithRole struct {

@@ -1,10 +1,10 @@
-package handlers
+package http
 
 import (
-	"backend/models"
-	"backend/security"
-	"backend/services"
-	"backend/utils"
+	"backend/internal"
+	"backend/internal/common/slice"
+	"backend/internal/product"
+	"backend/internal/security"
 	"context"
 	"errors"
 	"github.com/labstack/echo/v4"
@@ -25,14 +25,14 @@ func (j *CreateSpaceRequest) Validate() *ConstraintViolationError {
 		violations.AddViolation("name", "name must be set")
 	}
 
-	if len(violations.Violations) > 0 {
+	if violations.HasErrors() {
 		return &violations
 	}
 	return nil
 }
 
 type SpaceHandler struct {
-	ContentService *services.ContentService
+	ContentService *product.ContentService
 }
 
 func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -44,62 +44,62 @@ func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middle
 }
 
 func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
-	auth, err := getAuthenticatedUser(ctx)
+	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
-		return handleError(ctx, err, http.StatusUnauthorized)
+		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
 
 	var payload CreateSpaceRequest
 	if err := ctx.Bind(&payload); err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	if err := payload.Validate(); err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
-	space := &models.Space{
+	space := &internal.Space{
 		Name:        payload.Name,
 		Description: payload.Description,
 		OwnerID:     auth.UserId,
 	}
 
 	if err := h.ContentService.CreateSpace(context.TODO(), space); err != nil {
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.JSON(http.StatusCreated, space)
 }
 
 func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
-	auth, err := getAuthenticatedUser(ctx)
+	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
-		return handleError(ctx, err, http.StatusUnauthorized)
+		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
 	spaces, err := h.ContentService.GetSpacesForUser(auth.UserId)
 	if err != nil {
-		return handleError(ctx, err, http.StatusUnauthorized)
+		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
 	return ctx.JSON(http.StatusOK, spaces)
 }
 
 func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
-	auth, err := getAuthenticatedUser(ctx)
+	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
-		return handleError(ctx, err, http.StatusUnauthorized)
+		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
 
 	id, err := bson.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	space, err := h.ContentService.GetSpaceById(context.TODO(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return handleError(ctx, err, http.StatusNotFound)
+			return ctx.String(http.StatusNotFound, err.Error())
 		}
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
 	if err := h.checkPermission(&space, auth, false); err != nil {
@@ -110,22 +110,22 @@ func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 }
 
 func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {
-	auth, err := getAuthenticatedUser(ctx)
+	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
-		return handleError(ctx, err, http.StatusUnauthorized)
+		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
 
 	id, err := bson.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	space, err := h.ContentService.GetSpaceById(context.TODO(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return handleError(ctx, err, http.StatusNotFound)
+			return ctx.String(http.StatusNotFound, err.Error())
 		}
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
 	if err := h.checkPermission(&space, auth, true); err != nil {
@@ -134,29 +134,29 @@ func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {
 
 	err = h.ContentService.DeleteSpace(context.TODO(), id)
 	if err != nil {
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.String(http.StatusOK, "ok")
 }
 
 func (h *SpaceHandler) GetPagesTreeBySpaceId(ctx echo.Context) error {
-	auth, err := getAuthenticatedUser(ctx)
+	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
-		return handleError(ctx, err, http.StatusUnauthorized)
+		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
 
 	id, err := bson.ObjectIDFromHex(ctx.Param("id"))
 	if err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	space, err := h.ContentService.GetSpaceById(context.TODO(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return handleError(ctx, err, http.StatusNotFound)
+			return ctx.String(http.StatusNotFound, err.Error())
 		}
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
 	if err := h.checkPermission(&space, auth, false); err != nil {
@@ -165,16 +165,16 @@ func (h *SpaceHandler) GetPagesTreeBySpaceId(ctx echo.Context) error {
 
 	pages, err := h.ContentService.GetPagesBySpaceId(context.TODO(), space.ID)
 	if err != nil {
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
-	pagesPointers := utils.ConvertToPointerSlice(pages)
+	pagesPointers := slice.ConvertToPointerSlice(pages)
 
 	pagesTree := h.ContentService.BuildPageTree(pagesPointers)
 	return ctx.JSON(http.StatusOK, pagesTree)
 }
 
-func (h *SpaceHandler) checkPermission(space *models.Space, auth security.Authentication, requireAdmin bool) error {
-	if space.OwnerID != auth.UserId && !utils.ContainsFiltered(space.Shared, func(s models.UserIdWithRole) bool {
+func (h *SpaceHandler) checkPermission(space *internal.Space, auth security.Authentication, requireAdmin bool) error {
+	if space.OwnerID != auth.UserId && !slice.ContainsFiltered(space.Shared, func(s internal.UserIdWithRole) bool {
 		return s.UserID == auth.UserId && (!requireAdmin || s.Role == "ADMIN")
 	}) {
 		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")

@@ -1,4 +1,4 @@
-package utils
+package slice
 
 func ContainsFiltered[T any](items []T, compare func(T) bool) bool {
 	for _, v := range items {

@@ -1,12 +1,11 @@
 package main
 
 import (
-	"backend/db"
-	"backend/handlers"
-	"backend/models"
-	"backend/repositories"
-	"backend/security"
-	"backend/services"
+	"backend/internal"
+	handlers2 "backend/internal/http"
+	"backend/internal/mongodb"
+	"backend/internal/product"
+	"backend/internal/security"
 	"context"
 	"fmt"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -17,16 +16,16 @@ import (
 
 // https://golang.withcodeexample.com/blog/top-databases-with-golang-in-2024/#:~:text=for%20more%20examples-,MongoDB,or%20Not%20only%20SQL%20database.
 func main() {
-	_, database := db.Connect("mongodb://localhost:27017")
-	defer db.CloseConnection()
+	_, database := mongodb.Connect("mongodb://localhost:27017")
+	defer mongodb.CloseConnection()
 
-	userRepo := repositories.NewUserRepository(database.Collection("users"))
-	pageRepo := repositories.NewPageRepository(database.Collection("pages"))
-	spaceRepo := repositories.NewSpaceRepository(database.Collection("spaces"))
-	bookmarkRepo := repositories.NewBookmarkRepository(database.Collection("bookmarks"))
+	userRepo := mongodb.NewUserRepository(database.Collection("users"))
+	pageRepo := mongodb.NewPageRepository(database.Collection("pages"))
+	spaceRepo := mongodb.NewSpaceRepository(database.Collection("spaces"))
+	bookmarkRepo := mongodb.NewBookmarkRepository(database.Collection("bookmarks"))
 
-	userService := services.NewUserService(userRepo)
-	contentService := services.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
+	userService := product.NewUserService(userRepo)
+	contentService := product.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
 
 	tryDB(spaceRepo, pageRepo)
 
@@ -34,14 +33,14 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	handlers.RegisterAuthHandlers(e, handlers.AuthHandler{
+	handlers2.RegisterAuthHandlers(e, handlers2.AuthHandler{
 		UserService: userService,
 	}, "")
 
 	api := e.Group("/api")
 	api.Use(echojwt.WithConfig(security.CreateJwtConfig()))
-	handlers.RegisterUsersHandlers(api, handlers.UsersHandler{UserService: userService}, "/v1")
-	handlers.RegisterSpaceHandlers(api, handlers.SpaceHandler{ContentService: contentService}, "/v1")
+	handlers2.RegisterUsersHandlers(api, handlers2.UsersHandler{UserService: userService}, "/v1")
+	handlers2.RegisterSpaceHandlers(api, handlers2.SpaceHandler{ContentService: contentService}, "/v1")
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))
@@ -54,10 +53,10 @@ func printRoutes(e *echo.Echo) {
 	}
 }
 
-func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageRepository) {
-	space := &models.Space{
+func tryDB(spaceRepo *mongodb.SpaceRepository, pageRepo *mongodb.PageRepository) {
+	space := &internal.Space{
 		Name:   "Space 1",
-		Shared: make([]models.UserIdWithRole, 0),
+		Shared: make([]internal.UserIdWithRole, 0),
 	}
 
 	userId, err := bson.ObjectIDFromHex("66f07f396e64446f862e37da")
@@ -65,7 +64,7 @@ func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageR
 		panic(err)
 	}
 
-	space.Shared = append(space.Shared, models.UserIdWithRole{
+	space.Shared = append(space.Shared, internal.UserIdWithRole{
 		UserID: userId,
 		Role:   "OWNER",
 	})
@@ -84,7 +83,7 @@ func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageR
 		fmt.Printf(" - %v\n", found)
 	}
 
-	page0 := &models.Page{
+	page0 := &internal.Page{
 		Name:    "Page R0",
 		SpaceID: space.ID,
 	}
@@ -92,7 +91,7 @@ func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageR
 	if err != nil {
 		panic(err)
 	}
-	page1 := &models.Page{
+	page1 := &internal.Page{
 		Name:    "Page R1",
 		SpaceID: space.ID,
 	}
@@ -100,7 +99,7 @@ func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageR
 	if err != nil {
 		panic(err)
 	}
-	page11 := &models.Page{
+	page11 := &internal.Page{
 		Name:         "Page R21.1",
 		SpaceID:      space.ID,
 		ParentPageID: &page1.ID,
@@ -109,7 +108,7 @@ func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageR
 	if err != nil {
 		panic(err)
 	}
-	page12 := &models.Page{
+	page12 := &internal.Page{
 		Name:         "Page R21.2",
 		SpaceID:      space.ID,
 		ParentPageID: &page1.ID,
@@ -118,7 +117,7 @@ func tryDB(spaceRepo *repositories.SpaceRepository, pageRepo *repositories.PageR
 	if err != nil {
 		panic(err)
 	}
-	page121 := &models.Page{
+	page121 := &internal.Page{
 		Name:         "Page R21.2.1",
 		SpaceID:      space.ID,
 		ParentPageID: &page12.ID,

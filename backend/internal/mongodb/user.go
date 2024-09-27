@@ -1,7 +1,7 @@
-package repositories
+package mongodb
 
 import (
-	"backend/models"
+	"backend/internal"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -10,12 +10,12 @@ import (
 )
 
 type UserRepository struct {
-	*GenericRepository[*models.User]
+	*GenericMongoRepository[*internal.User]
 }
 
 func NewUserRepository(collection *mongo.Collection) *UserRepository {
 	repo := &UserRepository{
-		GenericRepository: NewGenericRepository[*models.User](collection),
+		GenericMongoRepository: NewGenericRepository[*internal.User](collection),
 	}
 
 	err := repo.createIndexes()
@@ -33,7 +33,7 @@ func (r *UserRepository) createIndexes() error {
 			SetName("uc_users_email").
 			SetUnique(true),
 	}
-	_, err := r.collection.Indexes().CreateOne(context.TODO(), indexModel)
+	_, err := r.Collection.Indexes().CreateOne(context.TODO(), indexModel)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (r *UserRepository) createIndexes() error {
 			SetName("uc_users_username").
 			SetUnique(true),
 	}
-	_, err = r.collection.Indexes().CreateOne(context.TODO(), indexModel)
+	_, err = r.Collection.Indexes().CreateOne(context.TODO(), indexModel)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (r *UserRepository) createIndexes() error {
 	return nil
 }
 
-func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
+func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*internal.User, error) {
 	found, err := r.FindOne(ctx, bson.M{"username": username})
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (r *UserRepository) FindByUsername(ctx context.Context, username string) (*
 	return *found, err
 }
 
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*internal.User, error) {
 	found, err := r.FindOne(ctx, bson.M{"email": email})
 	if err != nil {
 		return nil, err

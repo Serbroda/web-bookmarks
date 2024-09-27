@@ -1,7 +1,7 @@
-package repositories
+package mongodb
 
 import (
-	"backend/models"
+	"backend/internal"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -10,12 +10,12 @@ import (
 )
 
 type BookmarkRepository struct {
-	*GenericRepository[*models.Bookmark]
+	*GenericMongoRepository[*internal.Bookmark]
 }
 
 func NewBookmarkRepository(collection *mongo.Collection) *BookmarkRepository {
 	repo := &BookmarkRepository{
-		GenericRepository: NewGenericRepository[*models.Bookmark](collection),
+		GenericMongoRepository: NewGenericRepository[*internal.Bookmark](collection),
 	}
 
 	err := repo.createIndexes()
@@ -31,7 +31,7 @@ func (r *BookmarkRepository) createIndexes() error {
 		Keys:    bson.M{"pageId": 1}, // 1 für aufsteigender Index
 		Options: options.Index().SetName("idx_bookmarks_pageId"),
 	}
-	_, err := r.collection.Indexes().CreateOne(context.TODO(), indexModel)
+	_, err := r.Collection.Indexes().CreateOne(context.TODO(), indexModel)
 	if err != nil {
 		return err
 	}

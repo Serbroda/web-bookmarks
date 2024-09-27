@@ -1,13 +1,14 @@
-package handlers
+package http
 
 import (
-	"backend/models"
-	"backend/security"
-	"backend/services"
+	"backend/internal"
+	"backend/internal/product"
+	security2 "backend/internal/security"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"net/http"
 )
 
@@ -55,7 +56,7 @@ func (j *RegistrationRequest) Validate() *ConstraintViolationError {
 }
 
 type RefreshTokenRequest struct {
-	RefreshToken security.Jwt `json:"refreshToken"`
+	RefreshToken security2.Jwt `json:"refreshToken"`
 }
 
 func (j *RefreshTokenRequest) Validate() *ConstraintViolationError {
@@ -72,7 +73,7 @@ func (j *RefreshTokenRequest) Validate() *ConstraintViolationError {
 }
 
 type AuthHandler struct {
-	UserService *services.UserService
+	UserService *product.UserServiceImpl
 }
 
 func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -85,60 +86,66 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 	var payload RegistrationRequest
 	err := ctx.Bind(&payload)
 	if err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	if err := payload.Validate(); err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
-	hashedPassword, err := security.HashBcrypt(payload.Password)
+	hashedPassword, err := security2.HashBcrypt(payload.Password)
 	if err != nil {
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	user := &models.User{
+	entity := &internal.User{
 		Email:    payload.Email,
 		Password: hashedPassword,
 	}
 
 	if payload.Username != nil && *payload.Username != "" {
-		user.Username = *payload.Username
+		entity.Username = *payload.Username
 	}
 
-	err = si.UserService.CreateUser(user)
+	err = si.UserService.Create(entity)
 
 	if err != nil {
-		if errors.Is(err, services.ErrUsernameAlreadyExists) {
-			return handleError(ctx, err, http.StatusConflict)
+		if errors.Is(err, product.ErrUsernameAlreadyExists) {
+			return ctx.String(http.StatusConflict, err.Error())
 		} else {
-			return handleError(ctx, err, http.StatusInternalServerError)
+			return ctx.String(http.StatusInternalServerError, err.Error())
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, user)
+	return ctx.JSON(http.StatusOK, entity)
 }
 
 func (si *AuthHandler) Login(ctx echo.Context) error {
 	var payload LoginRequest
 	err := ctx.Bind(&payload)
 	if err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	if err := payload.Validate(); err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
-	user, err := si.UserService.GetUserByEmailOrUsername(payload.User)
-	if err != nil || !security.CheckBcryptHash(payload.Password, user.Password) {
-		return handleError(ctx, err, http.StatusUnauthorized)
+	entity, err := si.UserService.GetUserByEmailOrUsername(payload.User)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return ctx.String(http.StatusUnauthorized, "bad login credentials")
+		}
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+	if !security2.CheckBcryptHash(payload.Password, entity.Password) {
+		return ctx.String(http.StatusUnauthorized, "bad login credentials")
 	}
 
-	tokenPair, err := security.GenerateJwtPair(user)
+	tokenPair, err := security2.GenerateJwtPair(entity)
 
 	if err != nil {
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 	return ctx.JSON(http.StatusOK, tokenPair)
 }
@@ -147,14 +154,14 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	var payload RefreshTokenRequest
 	err := ctx.Bind(&payload)
 	if err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
 	if err := payload.Validate(); err != nil {
-		return handleError(ctx, err, http.StatusBadRequest)
+		return ctx.String(http.StatusBadRequest, err.Error())
 	}
 
-	token, err := security.ParseJwt(payload.RefreshToken)
+	token, err := security2.ParseJwt(payload.RefreshToken)
 
 	if err != nil {
 		return middleware.ErrJWTInvalid
@@ -167,15 +174,15 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	}
 
 	sub := claims["sub"].(string)
-	user, err := si.UserService.GetUserById(sub)
+	entity, err := si.UserService.GetById(sub)
 
 	if err != nil {
 		return echo.ErrUnauthorized
 	}
 
-	tokenPair, err := security.GenerateJwtPair(user)
+	tokenPair, err := security2.GenerateJwtPair(entity)
 	if err != nil {
-		return handleError(ctx, err, http.StatusInternalServerError)
+		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, tokenPair)

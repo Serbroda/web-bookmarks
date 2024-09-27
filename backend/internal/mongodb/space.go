@@ -1,17 +1,17 @@
-package repositories
+package mongodb
 
 import (
-	"backend/models"
+	"backend/internal"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type SpaceRepository struct {
-	*GenericRepository[*models.Space]
+	*GenericMongoRepository[*internal.Space]
 }
 
 func NewSpaceRepository(collection *mongo.Collection) *SpaceRepository {
 	repo := &SpaceRepository{
-		GenericRepository: NewGenericRepository[*models.Space](collection),
+		GenericMongoRepository: NewGenericRepository[*internal.Space](collection),
 	}
 	return repo
 }

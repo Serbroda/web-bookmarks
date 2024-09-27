@@ -1,22 +1,22 @@
-package services
+package product
 
 import (
-	"backend/models"
-	"backend/repositories"
+	"backend/internal"
+	"backend/internal/mongodb"
 	"context"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type ContentService struct {
-	spaceRepo    *repositories.SpaceRepository
-	pageRepo     *repositories.PageRepository
-	bookmarkRepo *repositories.BookmarkRepository
+	spaceRepo    *mongodb.SpaceRepository
+	pageRepo     *mongodb.PageRepository
+	bookmarkRepo *mongodb.BookmarkRepository
 }
 
 func NewContentService(
-	spaceRepo *repositories.SpaceRepository,
-	pageRepo *repositories.PageRepository,
-	bookmarkRepo *repositories.BookmarkRepository) *ContentService {
+	spaceRepo *mongodb.SpaceRepository,
+	pageRepo *mongodb.PageRepository,
+	bookmarkRepo *mongodb.BookmarkRepository) *ContentService {
 	return &ContentService{
 		spaceRepo:    spaceRepo,
 		pageRepo:     pageRepo,
@@ -24,19 +24,19 @@ func NewContentService(
 	}
 }
 
-func (s *ContentService) CreateSpace(ctx context.Context, space *models.Space) error {
+func (s *ContentService) CreateSpace(ctx context.Context, space *internal.Space) error {
 	return s.spaceRepo.Save(ctx, space)
 }
 
-func (s *ContentService) GetSpaceById(ctx context.Context, id bson.ObjectID) (models.Space, error) {
+func (s *ContentService) GetSpaceById(ctx context.Context, id bson.ObjectID) (internal.Space, error) {
 	space, err := s.spaceRepo.FindByID(ctx, id)
 	if err != nil {
-		return models.Space{}, err
+		return internal.Space{}, err
 	}
 
 	pages, err := s.pageRepo.FindBySpaceId(ctx, space.ID)
 	if err != nil {
-		return models.Space{}, err
+		return internal.Space{}, err
 	}
 
 	space.Pages = make([]bson.ObjectID, len(pages))
@@ -46,15 +46,15 @@ func (s *ContentService) GetSpaceById(ctx context.Context, id bson.ObjectID) (mo
 	return *space, nil
 }
 
-func (s *ContentService) GetPagesBySpaceId(ctx context.Context, spaceId bson.ObjectID) ([]models.Page, error) {
+func (s *ContentService) GetPagesBySpaceId(ctx context.Context, spaceId bson.ObjectID) ([]internal.Page, error) {
 	return s.pageRepo.FindBySpaceId(ctx, spaceId)
 }
 
-func (s *ContentService) BuildPageTree(pages []*models.Page) []*models.Page {
+func (s *ContentService) BuildPageTree(pages []*internal.Page) []*internal.Page {
 	return s.pageRepo.BuildPageTree(pages)
 }
 
-func (s *ContentService) GetSpacesForUser(userId bson.ObjectID) ([]*models.Space, error) {
+func (s *ContentService) GetSpacesForUser(userId bson.ObjectID) ([]*internal.Space, error) {
 	filter := bson.M{
 		"$or": []bson.M{
 			{"ownerId": userId},
