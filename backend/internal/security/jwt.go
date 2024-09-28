@@ -1,7 +1,7 @@
 package security
 
 import (
-	"backend/internal"
+	"backend/internal/sqlc"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
@@ -25,9 +25,9 @@ type JwtCustomClaims struct {
 	Roles string `json:"roles,omitempty"`
 }
 
-func GenerateJwtPair(user *internal.User) (TokenPair, error) {
+func GenerateJwtPair(user sqlc.User) (TokenPair, error) {
 	accessToken, err := GenerateJwt(jwt.MapClaims{
-		"sub":  user.ID.Hex(),
+		"sub":  user.ID,
 		"exp":  time.Now().Add(time.Minute * time.Duration(jwtAccessTokenExp)).Unix(),
 		"iat":  time.Now().Unix(),
 		"name": user.Username,
@@ -38,7 +38,7 @@ func GenerateJwtPair(user *internal.User) (TokenPair, error) {
 	}
 
 	refreshToken, err := GenerateJwt(jwt.MapClaims{
-		"sub": user.ID.Hex(),
+		"sub": user.ID,
 		"exp": time.Now().Add(time.Minute * time.Duration(jwtRefreshTokenExp)).Unix(),
 		"iat": time.Now().Unix(),
 	})

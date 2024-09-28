@@ -1,25 +1,13 @@
 package http
 
-import (
-	"backend/internal"
-	"backend/internal/common/slice"
-	"backend/internal/product"
-	"backend/internal/security"
-	"context"
-	"errors"
-	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
-	"net/http"
-)
-
+/*
 type CreateSpaceRequest struct {
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description,omitempty"`
 }
 
 type SpaceHandler struct {
-	ContentService *product.ContentService
+	ContentService *services.ContentService
 }
 
 func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -164,3 +152,4 @@ func (h *SpaceHandler) checkPermission(space *internal.Space, auth security.Auth
 	}
 	return nil
 }
+*/

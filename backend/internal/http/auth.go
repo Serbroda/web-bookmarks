@@ -1,15 +1,18 @@
 package http
 
 import (
-	"backend/internal"
-	"backend/internal/product"
+	"backend/internal/dto"
 	"backend/internal/security"
+	"backend/internal/services"
+	"backend/internal/sqlc"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"net/http"
+	"strconv"
 )
 
 type LoginRequest struct {
@@ -28,7 +31,7 @@ type RefreshTokenRequest struct {
 }
 
 type AuthHandler struct {
-	UserService internal.UserService
+	UserService *services.UserServiceImpl
 }
 
 func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -48,26 +51,26 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	entity := &internal.User{
+	params := sqlc.CreateParams{
 		Email:    payload.Email,
 		Password: hashedPassword,
 	}
 
 	if payload.Username != nil && *payload.Username != "" {
-		entity.Username = *payload.Username
+		params.Username = *payload.Username
 	}
 
-	err = si.UserService.Create(entity)
+	user, err := si.UserService.Create(params)
 
 	if err != nil {
-		if errors.Is(err, product.ErrUsernameAlreadyExists) {
+		if errors.Is(err, services.ErrUsernameAlreadyExists) {
 			return ctx.String(http.StatusConflict, err.Error())
 		} else {
 			return ctx.String(http.StatusInternalServerError, err.Error())
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, entity)
+	return ctx.JSON(http.StatusOK, copier.Copy(&user, dto.UserDto{}))
 }
 
 func (si *AuthHandler) Login(ctx echo.Context) error {
@@ -114,7 +117,11 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	}
 
 	sub := claims["sub"].(string)
-	entity, err := si.UserService.GetById(sub)
+	userId, err := strconv.ParseInt(sub, 10, 64)
+	if err != nil {
+		return err
+	}
+	entity, err := si.UserService.GetById(userId)
 
 	if err != nil {
 		return echo.ErrUnauthorized

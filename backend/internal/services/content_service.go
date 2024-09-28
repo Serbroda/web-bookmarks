@@ -1,22 +1,16 @@
-package product
+package services
 
-import (
-	"backend/internal"
-	"backend/internal/mongodb"
-	"context"
-	"go.mongodb.org/mongo-driver/v2/bson"
-)
-
+/*
 type ContentService struct {
-	spaceRepo    *mongodb.SpaceRepository
-	pageRepo     *mongodb.PageRepository
-	bookmarkRepo *mongodb.BookmarkRepository
+	spaceRepo    *db.SpaceRepository
+	pageRepo     *db.PageRepository
+	bookmarkRepo *db.BookmarkRepository
 }
 
 func NewContentService(
-	spaceRepo *mongodb.SpaceRepository,
-	pageRepo *mongodb.PageRepository,
-	bookmarkRepo *mongodb.BookmarkRepository) *ContentService {
+	spaceRepo *db.SpaceRepository,
+	pageRepo *db.PageRepository,
+	bookmarkRepo *db.BookmarkRepository) *ContentService {
 	return &ContentService{
 		spaceRepo:    spaceRepo,
 		pageRepo:     pageRepo,
@@ -72,3 +66,4 @@ func (s *ContentService) GetSpacesForUser(userId bson.ObjectID) ([]*internal.Spa
 func (s *ContentService) DeleteSpace(ctx context.Context, id bson.ObjectID) error {
 	return s.spaceRepo.Delete(ctx, id)
 }
+*/
