@@ -52,7 +52,7 @@ func (s *UserServiceImpl) GetById(id string) (*internal.User, error) {
 	return s.userRepo.FindByID(context.TODO(), objectID)
 }
 
-func (s *UserServiceImpl) GetUserByEmailOrUsername(emailOrUsername string) (*internal.User, error) {
+func (s *UserServiceImpl) GetByEmailOrUsername(emailOrUsername string) (*internal.User, error) {
 	entity, err := s.userRepo.FindByEmail(context.TODO(), emailOrUsername)
 	if err == nil {
 		return entity, nil

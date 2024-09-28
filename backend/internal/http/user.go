@@ -1,14 +1,12 @@
 package http
 
 import (
-	"backend/internal/product"
 	"backend/internal/security"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type UsersHandler struct {
-	UserService *product.UserServiceImpl
 }
 
 func RegisterUsersHandlers(e *echo.Group, h UsersHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {

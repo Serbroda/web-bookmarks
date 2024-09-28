@@ -28,7 +28,7 @@ type RefreshTokenRequest struct {
 }
 
 type AuthHandler struct {
-	UserService *product.UserServiceImpl
+	UserService internal.UserService
 }
 
 func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -76,7 +76,7 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 		return err
 	}
 
-	entity, err := si.UserService.GetUserByEmailOrUsername(payload.User)
+	entity, err := si.UserService.GetByEmailOrUsername(payload.User)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return ctx.String(http.StatusUnauthorized, "bad login credentials")

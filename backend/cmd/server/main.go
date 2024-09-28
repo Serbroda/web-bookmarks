@@ -2,7 +2,7 @@ package main
 
 import (
 	"backend/internal"
-	handlers2 "backend/internal/http"
+	"backend/internal/http"
 	"backend/internal/mongodb"
 	"backend/internal/product"
 	"backend/internal/security"
@@ -43,14 +43,14 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	handlers2.RegisterAuthHandlers(e, handlers2.AuthHandler{
+	http.RegisterAuthHandlers(e, http.AuthHandler{
 		UserService: userService,
 	}, "")
 
 	api := e.Group("/api")
 	api.Use(echojwt.WithConfig(security.CreateJwtConfig()))
-	handlers2.RegisterUsersHandlers(api, handlers2.UsersHandler{UserService: userService}, "/v1")
-	handlers2.RegisterSpaceHandlers(api, handlers2.SpaceHandler{ContentService: contentService}, "/v1")
+	http.RegisterUsersHandlers(api, http.UsersHandler{}, "/v1")
+	http.RegisterSpaceHandlers(api, http.SpaceHandler{ContentService: contentService}, "/v1")
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))

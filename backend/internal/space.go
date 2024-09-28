@@ -22,6 +22,5 @@ type Space struct {
 	Description string           `bson:"description" json:"description"`
 	Visibility  SpaceVisibility  `bson:"visibility" json:"visibility"`
 	OwnerID     bson.ObjectID    `bson:"ownerId" json:"ownerId"`
-	Pages       []bson.ObjectID  `bson:"pages,omitempty" json:"pages,omitempty"`
 	Shared      []UserIdWithRole `bson:"shared"`
 }

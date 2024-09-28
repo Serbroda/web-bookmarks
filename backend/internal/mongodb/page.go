@@ -45,7 +45,7 @@ func (r *PageRepository) FindBySpaceId(ctx context.Context, spaceID bson.ObjectI
 func (r *PageRepository) BuildPageTree(pages []*internal.Page) []*internal.Page {
 	// Map pages by ParentPageID
 	pageMap := make(map[bson.ObjectID][]*internal.Page)
-	var rootPages []*internal.Page
+	rootPages := make([]*internal.Page, 0)
 
 	for _, page := range pages {
 		if page.ParentPageID != nil {
