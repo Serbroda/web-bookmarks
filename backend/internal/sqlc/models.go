@@ -8,6 +8,16 @@ import (
 	"database/sql"
 )
 
+type Space struct {
+	ID          int64          `db:"id" json:"id"`
+	Name        string         `db:"name" json:"name"`
+	Description sql.NullString `db:"description" json:"description"`
+	OwnerID     int64          `db:"owner_id" json:"owner_id"`
+	Visibility  string         `db:"visibility" json:"visibility"`
+	CreatedAt   sql.NullTime   `db:"created_at" json:"created_at"`
+	UpdatedAt   sql.NullTime   `db:"updated_at" json:"updated_at"`
+}
+
 type User struct {
 	ID        int64        `db:"id" json:"id"`
 	Email     string       `db:"email" json:"email"`
@@ -15,4 +25,10 @@ type User struct {
 	Password  string       `db:"password" json:"password"`
 	CreatedAt sql.NullTime `db:"created_at" json:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
+}
+
+type UsersSpace struct {
+	UserID    int64        `db:"user_id" json:"user_id"`
+	SpaceID   int64        `db:"space_id" json:"space_id"`
+	CreatedAt sql.NullTime `db:"created_at" json:"created_at"`
 }

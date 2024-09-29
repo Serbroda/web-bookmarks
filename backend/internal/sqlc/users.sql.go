@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const create = `-- name: Create :execlastid
+const createUser = `-- name: CreateUser :execlastid
 INSERT INTO users (created_at,
                    updated_at,
                    email,
@@ -22,28 +22,28 @@ VALUES (CURRENT_TIMESTAMP,
         ?)
 `
 
-type CreateParams struct {
+type CreateUserParams struct {
 	Email    string `db:"email" json:"email"`
 	Username string `db:"username" json:"username"`
 	Password string `db:"password" json:"password"`
 }
 
-func (q *Queries) Create(ctx context.Context, arg CreateParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, create, arg.Email, arg.Username, arg.Password)
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createUser, arg.Email, arg.Username, arg.Password)
 	if err != nil {
 		return 0, err
 	}
 	return result.LastInsertId()
 }
 
-const findByEmail = `-- name: FindByEmail :one
+const findUserByEmail = `-- name: FindUserByEmail :one
 SELECT id, email, username, password, created_at, updated_at
 FROM users u
-WHERE lower(username) = ? LIMIT 1
+WHERE lower(email) = ? LIMIT 1
 `
 
-func (q *Queries) FindByEmail(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRowContext(ctx, findByEmail, username)
+func (q *Queries) FindUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, findUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -56,14 +56,14 @@ func (q *Queries) FindByEmail(ctx context.Context, username string) (User, error
 	return i, err
 }
 
-const findById = `-- name: FindById :one
+const findUserById = `-- name: FindUserById :one
 SELECT id, email, username, password, created_at, updated_at
 FROM users u
 WHERE id = ? LIMIT 1
 `
 
-func (q *Queries) FindById(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, findById, id)
+func (q *Queries) FindUserById(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, findUserById, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -76,14 +76,14 @@ func (q *Queries) FindById(ctx context.Context, id int64) (User, error) {
 	return i, err
 }
 
-const findByUsername = `-- name: FindByUsername :one
+const findUserByUsername = `-- name: FindUserByUsername :one
 SELECT id, email, username, password, created_at, updated_at
 FROM users u
 WHERE lower(username) = ? LIMIT 1
 `
 
-func (q *Queries) FindByUsername(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRowContext(ctx, findByUsername, username)
+func (q *Queries) FindUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, findUserByUsername, username)
 	var i User
 	err := row.Scan(
 		&i.ID,

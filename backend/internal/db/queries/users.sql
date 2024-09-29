@@ -1,19 +1,19 @@
--- name: FindById :one
+-- name: FindUserById :one
 SELECT *
 FROM users u
 WHERE id = ? LIMIT 1;
 
--- name: FindByEmail :one
+-- name: FindUserByEmail :one
+SELECT *
+FROM users u
+WHERE lower(email) = ? LIMIT 1;
+
+-- name: FindUserByUsername :one
 SELECT *
 FROM users u
 WHERE lower(username) = ? LIMIT 1;
 
--- name: FindByUsername :one
-SELECT *
-FROM users u
-WHERE lower(username) = ? LIMIT 1;
-
--- name: Create :execlastid
+-- name: CreateUser :execlastid
 INSERT INTO users (created_at,
                    updated_at,
                    email,

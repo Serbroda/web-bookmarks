@@ -21,9 +21,9 @@ func NewUserService(userRepo *sqlc.Queries) *UserServiceImpl {
 	}
 }
 
-func (s *UserServiceImpl) Create(user sqlc.CreateParams) (int64, error) {
+func (s *UserServiceImpl) CreateUser(user sqlc.CreateUserParams) (int64, error) {
 	if s.existsByEmail(user.Email) {
-		return 0, ErrUsernameAlreadyExists
+		return 0, ErrEmailAlreadyExists
 	}
 
 	if user.Username != "" {
@@ -32,20 +32,20 @@ func (s *UserServiceImpl) Create(user sqlc.CreateParams) (int64, error) {
 		}
 	}
 
-	return s.userRepo.Create(context.TODO(), user)
+	return s.userRepo.CreateUser(context.TODO(), user)
 }
 
 func (s *UserServiceImpl) GetById(id int64) (sqlc.User, error) {
-	return s.userRepo.FindById(context.TODO(), id)
+	return s.userRepo.FindUserById(context.TODO(), id)
 }
 
 func (s *UserServiceImpl) GetByEmailOrUsername(emailOrUsername string) (sqlc.User, error) {
-	entity, err := s.userRepo.FindByEmail(context.TODO(), emailOrUsername)
+	entity, err := s.userRepo.FindUserByEmail(context.TODO(), emailOrUsername)
 	if err == nil {
 		return entity, nil
 	}
 
-	entity, err = s.userRepo.FindByUsername(context.TODO(), emailOrUsername)
+	entity, err = s.userRepo.FindUserByUsername(context.TODO(), emailOrUsername)
 	if err != nil {
 		return sqlc.User{}, err
 	}
@@ -53,14 +53,14 @@ func (s *UserServiceImpl) GetByEmailOrUsername(emailOrUsername string) (sqlc.Use
 }
 
 func (s *UserServiceImpl) existsUserByUsername(username string) bool {
-	if _, err := s.userRepo.FindByUsername(context.TODO(), username); err != nil {
+	if _, err := s.userRepo.FindUserByUsername(context.TODO(), username); err != nil {
 		return false
 	}
 	return true
 }
 
 func (s *UserServiceImpl) existsByEmail(email string) bool {
-	if _, err := s.userRepo.FindByEmail(context.TODO(), email); err != nil {
+	if _, err := s.userRepo.FindUserByEmail(context.TODO(), email); err != nil {
 		return false
 	}
 	return true

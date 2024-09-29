@@ -51,7 +51,7 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
 
-	params := sqlc.CreateParams{
+	params := sqlc.CreateUserParams{
 		Email:    payload.Email,
 		Password: hashedPassword,
 	}
@@ -60,7 +60,7 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		params.Username = *payload.Username
 	}
 
-	user, err := si.UserService.Create(params)
+	user, err := si.UserService.CreateUser(params)
 
 	if err != nil {
 		if errors.Is(err, services.ErrUsernameAlreadyExists) {
