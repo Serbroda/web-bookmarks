@@ -5,6 +5,7 @@ import (
 	"backend/internal/security"
 	"backend/internal/services"
 	"backend/internal/sqlc"
+	"database/sql"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -51,7 +52,10 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 	}
 
 	if payload.Username != nil && *payload.Username != "" {
-		params.Username = *payload.Username
+		params.Username = sql.NullString{
+			String: *payload.Username,
+			Valid:  true,
+		}
 	}
 
 	user, err := si.UserService.CreateUser(params)
@@ -64,11 +68,7 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, dto.UserDto{
-		ID:       user.ID,
-		Email:    user.Email,
-		Username: user.Username,
-	})
+	return ctx.JSON(http.StatusOK, dto.UserDtoFromUser(user))
 }
 
 func (si *AuthHandler) Login(ctx echo.Context) error {
@@ -77,7 +77,7 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 		return err
 	}
 
-	entity, err := si.UserService.GetByEmailOrUsername(payload.User)
+	entity, err := si.UserService.GetByEmail(payload.User)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return ctx.String(http.StatusUnauthorized, "bad login credentials")

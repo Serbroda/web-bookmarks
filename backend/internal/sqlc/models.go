@@ -19,12 +19,13 @@ type Space struct {
 }
 
 type User struct {
-	ID        int64        `db:"id" json:"id"`
-	Email     string       `db:"email" json:"email"`
-	Username  string       `db:"username" json:"username"`
-	Password  string       `db:"password" json:"password"`
-	CreatedAt sql.NullTime `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime `db:"updated_at" json:"updated_at"`
+	ID        int64          `db:"id" json:"id"`
+	Email     string         `db:"email" json:"email"`
+	Username  sql.NullString `db:"username" json:"username"`
+	Tag       sql.NullString `db:"tag" json:"tag"`
+	Password  string         `db:"password" json:"password"`
+	CreatedAt sql.NullTime   `db:"created_at" json:"created_at"`
+	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
 }
 
 type UsersSpace struct {

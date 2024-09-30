@@ -26,9 +26,5 @@ func (h *UsersHandler) GetMe(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, dto.UserDto{
-		ID:       user.ID,
-		Email:    user.Email,
-		Username: user.Username,
-	})
+	return ctx.JSON(http.StatusOK, dto.UserDtoFromUser(user))
 }

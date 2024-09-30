@@ -61,7 +61,7 @@ func main() {
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
-	e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())
 
 	http.RegisterAuthHandlers(e, http.AuthHandler{
 		UserService: userService,
