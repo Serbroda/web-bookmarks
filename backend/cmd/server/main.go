@@ -26,12 +26,33 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 	return cv.validator.Struct(i)
 }
 
-func main() {
-	db := db.OpenConnection(dialect, "ragbag.db")
-	migrations.Migrate(db, dialect, migrations.Migrations, "sqlite")
-	defer db.Close()
+type Test = string
 
-	queries := sqlc.New(db)
+type Input struct {
+	NonEmptyString Test `validate:"required,min=1"`
+}
+
+func main() {
+	validate := validator.New()
+
+	// Test with empty string
+	input := Input{NonEmptyString: ""}
+
+	err := validate.Struct(input)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			fmt.Printf("Field '%s' failed validation. Condition: '%s'\n", err.Field(), err.Tag())
+		}
+		//panic(err)
+	} else {
+		fmt.Println("Validation passed!")
+	}
+
+	database := db.OpenConnection(dialect, "ragbag.db")
+	migrations.Migrate(database, dialect, migrations.Migrations, "sqlite")
+	defer database.Close()
+
+	queries := sqlc.New(database)
 
 	userService := services.NewUserService(queries)
 	//contentService := services.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
@@ -40,6 +61,7 @@ func main() {
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
+	e.Use(middleware.Logger())
 
 	http.RegisterAuthHandlers(e, http.AuthHandler{
 		UserService: userService,
@@ -47,7 +69,9 @@ func main() {
 
 	api := e.Group("/api")
 	api.Use(echojwt.WithConfig(security.CreateJwtConfig()))
-	http.RegisterUsersHandlers(api, http.UsersHandler{}, "/v1")
+	http.RegisterUsersHandlers(api, http.UsersHandler{
+		UserService: userService,
+	}, "/v1")
 	//http.RegisterSpaceHandlers(api, http.SpaceHandler{ContentService: contentService}, "/v1")
 
 	printRoutes(e)

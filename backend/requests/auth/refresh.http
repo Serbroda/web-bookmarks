@@ -1,11 +1,7 @@
 ### GET request to example server
-POST {{host}}/auth/login
+POST {{host}}/auth/refresh
 Content-Type: application/json
-
-{
-  "user": "{{username}}",
-  "password": "{{password}}"
-}
+Cookie: refreshToken={{refreshToken}}
 
 > {%
     client.global.set("accessToken", response.body.accessToken);
@@ -14,3 +10,5 @@ Content-Type: application/json
         client.global.set("refreshToken", cookieString.split(";")[0].split("=")[1]);
     }
 %}
+
+###

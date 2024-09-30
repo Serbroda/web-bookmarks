@@ -7,12 +7,10 @@ import (
 	"backend/internal/sqlc"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"net/http"
-	"strconv"
 )
 
 type LoginRequest struct {
@@ -26,10 +24,6 @@ type RegistrationRequest struct {
 	Username *string `json:"username,omitempty"`
 }
 
-type RefreshTokenRequest struct {
-	RefreshToken security.Jwt `json:"refreshToken" validate:"required"`
-}
-
 type AuthHandler struct {
 	UserService *services.UserServiceImpl
 }
@@ -37,7 +31,7 @@ type AuthHandler struct {
 func RegisterAuthHandlers(e *echo.Echo, c AuthHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
 	e.POST(baseUrl+"/auth/signup", c.Register, middlewares...)
 	e.POST(baseUrl+"/auth/login", c.Login, middlewares...)
-	e.POST(baseUrl+"/auth/refresh_token", c.RefreshToken, middlewares...)
+	e.POST(baseUrl+"/auth/refresh", c.Refresh, middlewares...)
 }
 
 func (si *AuthHandler) Register(ctx echo.Context) error {
@@ -63,14 +57,18 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 	user, err := si.UserService.CreateUser(params)
 
 	if err != nil {
-		if errors.Is(err, services.ErrUsernameAlreadyExists) {
+		if errors.Is(err, services.ErrEmailAlreadyExists) || errors.Is(err, services.ErrUsernameAlreadyExists) {
 			return ctx.String(http.StatusConflict, err.Error())
 		} else {
 			return ctx.String(http.StatusInternalServerError, err.Error())
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, copier.Copy(&user, dto.UserDto{}))
+	return ctx.JSON(http.StatusOK, dto.UserDto{
+		ID:       user.ID,
+		Email:    user.Email,
+		Username: user.Username,
+	})
 }
 
 func (si *AuthHandler) Login(ctx echo.Context) error {
@@ -91,21 +89,29 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 	}
 
 	tokenPair, err := security.GenerateJwtPair(entity)
-
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
+
+	ctx.SetCookie(&http.Cookie{
+		Name:     "refreshToken",
+		Value:    *tokenPair.RefreshToken,
+		Expires:  tokenPair.RefreshTokenExpiration, // 7 days
+		HttpOnly: true,
+		Secure:   true, // Set to true in production (HTTPS only)
+	})
 	return ctx.JSON(http.StatusOK, tokenPair)
 }
 
-func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
-	var payload RefreshTokenRequest
-	if err := BindAndValidate(ctx, &payload); err != nil {
-		return err
+func (si *AuthHandler) Refresh(ctx echo.Context) error {
+	cookie, err := ctx.Cookie("refreshToken")
+	if err != nil {
+		return ctx.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "refresh token missing",
+		})
 	}
 
-	token, err := security.ParseJwt(payload.RefreshToken)
-
+	token, err := security.VerifyRefreshToken(cookie.Value)
 	if err != nil {
 		return middleware.ErrJWTInvalid
 	}
@@ -116,11 +122,8 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 		return middleware.ErrJWTInvalid
 	}
 
-	sub := claims["sub"].(string)
-	userId, err := strconv.ParseInt(sub, 10, 64)
-	if err != nil {
-		return err
-	}
+	sub := claims["sub"].(float64)
+	userId := int64(sub)
 	entity, err := si.UserService.GetById(userId)
 
 	if err != nil {
@@ -131,6 +134,14 @@ func (si *AuthHandler) RefreshToken(ctx echo.Context) error {
 	if err != nil {
 		return ctx.String(http.StatusInternalServerError, err.Error())
 	}
+
+	ctx.SetCookie(&http.Cookie{
+		Name:     "refreshToken",
+		Value:    *tokenPair.RefreshToken,
+		Expires:  tokenPair.RefreshTokenExpiration, // 7 days
+		HttpOnly: true,
+		Secure:   true, // Set to true in production (HTTPS only)
+	})
 
 	return ctx.JSON(http.StatusOK, tokenPair)
 }

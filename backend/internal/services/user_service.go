@@ -21,18 +21,22 @@ func NewUserService(userRepo *sqlc.Queries) *UserServiceImpl {
 	}
 }
 
-func (s *UserServiceImpl) CreateUser(user sqlc.CreateUserParams) (int64, error) {
+func (s *UserServiceImpl) CreateUser(user sqlc.CreateUserParams) (sqlc.User, error) {
 	if s.existsByEmail(user.Email) {
-		return 0, ErrEmailAlreadyExists
+		return sqlc.User{}, ErrEmailAlreadyExists
 	}
 
 	if user.Username != "" {
 		if s.existsUserByUsername(user.Username) {
-			return 0, ErrUsernameAlreadyExists
+			return sqlc.User{}, ErrUsernameAlreadyExists
 		}
 	}
 
-	return s.userRepo.CreateUser(context.TODO(), user)
+	id, err := s.userRepo.CreateUser(context.Background(), user)
+	if err != nil {
+		return sqlc.User{}, err
+	}
+	return s.GetById(id)
 }
 
 func (s *UserServiceImpl) GetById(id int64) (sqlc.User, error) {

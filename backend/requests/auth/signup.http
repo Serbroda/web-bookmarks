@@ -7,3 +7,36 @@ Content-Type: application/json
   "password": "{{password}}",
   "username": "{{username}}"
 }
+
+### GET create user random
+< {%
+    const min = 1;
+    const max = 99999;
+    const rnd = Math.floor(Math.random() * (max - min + 1)) + min;
+    request.variables.set("random", rnd);
+%}
+
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "{{random}}-{{email}}",
+  "password": "{{password}}",
+  "username": "{{username}}-{{random}}"
+}
+
+### GET create user random Bad Request
+< {%
+    const min = 1;
+    const max = 99999;
+    const rnd = Math.floor(Math.random() * (max - min + 1)) + min;
+    request.variables.set("random", rnd);%}
+
+POST {{host}}/auth/signup
+Content-Type: application/json
+
+{
+  "email": "{{email}}-{{random}}",
+  "password": "",
+  "username": "{{username}}-{{random}}"
+}

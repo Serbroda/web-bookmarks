@@ -1,12 +1,15 @@
 package http
 
 import (
+	"backend/internal/dto"
 	"backend/internal/security"
+	"backend/internal/services"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type UsersHandler struct {
+	UserService *services.UserServiceImpl
 }
 
 func RegisterUsersHandlers(e *echo.Group, h UsersHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -18,5 +21,14 @@ func (h *UsersHandler) GetMe(ctx echo.Context) error {
 	if err != nil {
 		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, auth)
+	user, err := h.UserService.GetById(auth.UserId)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, dto.UserDto{
+		ID:       user.ID,
+		Email:    user.Email,
+		Username: user.Username,
+	})
 }
