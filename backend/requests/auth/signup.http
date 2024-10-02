@@ -22,7 +22,8 @@ Content-Type: application/json
 {
   "email": "{{random}}-{{email}}",
   "password": "{{password}}",
-  "username": "{{username}}-{{random}}"
+  "username": "{{username}}-{{random}}",
+  "displayName": "{{random}}-{{username}}"
 }
 
 ### GET create user random Bad Request

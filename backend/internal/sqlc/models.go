@@ -5,31 +5,31 @@
 package sqlc
 
 import (
-	"database/sql"
+	"time"
 )
 
 type Space struct {
-	ID          int64          `db:"id" json:"id"`
-	Name        string         `db:"name" json:"name"`
-	Description sql.NullString `db:"description" json:"description"`
-	OwnerID     int64          `db:"owner_id" json:"owner_id"`
-	Visibility  string         `db:"visibility" json:"visibility"`
-	CreatedAt   sql.NullTime   `db:"created_at" json:"created_at"`
-	UpdatedAt   sql.NullTime   `db:"updated_at" json:"updated_at"`
+	ID          int64      `db:"id" json:"id"`
+	Name        string     `db:"name" json:"name"`
+	Description *string    `db:"description" json:"description"`
+	OwnerID     int64      `db:"owner_id" json:"owner_id"`
+	Visibility  string     `db:"visibility" json:"visibility"`
+	CreatedAt   *time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type User struct {
-	ID        int64          `db:"id" json:"id"`
-	Email     string         `db:"email" json:"email"`
-	Username  sql.NullString `db:"username" json:"username"`
-	Tag       sql.NullString `db:"tag" json:"tag"`
-	Password  string         `db:"password" json:"password"`
-	CreatedAt sql.NullTime   `db:"created_at" json:"created_at"`
-	UpdatedAt sql.NullTime   `db:"updated_at" json:"updated_at"`
+	ID          int64      `db:"id" json:"id"`
+	Email       string     `db:"email" json:"email"`
+	Username    string     `db:"username" json:"username"`
+	Password    string     `db:"password" json:"password"`
+	DisplayName *string    `db:"display_name" json:"display_name"`
+	CreatedAt   *time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type UsersSpace struct {
-	UserID    int64        `db:"user_id" json:"user_id"`
-	SpaceID   int64        `db:"space_id" json:"space_id"`
-	CreatedAt sql.NullTime `db:"created_at" json:"created_at"`
+	UserID    int64      `db:"user_id" json:"user_id"`
+	SpaceID   int64      `db:"space_id" json:"space_id"`
+	CreatedAt *time.Time `db:"created_at" json:"created_at"`
 }

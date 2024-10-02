@@ -5,7 +5,6 @@ import (
 	"backend/internal/security"
 	"backend/internal/services"
 	"backend/internal/sqlc"
-	"database/sql"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -20,9 +19,10 @@ type LoginRequest struct {
 }
 
 type RegistrationRequest struct {
-	Email    string  `json:"email" validate:"email,required"`
-	Password string  `json:"password" validate:"required"`
-	Username *string `json:"username,omitempty"`
+	Email       string  `json:"email" validate:"email,required"`
+	Password    string  `json:"password" validate:"required"`
+	Username    *string `json:"username" validate:"required"`
+	DisplayName *string `json:"displayName,omitempty"`
 }
 
 type AuthHandler struct {
@@ -47,15 +47,10 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 	}
 
 	params := sqlc.CreateUserParams{
-		Email:    payload.Email,
-		Password: hashedPassword,
-	}
-
-	if payload.Username != nil && *payload.Username != "" {
-		params.Username = sql.NullString{
-			String: *payload.Username,
-			Valid:  true,
-		}
+		Email:       payload.Email,
+		Password:    hashedPassword,
+		Username:    *payload.Username,
+		DisplayName: payload.DisplayName,
 	}
 
 	user, err := si.UserService.CreateUser(params)
@@ -77,7 +72,7 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 		return err
 	}
 
-	entity, err := si.UserService.GetByEmail(payload.User)
+	entity, err := si.UserService.GetByEmailOrUsername(payload.User)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return ctx.String(http.StatusUnauthorized, "bad login credentials")

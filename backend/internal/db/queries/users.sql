@@ -3,31 +3,29 @@ SELECT *
 FROM users u
 WHERE id = ? LIMIT 1;
 
--- name: FindUserByEmail :one
+-- name: FindUserByEmailOrUsername :one
 SELECT *
 FROM users u
-WHERE lower(email) = lower(?) LIMIT 1;
+WHERE lower(email) = ?
+   or lower(username) = ? LIMIT 1;
 
--- name: CountByUsernameAndTag :one
+-- name: CountUserByEmail :one
 SELECT count(*)
 FROM users
-WHERE lower(username) = lower(?)
-  AND tag = ? LIMIT 1;
+WHERE lower(email) = ? LIMIT 1;
 
--- name: FindUserByUsername :one
-SELECT *
-FROM users u
-WHERE lower(username) = ?
-  AND tag = ? LIMIT 1;
-
+-- name: CountUserByUsername :one
+SELECT count(*)
+FROM users
+WHERE lower(username) = ? LIMIT 1;
 
 -- name: CreateUser :execlastid
 INSERT INTO users (created_at,
                    updated_at,
                    email,
                    username,
-                   tag,
-                   password)
+                   password,
+                   display_name)
 VALUES (CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
         ?,
@@ -35,20 +33,9 @@ VALUES (CURRENT_TIMESTAMP,
         ?,
         ?);
 
--- name: UpdateUsername :exec
-UPDATE users
-SET username = ?,
-    tag      = ?
-;
-
 -- name: UpdatePassword :exec
 UPDATE users
-SET username = ?,
-    tag      = ?
+SET password = ?
+WHERE id = ?
 ;
 
--- name: UpdateEmail :exec
-UPDATE users
-SET username = ?,
-    tag      = ?
-;

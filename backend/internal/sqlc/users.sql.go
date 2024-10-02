@@ -7,23 +7,29 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
 )
 
-const countByUsernameAndTag = `-- name: CountByUsernameAndTag :one
+const countUserByEmail = `-- name: CountUserByEmail :one
 SELECT count(*)
 FROM users
-WHERE lower(username) = lower(?)
-  AND tag = ? LIMIT 1
+WHERE lower(email) = ? LIMIT 1
 `
 
-type CountByUsernameAndTagParams struct {
-	LOWER string         `db:"LOWER" json:"LOWER"`
-	Tag   sql.NullString `db:"tag" json:"tag"`
+func (q *Queries) CountUserByEmail(ctx context.Context, email string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUserByEmail, email)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
-func (q *Queries) CountByUsernameAndTag(ctx context.Context, arg CountByUsernameAndTagParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countByUsernameAndTag, arg.LOWER, arg.Tag)
+const countUserByUsername = `-- name: CountUserByUsername :one
+SELECT count(*)
+FROM users
+WHERE lower(username) = ? LIMIT 1
+`
+
+func (q *Queries) CountUserByUsername(ctx context.Context, username string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUserByUsername, username)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -34,8 +40,8 @@ INSERT INTO users (created_at,
                    updated_at,
                    email,
                    username,
-                   tag,
-                   password)
+                   password,
+                   display_name)
 VALUES (CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
         ?,
@@ -45,18 +51,18 @@ VALUES (CURRENT_TIMESTAMP,
 `
 
 type CreateUserParams struct {
-	Email    string         `db:"email" json:"email"`
-	Username sql.NullString `db:"username" json:"username"`
-	Tag      sql.NullString `db:"tag" json:"tag"`
-	Password string         `db:"password" json:"password"`
+	Email       string  `db:"email" json:"email"`
+	Username    string  `db:"username" json:"username"`
+	Password    string  `db:"password" json:"password"`
+	DisplayName *string `db:"display_name" json:"display_name"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, createUser,
 		arg.Email,
 		arg.Username,
-		arg.Tag,
 		arg.Password,
+		arg.DisplayName,
 	)
 	if err != nil {
 		return 0, err
@@ -64,21 +70,27 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 	return result.LastInsertId()
 }
 
-const findUserByEmail = `-- name: FindUserByEmail :one
-SELECT id, email, username, tag, password, created_at, updated_at
+const findUserByEmailOrUsername = `-- name: FindUserByEmailOrUsername :one
+SELECT id, email, username, password, display_name, created_at, updated_at
 FROM users u
-WHERE lower(email) = lower(?) LIMIT 1
+WHERE lower(email) = ?
+   or lower(username) = ? LIMIT 1
 `
 
-func (q *Queries) FindUserByEmail(ctx context.Context, lower string) (User, error) {
-	row := q.db.QueryRowContext(ctx, findUserByEmail, lower)
+type FindUserByEmailOrUsernameParams struct {
+	Email    string `db:"email" json:"email"`
+	Username string `db:"username" json:"username"`
+}
+
+func (q *Queries) FindUserByEmailOrUsername(ctx context.Context, arg FindUserByEmailOrUsernameParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, findUserByEmailOrUsername, arg.Email, arg.Username)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
 		&i.Username,
-		&i.Tag,
 		&i.Password,
+		&i.DisplayName,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -86,7 +98,7 @@ func (q *Queries) FindUserByEmail(ctx context.Context, lower string) (User, erro
 }
 
 const findUserById = `-- name: FindUserById :one
-SELECT id, email, username, tag, password, created_at, updated_at
+SELECT id, email, username, password, display_name, created_at, updated_at
 FROM users u
 WHERE id = ? LIMIT 1
 `
@@ -98,89 +110,26 @@ func (q *Queries) FindUserById(ctx context.Context, id int64) (User, error) {
 		&i.ID,
 		&i.Email,
 		&i.Username,
-		&i.Tag,
 		&i.Password,
+		&i.DisplayName,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
-}
-
-const findUserByUsername = `-- name: FindUserByUsername :one
-SELECT id, email, username, tag, password, created_at, updated_at
-FROM users u
-WHERE lower(username) = ?
-  AND tag = ? LIMIT 1
-`
-
-type FindUserByUsernameParams struct {
-	Username sql.NullString `db:"username" json:"username"`
-	Tag      sql.NullString `db:"tag" json:"tag"`
-}
-
-func (q *Queries) FindUserByUsername(ctx context.Context, arg FindUserByUsernameParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, findUserByUsername, arg.Username, arg.Tag)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Username,
-		&i.Tag,
-		&i.Password,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const updateEmail = `-- name: UpdateEmail :exec
-;
-
-UPDATE users
-SET username = ?,
-    tag      = ?
-`
-
-type UpdateEmailParams struct {
-	Username sql.NullString `db:"username" json:"username"`
-	Tag      sql.NullString `db:"tag" json:"tag"`
-}
-
-func (q *Queries) UpdateEmail(ctx context.Context, arg UpdateEmailParams) error {
-	_, err := q.db.ExecContext(ctx, updateEmail, arg.Username, arg.Tag)
-	return err
 }
 
 const updatePassword = `-- name: UpdatePassword :exec
-;
-
 UPDATE users
-SET username = ?,
-    tag      = ?
+SET password = ?
+WHERE id = ?
 `
 
 type UpdatePasswordParams struct {
-	Username sql.NullString `db:"username" json:"username"`
-	Tag      sql.NullString `db:"tag" json:"tag"`
+	Password string `db:"password" json:"password"`
+	ID       int64  `db:"id" json:"id"`
 }
 
 func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updatePassword, arg.Username, arg.Tag)
-	return err
-}
-
-const updateUsername = `-- name: UpdateUsername :exec
-UPDATE users
-SET username = ?,
-    tag      = ?
-`
-
-type UpdateUsernameParams struct {
-	Username sql.NullString `db:"username" json:"username"`
-	Tag      sql.NullString `db:"tag" json:"tag"`
-}
-
-func (q *Queries) UpdateUsername(ctx context.Context, arg UpdateUsernameParams) error {
-	_, err := q.db.ExecContext(ctx, updateUsername, arg.Username, arg.Tag)
+	_, err := q.db.ExecContext(ctx, updatePassword, arg.Password, arg.ID)
 	return err
 }
