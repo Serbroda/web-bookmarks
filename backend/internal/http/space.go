@@ -7,7 +7,7 @@ type CreateSpaceRequest struct {
 }
 
 type SpaceHandler struct {
-	ContentService *services.ContentService
+	SpaceService *services.SpaceService
 }
 
 func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
@@ -151,5 +151,4 @@ func (h *SpaceHandler) checkPermission(space *internal.Space, auth security.Auth
 		return echo.NewHTTPError(http.StatusForbidden, "Forbidden")
 	}
 	return nil
-}
-*/
+}*/

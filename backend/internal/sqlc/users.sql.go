@@ -12,7 +12,7 @@ import (
 const countUserByEmail = `-- name: CountUserByEmail :one
 SELECT count(*)
 FROM users
-WHERE lower(email) = ? LIMIT 1
+WHERE lower(email) = lower(?1) LIMIT 1
 `
 
 func (q *Queries) CountUserByEmail(ctx context.Context, email string) (int64, error) {
@@ -25,7 +25,7 @@ func (q *Queries) CountUserByEmail(ctx context.Context, email string) (int64, er
 const countUserByUsername = `-- name: CountUserByUsername :one
 SELECT count(*)
 FROM users
-WHERE lower(username) = ? LIMIT 1
+WHERE lower(username) = lower(?1) LIMIT 1
 `
 
 func (q *Queries) CountUserByUsername(ctx context.Context, username string) (int64, error) {
@@ -44,10 +44,10 @@ INSERT INTO users (created_at,
                    display_name)
 VALUES (CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP,
-        ?,
-        ?,
-        ?,
-        ?)
+        lower(?1),
+        lower(?2),
+        ?3,
+        ?4)
 `
 
 type CreateUserParams struct {
@@ -73,8 +73,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, 
 const findUserByEmailOrUsername = `-- name: FindUserByEmailOrUsername :one
 SELECT id, email, username, password, display_name, created_at, updated_at
 FROM users u
-WHERE lower(email) = ?
-   or lower(username) = ? LIMIT 1
+WHERE lower(email) = lower(?1)
+   or lower(username) = lower(?2) LIMIT 1
 `
 
 type FindUserByEmailOrUsernameParams struct {
