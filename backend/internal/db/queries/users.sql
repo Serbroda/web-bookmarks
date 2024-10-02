@@ -19,7 +19,7 @@ SELECT count(*)
 FROM users
 WHERE lower(username) = lower(sqlc.arg('username')) LIMIT 1;
 
--- name: CreateUser :execlastid
+-- name: CreateUser :one
 INSERT INTO users (created_at,
                    updated_at,
                    email,
@@ -31,7 +31,9 @@ VALUES (CURRENT_TIMESTAMP,
         lower(sqlc.arg('email')),
         lower(sqlc.arg('username')),
         sqlc.arg('password'),
-        sqlc.arg('display_name'));
+        sqlc.arg('display_name'))
+RETURNING *
+;
 
 -- name: UpdatePassword :exec
 UPDATE users

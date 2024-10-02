@@ -55,7 +55,7 @@ func main() {
 	queries := sqlc.New(database)
 
 	userService := services.NewUserService(queries)
-	//contentService := services.NewContentService(spaceRepo, pageRepo, bookmarkRepo)
+	spaceService := services.NewSpaceService(queries)
 
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
@@ -72,7 +72,7 @@ func main() {
 	http.RegisterUsersHandlers(api, http.UsersHandler{
 		UserService: userService,
 	}, "/v1")
-	//http.RegisterSpaceHandlers(api, http.SpaceHandler{ContentService: contentService}, "/v1")
+	http.RegisterSpaceHandlers(api, http.SpaceHandler{SpaceService: spaceService}, "/v1")
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))

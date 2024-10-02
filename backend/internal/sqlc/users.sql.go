@@ -35,7 +35,7 @@ func (q *Queries) CountUserByUsername(ctx context.Context, username string) (int
 	return count, err
 }
 
-const createUser = `-- name: CreateUser :execlastid
+const createUser = `-- name: CreateUser :one
 INSERT INTO users (created_at,
                    updated_at,
                    email,
@@ -48,6 +48,7 @@ VALUES (CURRENT_TIMESTAMP,
         lower(?2),
         ?3,
         ?4)
+RETURNING id, email, username, password, display_name, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -57,17 +58,24 @@ type CreateUserParams struct {
 	DisplayName *string `db:"display_name" json:"display_name"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, createUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Email,
 		arg.Username,
 		arg.Password,
 		arg.DisplayName,
 	)
-	if err != nil {
-		return 0, err
-	}
-	return result.LastInsertId()
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Username,
+		&i.Password,
+		&i.DisplayName,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const findUserByEmailOrUsername = `-- name: FindUserByEmailOrUsername :one
@@ -119,6 +127,8 @@ func (q *Queries) FindUserById(ctx context.Context, id int64) (User, error) {
 }
 
 const updatePassword = `-- name: UpdatePassword :exec
+;
+
 UPDATE users
 SET password = ?
 WHERE id = ?

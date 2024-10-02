@@ -72,7 +72,7 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 		return err
 	}
 
-	entity, err := si.UserService.GetByEmailOrUsername(payload.User)
+	entity, err := si.UserService.GetUserByEmailOrUsername(payload.User)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return ctx.String(http.StatusUnauthorized, "bad login credentials")
@@ -119,7 +119,7 @@ func (si *AuthHandler) Refresh(ctx echo.Context) error {
 
 	sub := claims["sub"].(float64)
 	userId := int64(sub)
-	entity, err := si.UserService.GetById(userId)
+	entity, err := si.UserService.GetUserById(userId)
 
 	if err != nil {
 		return echo.ErrUnauthorized

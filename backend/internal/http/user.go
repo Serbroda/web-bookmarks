@@ -24,7 +24,7 @@ func (h *UsersHandler) GetMe(ctx echo.Context) error {
 		return err
 	}
 
-	user, err := h.UserService.GetById(auth.UserId)
+	user, err := h.UserService.GetUserById(auth.UserId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return echo.NewHTTPError(http.StatusNotFound, "user not found")

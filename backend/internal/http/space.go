@@ -1,9 +1,17 @@
 package http
 
-/*
+import (
+	"backend/internal/security"
+	"backend/internal/services"
+	"backend/internal/sqlc"
+	"github.com/labstack/echo/v4"
+	"net/http"
+)
+
 type CreateSpaceRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description,omitempty"`
+	Name        string  `json:"name" validate:"required"`
+	Description *string `json:"description"`
+	Visibility  string  `json:"visibility"`
 }
 
 type SpaceHandler struct {
@@ -12,10 +20,10 @@ type SpaceHandler struct {
 
 func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
 	e.POST(baseUrl+"/spaces", h.CreateSpace, middlewares...)
-	e.GET(baseUrl+"/spaces", h.GetSpaces, middlewares...)
-	e.GET(baseUrl+"/spaces/:id", h.GetSpaceById, middlewares...)
-	e.DELETE(baseUrl+"/spaces/:id", h.DeleteSpace, middlewares...)
-	e.GET(baseUrl+"/spaces/:id/pages/tree", h.GetPagesTreeBySpaceId, middlewares...)
+	//e.GET(baseUrl+"/spaces", h.GetSpaces, middlewares...)
+	//e.GET(baseUrl+"/spaces/:id", h.GetSpaceById, middlewares...)
+	//e.DELETE(baseUrl+"/spaces/:id", h.DeleteSpace, middlewares...)
+	//e.GET(baseUrl+"/spaces/:id/pages/tree", h.GetPagesTreeBySpaceId, middlewares...)
 }
 
 func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
@@ -29,20 +37,22 @@ func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
 		return err
 	}
 
-	space := &internal.Space{
+	params := sqlc.CreateSpaceParams{
 		Name:        payload.Name,
 		Description: payload.Description,
-		OwnerID:     auth.UserId,
+		Visibility:  payload.Visibility,
 	}
 
-	if err := h.ContentService.CreateSpace(context.TODO(), space); err != nil {
-		return ctx.String(http.StatusInternalServerError, err.Error())
+	space, err := h.SpaceService.CreateSpace(auth, params)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.JSON(http.StatusCreated, space)
 }
 
-func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
+/*func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
 	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
 		return ctx.String(http.StatusUnauthorized, err.Error())

@@ -9,8 +9,74 @@ import (
 	"context"
 )
 
+const createSpace = `-- name: CreateSpace :one
+INSERT INTO spaces(created_at,
+                   updated_at,
+                   name,
+                   description,
+                   visibility)
+VALUES (CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP,
+        ?,
+        ?,
+        ?) RETURNING id, name, description, visibility, created_at, updated_at
+`
+
+type CreateSpaceParams struct {
+	Name        string  `db:"name" json:"name"`
+	Description *string `db:"description" json:"description"`
+	Visibility  string  `db:"visibility" json:"visibility"`
+}
+
+func (q *Queries) CreateSpace(ctx context.Context, arg CreateSpaceParams) (Space, error) {
+	row := q.db.QueryRowContext(ctx, createSpace, arg.Name, arg.Description, arg.Visibility)
+	var i Space
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Visibility,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createSpaceUser = `-- name: CreateSpaceUser :one
+;
+
+INSERT INTO spaces_users(created_at,
+                         space_id,
+                         user_id,
+                         role)
+VALUES (CURRENT_TIMESTAMP,
+        ?,
+        ?,
+        ?) RETURNING space_id, user_id, role, created_at
+`
+
+type CreateSpaceUserParams struct {
+	SpaceID int64  `db:"space_id" json:"space_id"`
+	UserID  int64  `db:"user_id" json:"user_id"`
+	Role    string `db:"role" json:"role"`
+}
+
+func (q *Queries) CreateSpaceUser(ctx context.Context, arg CreateSpaceUserParams) (SpacesUser, error) {
+	row := q.db.QueryRowContext(ctx, createSpaceUser, arg.SpaceID, arg.UserID, arg.Role)
+	var i SpacesUser
+	err := row.Scan(
+		&i.SpaceID,
+		&i.UserID,
+		&i.Role,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const findSpaceById = `-- name: FindSpaceById :one
-SELECT id, name, description, owner_id, visibility, created_at, updated_at
+;
+
+SELECT id, name, description, visibility, created_at, updated_at
 FROM spaces u
 WHERE id = ? LIMIT 1
 `
@@ -22,7 +88,6 @@ func (q *Queries) FindSpaceById(ctx context.Context, id int64) (Space, error) {
 		&i.ID,
 		&i.Name,
 		&i.Description,
-		&i.OwnerID,
 		&i.Visibility,
 		&i.CreatedAt,
 		&i.UpdatedAt,

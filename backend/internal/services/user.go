@@ -36,18 +36,18 @@ func (s *UserServiceImpl) CreateUser(user sqlc.CreateUserParams) (sqlc.User, err
 		return sqlc.User{}, ErrUsernameAlreadyExists
 	}
 
-	id, err := s.queries.CreateUser(context.Background(), user)
+	entity, err := s.queries.CreateUser(context.Background(), user)
 	if err != nil {
 		return sqlc.User{}, err
 	}
-	return s.GetById(id)
+	return entity, nil
 }
 
-func (s *UserServiceImpl) GetById(id int64) (sqlc.User, error) {
+func (s *UserServiceImpl) GetUserById(id int64) (sqlc.User, error) {
 	return s.queries.FindUserById(context.TODO(), id)
 }
 
-func (s *UserServiceImpl) GetByEmailOrUsername(emailOrUsername string) (sqlc.User, error) {
+func (s *UserServiceImpl) GetUserByEmailOrUsername(emailOrUsername string) (sqlc.User, error) {
 	entity, err := s.queries.FindUserByEmailOrUsername(context.TODO(), sqlc.FindUserByEmailOrUsernameParams{
 		Email:    emailOrUsername,
 		Username: emailOrUsername,
