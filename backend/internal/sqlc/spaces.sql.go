@@ -77,7 +77,7 @@ const findSpaceById = `-- name: FindSpaceById :one
 ;
 
 SELECT id, name, description, visibility, created_at, updated_at
-FROM spaces u
+FROM spaces s
 WHERE id = ? LIMIT 1
 `
 
@@ -93,4 +93,42 @@ func (q *Queries) FindSpaceById(ctx context.Context, id int64) (Space, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const findSpacesByUserId = `-- name: FindSpacesByUserId :many
+SELECT s.id, s.name, s.description, s.visibility, s.created_at, s.updated_at--, su.user_id, su.role, su.created_at as assigned_at
+FROM spaces s
+         INNER JOIN spaces_users su on
+    su.space_id = s.id AND
+    su.user_id = ?
+`
+
+func (q *Queries) FindSpacesByUserId(ctx context.Context, userID int64) ([]Space, error) {
+	rows, err := q.db.QueryContext(ctx, findSpacesByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Space
+	for rows.Next() {
+		var i Space
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Visibility,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

@@ -20,9 +20,6 @@ func CreateJwtConfig() echojwt.Config {
 	return echojwt.Config{
 		SigningKey: []byte(JwtAccessTokenSecret),
 		ContextKey: "token",
-		ErrorHandler: func(c echo.Context, err error) error {
-			return err
-		},
 		SuccessHandler: func(c echo.Context) {
 			token, ok := c.Get("token").(*jwt.Token)
 			if !ok {

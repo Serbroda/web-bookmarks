@@ -21,7 +21,7 @@ func NewSpaceService(queries *sqlc.Queries) *SpaceService {
 	return &SpaceService{queries: queries}
 }
 
-func (s *SpaceService) CreateSpace(authenticated security.Authentication, space sqlc.CreateSpaceParams) (sqlc.Space, error) {
+func (s *SpaceService) CreateSpace(auth security.Authentication, space sqlc.CreateSpaceParams) (sqlc.Space, error) {
 	if space.Visibility == "" {
 		space.Visibility = SpaceVisibilityPrivate
 	}
@@ -33,7 +33,7 @@ func (s *SpaceService) CreateSpace(authenticated security.Authentication, space 
 
 	_, err = s.queries.CreateSpaceUser(context.TODO(), sqlc.CreateSpaceUserParams{
 		SpaceID: entity.ID,
-		UserID:  authenticated.UserId,
+		UserID:  auth.UserId,
 		Role:    "OWNER",
 	})
 	if err != nil {
@@ -43,6 +43,10 @@ func (s *SpaceService) CreateSpace(authenticated security.Authentication, space 
 	return entity, nil
 }
 
-func (s *SpaceService) GetSpaceById(authenticated sqlc.User, spaceId int64) (sqlc.Space, error) {
+func (s *SpaceService) GetSpaceById(auth security.Authentication, spaceId int64) (sqlc.Space, error) {
 	return s.queries.FindSpaceById(context.TODO(), spaceId)
+}
+
+func (s *SpaceService) GetSpacesByUser(auth security.Authentication) ([]sqlc.Space, error) {
+	return s.queries.FindSpacesByUserId(context.TODO(), auth.UserId)
 }

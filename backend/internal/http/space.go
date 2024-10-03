@@ -1,6 +1,7 @@
 package http
 
 import (
+	"backend/internal/dto"
 	"backend/internal/security"
 	"backend/internal/services"
 	"backend/internal/sqlc"
@@ -20,7 +21,7 @@ type SpaceHandler struct {
 
 func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
 	e.POST(baseUrl+"/spaces", h.CreateSpace, middlewares...)
-	//e.GET(baseUrl+"/spaces", h.GetSpaces, middlewares...)
+	e.GET(baseUrl+"/spaces", h.GetSpaces, middlewares...)
 	//e.GET(baseUrl+"/spaces/:id", h.GetSpaceById, middlewares...)
 	//e.DELETE(baseUrl+"/spaces/:id", h.DeleteSpace, middlewares...)
 	//e.GET(baseUrl+"/spaces/:id/pages/tree", h.GetPagesTreeBySpaceId, middlewares...)
@@ -29,7 +30,7 @@ func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middle
 func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
 	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
-		return ctx.String(http.StatusUnauthorized, err.Error())
+		return err
 	}
 
 	var payload CreateSpaceRequest
@@ -52,19 +53,20 @@ func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, space)
 }
 
-/*func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
+func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
 	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
-		return ctx.String(http.StatusUnauthorized, err.Error())
+		return err
 	}
-	spaces, err := h.ContentService.GetSpacesForUser(auth.UserId)
+
+	spaces, err := h.SpaceService.GetSpacesByUser(auth)
 	if err != nil {
-		return ctx.String(http.StatusUnauthorized, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, spaces)
+	return ctx.JSON(http.StatusOK, dto.SpaceDtosFromSpaces(spaces))
 }
 
-func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
+/*func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
 		return ctx.String(http.StatusUnauthorized, err.Error())

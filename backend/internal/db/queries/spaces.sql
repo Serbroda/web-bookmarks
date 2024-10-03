@@ -24,6 +24,13 @@ VALUES (CURRENT_TIMESTAMP,
 
 -- name: FindSpaceById :one
 SELECT *
-FROM spaces u
+FROM spaces s
 WHERE id = ? LIMIT 1;
 
+-- name: FindSpacesByUserId :many
+SELECT s.*--, su.user_id, su.role, su.created_at as assigned_at
+FROM spaces s
+         INNER JOIN spaces_users su on
+    su.space_id = s.id AND
+    su.user_id = ?
+;
