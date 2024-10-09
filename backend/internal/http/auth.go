@@ -5,11 +5,11 @@ import (
 	"backend/internal/security"
 	"backend/internal/services"
 	"backend/internal/sqlc"
+	"database/sql"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 	"net/http"
 )
 
@@ -74,7 +74,7 @@ func (si *AuthHandler) Login(ctx echo.Context) error {
 
 	entity, err := si.UserService.GetUserByEmailOrUsername(payload.User)
 	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
+		if errors.Is(err, sql.ErrNoRows) {
 			return ctx.String(http.StatusUnauthorized, "bad login credentials")
 		}
 		return ctx.String(http.StatusInternalServerError, err.Error())

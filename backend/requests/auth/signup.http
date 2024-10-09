@@ -26,6 +26,24 @@ Content-Type: application/json
   "displayName": "{{random}}-{{username}}"
 }
 
+### GET request to example server
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "user": "danny-97894",
+  "password": "{{password}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    const cookieString = response.headers.valuesOf("Set-Cookie")[0]
+    if (cookieString && cookieString.includes("=")) {
+        client.global.set("refreshToken", cookieString.split(";")[0].split("=")[1]);
+    }
+%}
+
+
 ### GET create user random Bad Request
 < {%
     const min = 1;

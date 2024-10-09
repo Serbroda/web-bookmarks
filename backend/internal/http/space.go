@@ -5,8 +5,11 @@ import (
 	"backend/internal/security"
 	"backend/internal/services"
 	"backend/internal/sqlc"
+	"database/sql"
+	"errors"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 type CreateSpaceRequest struct {
@@ -22,7 +25,7 @@ type SpaceHandler struct {
 func RegisterSpaceHandlers(e *echo.Group, h SpaceHandler, baseUrl string, middlewares ...echo.MiddlewareFunc) {
 	e.POST(baseUrl+"/spaces", h.CreateSpace, middlewares...)
 	e.GET(baseUrl+"/spaces", h.GetSpaces, middlewares...)
-	//e.GET(baseUrl+"/spaces/:id", h.GetSpaceById, middlewares...)
+	e.GET(baseUrl+"/spaces/:id", h.GetSpaceById, middlewares...)
 	//e.DELETE(baseUrl+"/spaces/:id", h.DeleteSpace, middlewares...)
 	//e.GET(baseUrl+"/spaces/:id/pages/tree", h.GetPagesTreeBySpaceId, middlewares...)
 }
@@ -50,7 +53,7 @@ func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, space)
+	return ctx.JSON(http.StatusCreated, dto.SpaceDtoFromSpace(space))
 }
 
 func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
@@ -66,33 +69,34 @@ func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, dto.SpaceDtosFromSpaces(spaces))
 }
 
-/*func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
+func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
 		return ctx.String(http.StatusUnauthorized, err.Error())
 	}
 
-	id, err := bson.ObjectIDFromHex(ctx.Param("id"))
+	id := ctx.Param("id")
+	spaceId, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
-		return ctx.String(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"error": "Invalid ID",
+		})
 	}
 
-	space, err := h.ContentService.GetSpaceById(context.TODO(), id)
+	space, err := h.SpaceService.GetSpaceById(auth, spaceId)
 	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return ctx.String(http.StatusNotFound, err.Error())
+		if errors.Is(err, sql.ErrNoRows) {
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
+		} else if errors.Is(err, services.ErrNoPermission) {
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-		return ctx.String(http.StatusInternalServerError, err.Error())
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	if err := h.checkPermission(&space, auth, false); err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusOK, space)
+	return ctx.JSON(http.StatusOK, dto.SpaceDtoFromSpace(space))
 }
 
-func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {
+/*func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {
 	auth, err := security.GetAuthentication(ctx)
 	if err != nil {
 		return ctx.String(http.StatusUnauthorized, err.Error())

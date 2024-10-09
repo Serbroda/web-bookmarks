@@ -26,33 +26,14 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 	return cv.validator.Struct(i)
 }
 
-type Test = string
-
-type Input struct {
-	NonEmptyString Test `validate:"required,min=1"`
-}
-
 func main() {
-	validate := validator.New()
-
-	// Test with empty string
-	input := Input{NonEmptyString: ""}
-
-	err := validate.Struct(input)
-	if err != nil {
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Printf("Field '%s' failed validation. Condition: '%s'\n", err.Field(), err.Tag())
-		}
-		//panic(err)
-	} else {
-		fmt.Println("Validation passed!")
-	}
-
 	database := db.OpenConnection(dialect, "ragbag.db")
 	migrations.Migrate(database, dialect, migrations.Migrations, "sqlite")
 	defer database.Close()
 
 	queries := sqlc.New(database)
+
+	db.InitializeData(queries)
 
 	userService := services.NewUserService(queries)
 	spaceService := services.NewSpaceService(queries)

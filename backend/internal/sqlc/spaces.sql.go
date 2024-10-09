@@ -9,6 +9,27 @@ import (
 	"context"
 )
 
+const countSpacesUsers = `-- name: CountSpacesUsers :one
+;
+
+SELECT count(*)
+FROM spaces_users s
+WHERE s.space_id = ?
+  AND s.user_id = ? LIMIT 1
+`
+
+type CountSpacesUsersParams struct {
+	SpaceID int64 `db:"space_id" json:"space_id"`
+	UserID  int64 `db:"user_id" json:"user_id"`
+}
+
+func (q *Queries) CountSpacesUsers(ctx context.Context, arg CountSpacesUsersParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countSpacesUsers, arg.SpaceID, arg.UserID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createSpace = `-- name: CreateSpace :one
 INSERT INTO spaces(created_at,
                    updated_at,

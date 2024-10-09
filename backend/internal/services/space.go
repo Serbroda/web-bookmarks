@@ -4,6 +4,7 @@ import (
 	"backend/internal/security"
 	"backend/internal/sqlc"
 	"context"
+	"errors"
 )
 
 type SpaceVisibility = string
@@ -11,6 +12,10 @@ type SpaceVisibility = string
 const (
 	SpaceVisibilityPublic  SpaceVisibility = "PUBLIC"
 	SpaceVisibilityPrivate SpaceVisibility = "PRIVATE"
+)
+
+var (
+	ErrNoPermission = errors.New("no permission")
 )
 
 type SpaceService struct {
@@ -44,7 +49,22 @@ func (s *SpaceService) CreateSpace(auth security.Authentication, space sqlc.Crea
 }
 
 func (s *SpaceService) GetSpaceById(auth security.Authentication, spaceId int64) (sqlc.Space, error) {
-	return s.queries.FindSpaceById(context.TODO(), spaceId)
+	space, err := s.queries.FindSpaceById(context.TODO(), spaceId)
+	if err != nil {
+		return sqlc.Space{}, err
+	}
+
+	count, err := s.queries.CountSpacesUsers(context.TODO(), sqlc.CountSpacesUsersParams{
+		SpaceID: space.ID,
+		UserID:  auth.UserId,
+	})
+	if err != nil {
+		return sqlc.Space{}, err
+	} else if count == 0 {
+		return sqlc.Space{}, ErrNoPermission
+	}
+
+	return space, nil
 }
 
 func (s *SpaceService) GetSpacesByUser(auth security.Authentication) ([]sqlc.Space, error) {

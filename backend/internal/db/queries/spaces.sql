@@ -34,3 +34,10 @@ FROM spaces s
     su.space_id = s.id AND
     su.user_id = ?
 ;
+
+-- name: CountSpacesUsers :one
+SELECT count(*)
+FROM spaces_users s
+WHERE s.space_id = ?
+  AND s.user_id = ? LIMIT 1
+;
