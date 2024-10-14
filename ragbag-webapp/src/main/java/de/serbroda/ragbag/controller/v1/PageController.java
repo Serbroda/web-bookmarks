@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.AccessDeniedException;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/pages")
@@ -25,8 +26,10 @@ public class PageController {
     }
 
     @PostMapping
-    public ResponseEntity<PageDto> createSpace(@RequestBody CreatePageDto dto) throws AccessDeniedException {
+    public ResponseEntity<PageDto> createPage(@RequestBody CreatePageDto dto) throws AccessDeniedException {
         Page entity = pageService.createPage(dto, AuthorizationService.getAuthenticatedAccountRequired());
         return ResponseEntity.ok(PageMapper.INSTANCE.map(entity));
     }
+
+
 }

@@ -1,6 +1,7 @@
 package de.serbroda.ragbag.models;
 
 import de.serbroda.ragbag.models.base.AbstractBaseEntity;
+import de.serbroda.ragbag.models.shared.SpaceVisibility;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Set;
 public class Space extends AbstractBaseEntity {
 
     private String name;
+    private SpaceVisibility visibility = SpaceVisibility.PRIVATE;
     private Set<Page> pages = new HashSet<>();
     private Set<SpaceAccount> accounts = new HashSet<>();
 
@@ -27,6 +29,15 @@ public class Space extends AbstractBaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Enumerated(EnumType.STRING)
+    public SpaceVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(SpaceVisibility visibility) {
+        this.visibility = visibility;
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space")

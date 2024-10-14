@@ -8,9 +8,9 @@ import de.serbroda.ragbag.utils.RandomUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class DataInitializer {
@@ -30,26 +30,25 @@ public class DataInitializer {
 
     public void initialize() {
         initializeRoles();
-        initializeAdmin();
+        initializeUser(ADMIN_USERNAME, RandomUtils.randomString(10), AccountRoles.ADMIN);
     }
 
-    private void initializeAdmin() {
-        Optional<Account> adminOptional = userService.getUserByUsername(ADMIN_USERNAME);
+    protected Account initializeUser(String username, String password, AccountRoles... roles) {
+        Optional<Account> adminOptional = userService.getUserByUsername(username);
         if (adminOptional.isPresent()) {
-            return;
+            return null;
         }
 
-        final String password = RandomUtils.randomString(10);
-
         Account admin = new Account();
-        admin.setUsername(ADMIN_USERNAME);
+        admin.setUsername(username);
         admin.setPassword(passwordEncoder.encode(password));
-        admin.setAccountRoles(new HashSet<>(
-                Collections.singletonList(
-                        accountRoleRepository.findByNameIgnoreCase(AccountRoles.ADMIN.name()))));
-        userService.createAccount(admin);
+        admin.setAccountRoles(Stream.of(roles)
+                .map((r) -> accountRoleRepository.findByNameIgnoreCase(r.name()))
+                .collect(Collectors.toSet()));
+        Account account = userService.createAccount(admin);
 
         System.out.println("Initialized '" + ADMIN_USERNAME + "' user with password: " + password);
+        return account;
     }
 
     private void initializeRoles() {

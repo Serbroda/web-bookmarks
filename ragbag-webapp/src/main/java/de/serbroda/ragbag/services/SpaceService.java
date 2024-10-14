@@ -46,20 +46,20 @@ public class SpaceService {
         return space;
     }
 
-    public SpaceAccount addAccountToSpace(Space space, Account account, SpaceRole role) {
-        SpaceAccount spaceAccount = new SpaceAccount();
-        spaceAccount.setSpace(space);
-        spaceAccount.setAccount(account);
-        spaceAccount.setRole(role);
-        return spaceAccountRepository.save(spaceAccount);
-    }
-
     public List<Space> getSpaces(Account account) {
         return spaceRepository.findAllByAccount(account);
     }
 
     public Optional<Space> getSpaceById(long id) {
         return spaceRepository.findById(id);
+    }
+
+    public SpaceAccount addAccountToSpace(Space space, Account account, SpaceRole role) {
+        SpaceAccount spaceAccount = new SpaceAccount();
+        spaceAccount.setSpace(space);
+        spaceAccount.setAccount(account);
+        spaceAccount.setRole(role);
+        return spaceAccountRepository.save(spaceAccount);
     }
 
     public void removeAccountFromSpace(Space space, Account account) {

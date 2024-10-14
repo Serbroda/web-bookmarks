@@ -9,6 +9,8 @@ import de.serbroda.ragbag.models.Space;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface PageMapper {
 
@@ -17,4 +19,6 @@ public interface PageMapper {
     Page map(CreatePageDto source);
 
     PageDto map(Page source);
+
+    List<PageDto> mapAll(List<Page> sources);
 }

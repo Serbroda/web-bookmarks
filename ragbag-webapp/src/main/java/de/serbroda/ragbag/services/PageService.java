@@ -16,7 +16,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static de.serbroda.ragbag.security.AuthorizationService.checkAccessAllowed;
 
@@ -48,7 +50,7 @@ public class PageService {
                     .orElseThrow(() -> new EntityNotFoundException("Page with id " + createPageDto.getParentPageId() + " not found"));
             page.setParent(parent);
         }
-        page.setVisibility(PageVisibility.PRIVATE);
+        page.setVisibility(PageVisibility.PUBLIC);
         return createPage(page, account);
     }
 
@@ -71,5 +73,21 @@ public class PageService {
 
     public Optional<Page> getPageById(long id) {
         return pageRepository.findById(id);
+    }
+
+    public List<Page> getPagesTreeBySpaceId(Long spaceId) {
+        List<Page> pages = pageRepository.findRootPagesBySpaceId(spaceId);
+        for (Page page : pages) {
+            loadSubPages(page);  // rekursive Methode, um SubPages zu laden
+        }
+        return pages;
+    }
+
+    // Rekursive Methode, um die SubPages zu laden
+    private void loadSubPages(Page page) {
+        Set<Page> subPages = page.getSubPages();
+        for (Page subPage : subPages) {
+            loadSubPages(subPage);  // rekursiv die SubPages laden
+        }
     }
 }

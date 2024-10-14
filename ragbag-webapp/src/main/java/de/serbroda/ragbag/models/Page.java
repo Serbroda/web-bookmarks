@@ -14,7 +14,7 @@ public class Page extends AbstractBaseEntity {
     private String name;
     private Space space;
     private Page parent;
-    private PageVisibility visibility;
+    private PageVisibility visibility = PageVisibility.PUBLIC;
     private Set<Page> subPages = new HashSet<>();
     private Set<Bookmark> bookmarks = new HashSet<>();
     private Set<PageAccount> accounts = new HashSet<>();

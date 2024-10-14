@@ -25,6 +25,9 @@
             <column name="name" type="varchar(150)">
                 <constraints nullable="false" />
             </column>
+            <column name="visibility" type="varchar(80)" defaultValue="PRIVATE">
+                <constraints nullable="false" />
+            </column>
         </createTable>
     </changeSet>
 

@@ -2,6 +2,7 @@ package de.serbroda.ragbag.configuration;
 
 import de.serbroda.ragbag.repositories.AccountRepository;
 import de.serbroda.ragbag.services.DataInitializer;
+import de.serbroda.ragbag.services.DataInitializerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,12 +25,22 @@ public class AppConfiguration {
         this.accountRepository = accountRepository;
     }
 
-    @Profile("!test")
+    @Profile({"prod"})
     @Configuration
     public static class DefaultAppConfiguration {
 
         @Autowired
         public void initialize(DataInitializer dataInitializer) {
+            dataInitializer.initialize();
+        }
+    }
+
+    @Profile("!prod")
+    @Configuration
+    public static class TestAppConfiguration {
+
+        @Autowired
+        public void initialize(DataInitializerTest dataInitializer) {
             dataInitializer.initialize();
         }
     }
