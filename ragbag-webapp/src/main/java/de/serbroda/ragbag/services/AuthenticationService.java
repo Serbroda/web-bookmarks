@@ -2,7 +2,7 @@ package de.serbroda.ragbag.services;
 
 import de.serbroda.ragbag.dtos.auth.LoginUserDto;
 import de.serbroda.ragbag.dtos.auth.RegisterUserDto;
-import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.repositories.AccountRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,14 +24,14 @@ public class AuthenticationService {
         this.authenticationManager = authenticationManager;
     }
 
-    public Account signup(RegisterUserDto input) {
-        Account user = new Account();
+    public User signup(RegisterUserDto input) {
+        User user = new User();
         user.setUsername(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         return accountRepository.save(user);
     }
 
-    public Account authenticate(LoginUserDto input) {
+    public User authenticate(LoginUserDto input) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.getEmail(),

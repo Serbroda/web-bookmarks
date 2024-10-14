@@ -4,8 +4,8 @@ import de.serbroda.ragbag.models.base.AbstractBaseEntity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "accountrole")
-public class AccountRole extends AbstractBaseEntity {
+@Table(name = "usersrole")
+public class UserRole extends AbstractBaseEntity {
 
     private String name;
 
@@ -26,7 +26,7 @@ public class AccountRole extends AbstractBaseEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof AccountRole) {
+        if (obj instanceof UserRole) {
             return super.equals(obj);
         }
         return false;

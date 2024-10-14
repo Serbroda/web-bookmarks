@@ -4,21 +4,20 @@ import de.serbroda.ragbag.models.base.AbstractBaseEntity;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
 @Entity
-@Table(name = "account")
-public class Account extends AbstractBaseEntity implements UserDetails {
+@Table(name = "users")
+public class User extends AbstractBaseEntity implements UserDetails {
 
     private String username;
     private String password;
     private boolean active = true;
-    private Set<AccountRole> accountRoles = new HashSet<>();
-    private Set<SpaceAccount> spaces = new HashSet<>();
-    private Set<PageAccount> pages = new HashSet<>();
+    private Set<UserRole> userRoles = new HashSet<>();
+    private Set<SpaceUser> spaces = new HashSet<>();
+    private Set<PageUser> pages = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,17 +52,17 @@ public class Account extends AbstractBaseEntity implements UserDetails {
         this.active = active;
     }
 
-    @JoinTable(name = "account_accountrole", joinColumns = {
-            @JoinColumn(name = "account_id", referencedColumnName = "id")}, inverseJoinColumns = {
+    @JoinTable(name = "users_role", joinColumns = {
+            @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
             @JoinColumn(name = "role_id", referencedColumnName = "id")
     })
     @ManyToMany(fetch = FetchType.EAGER)
-    public Set<AccountRole> getAccountRoles() {
-        return accountRoles;
+    public Set<UserRole> getAccountRoles() {
+        return userRoles;
     }
 
-    public void setAccountRoles(Set<AccountRole> accountRoles) {
-        this.accountRoles = accountRoles;
+    public void setAccountRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
 //    @JoinTable(name = "space_account", joinColumns = {
@@ -76,20 +75,20 @@ public class Account extends AbstractBaseEntity implements UserDetails {
 //    }
 
     @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
-    public Set<SpaceAccount> getSpaces() {
+    public Set<SpaceUser> getSpaces() {
         return spaces;
     }
 
-    public void setSpaces(Set<SpaceAccount> spaces) {
+    public void setSpaces(Set<SpaceUser> spaces) {
         this.spaces = spaces;
     }
 
     @OneToMany(mappedBy = "account")
-    public Set<PageAccount> getPages() {
+    public Set<PageUser> getPages() {
         return pages;
     }
 
-    public void setPages(Set<PageAccount> pages) {
+    public void setPages(Set<PageUser> pages) {
         this.pages = pages;
     }
 
@@ -97,7 +96,7 @@ public class Account extends AbstractBaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        for (AccountRole r : accountRoles) {
+        for (UserRole r : userRoles) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + r.getName()));
         }
         return authorities;
@@ -105,7 +104,7 @@ public class Account extends AbstractBaseEntity implements UserDetails {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Account) {
+        if (obj instanceof User) {
             return super.equals(obj);
         }
         return false;

@@ -3,7 +3,7 @@ package de.serbroda.ragbag.controller;
 import de.serbroda.ragbag.dtos.auth.LoginResponse;
 import de.serbroda.ragbag.dtos.auth.LoginUserDto;
 import de.serbroda.ragbag.dtos.auth.RegisterUserDto;
-import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.services.AuthenticationService;
 import de.serbroda.ragbag.services.JwtService;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +26,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Account> register(@RequestBody RegisterUserDto registerUserDto) {
-        Account registeredUser = authenticationService.signup(registerUserDto);
+    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
+        User registeredUser = authenticationService.signup(registerUserDto);
         return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-        Account authenticatedUser = authenticationService.authenticate(loginUserDto);
+        User authenticatedUser = authenticationService.authenticate(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
 

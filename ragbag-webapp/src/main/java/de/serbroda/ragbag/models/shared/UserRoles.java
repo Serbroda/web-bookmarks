@@ -1,5 +1,5 @@
 package de.serbroda.ragbag.models.shared;
 
-public enum AccountRoles {
+public enum UserRoles {
     ADMIN, USER
 }

@@ -5,16 +5,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2024-04-24: create table space" author="drottstegge">
+    <changeSet id="2024-04-24: create table spaces" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="space"/>
+                <tableExists tableName="spaces"/>
             </not>
         </preConditions>
 
-        <createTable tableName="space">
+        <createTable tableName="spaces">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="PK_SPACE_ID"/>
+                <constraints primaryKey="true" primaryKeyName="PK_space_id"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -31,29 +31,29 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2024-04-21: create table space_account" author="drottstegge">
+    <changeSet id="2024-04-21: create table spaces_users" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="space_account"/>
+                <tableExists tableName="spaces_users"/>
             </not>
         </preConditions>
 
-        <createTable tableName="space_account">
+        <createTable tableName="spaces_users">
             <column name="space_id" type="bigint">
-                <constraints nullable="false" referencedTableName="space" referencedColumnNames="id"
-                  foreignKeyName="fk_space_account_space_id"/>
+                <constraints nullable="false" referencedTableName="spaces" referencedColumnNames="id"
+                  foreignKeyName="fk_spaces_users_space_id"/>
             </column>
-            <column name="account_id" type="bigint">
-                <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
-                  foreignKeyName="fk_space_account_account_id"/>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" referencedTableName="users" referencedColumnNames="id"
+                  foreignKeyName="fk_spaces_users_user_id"/>
             </column>
             <column name="role" type="varchar(40)">
                 <constraints nullable="false" />
             </column>
         </createTable>
 
-        <addUniqueConstraint tableName="space_account" columnNames="space_id,account_id"
-          constraintName="uc_space_account_space_id_account_id"/>
+        <addUniqueConstraint tableName="spaces_users" columnNames="space_id,user_id"
+          constraintName="uc_spaces_users_space_id_user_id"/>
     </changeSet>
 
 </databaseChangeLog>

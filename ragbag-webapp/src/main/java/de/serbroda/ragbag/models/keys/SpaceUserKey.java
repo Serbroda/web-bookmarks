@@ -4,17 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public class SpaceAccountKey {
+public class SpaceUserKey {
 
     private Long spaceId;
-    private Long accountId;
+    private Long userId;
 
-    public SpaceAccountKey() {
+    public SpaceUserKey() {
     }
 
-    public SpaceAccountKey(Long spaceId, Long accountId) {
+    public SpaceUserKey(Long spaceId, Long userId) {
         this.spaceId = spaceId;
-        this.accountId = accountId;
+        this.userId = userId;
     }
 
     @Column(name = "space_id")
@@ -27,11 +27,11 @@ public class SpaceAccountKey {
     }
 
     @Column(name = "account_id")
-    public Long getAccountId() {
-        return accountId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setUserId(Long accountId) {
+        this.userId = accountId;
     }
 }

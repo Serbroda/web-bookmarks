@@ -2,9 +2,9 @@ package de.serbroda.ragbag.services;
 
 import de.serbroda.ragbag.dtos.page.CreatePageDto;
 import de.serbroda.ragbag.mappers.PageMapper;
-import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.Page;
-import de.serbroda.ragbag.models.PageAccount;
+import de.serbroda.ragbag.models.PageUser;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.models.shared.PageRole;
 import de.serbroda.ragbag.models.shared.PageVisibility;
@@ -38,10 +38,10 @@ public class PageService {
         this.pageAccountRepository = pageAccountRepository;
     }
 
-    public Page createPage(CreatePageDto createPageDto, Account account) throws AccessDeniedException {
+    public Page createPage(CreatePageDto createPageDto, User user) throws AccessDeniedException {
         Space space = spaceRepository.findById(createPageDto.getSpaceId())
                 .orElseThrow(() -> new EntityNotFoundException("Space with id " + createPageDto.getSpaceId() + " not found"));
-        checkAccessAllowed(account, space, SpaceRole.OWNER, SpaceRole.CONTRIBUTOR);
+        checkAccessAllowed(user, space, SpaceRole.OWNER, SpaceRole.CONTRIBUTOR);
 
         Page page = PageMapper.INSTANCE.map(createPageDto);
         page.setSpace(space);
@@ -51,24 +51,24 @@ public class PageService {
             page.setParent(parent);
         }
         page.setVisibility(PageVisibility.PUBLIC);
-        return createPage(page, account);
+        return createPage(page, user);
     }
 
-    public Page createPage(Page page, Account account) {
+    public Page createPage(Page page, User user) {
         if (page.getSpace() == null) {
             throw new IllegalArgumentException("Space must be set");
         }
         page = pageRepository.save(page);
-        addAccountToPage(page, account, PageRole.OWNER);
+        addAccountToPage(page, user, PageRole.OWNER);
         return page;
     }
 
-    public PageAccount addAccountToPage(Page page, Account account, PageRole pageRole) {
-        PageAccount pageAccount = new PageAccount();
-        pageAccount.setPage(page);
-        pageAccount.setAccount(account);
-        pageAccount.setRole(pageRole);
-        return pageAccountRepository.save(pageAccount);
+    public PageUser addAccountToPage(Page page, User user, PageRole pageRole) {
+        PageUser pageUser = new PageUser();
+        pageUser.setPage(page);
+        pageUser.setAccount(user);
+        pageUser.setRole(pageRole);
+        return pageAccountRepository.save(pageUser);
     }
 
     public Optional<Page> getPageById(long id) {

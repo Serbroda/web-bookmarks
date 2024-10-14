@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "space")
+@Table(name = "spaces")
 public class Space extends AbstractBaseEntity {
 
     private String name;
     private SpaceVisibility visibility = SpaceVisibility.PRIVATE;
     private Set<Page> pages = new HashSet<>();
-    private Set<SpaceAccount> accounts = new HashSet<>();
+    private Set<SpaceUser> accounts = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,11 +50,11 @@ public class Space extends AbstractBaseEntity {
     }
 
     @OneToMany(mappedBy = "space")
-    public Set<SpaceAccount> getAccounts() {
+    public Set<SpaceUser> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(Set<SpaceAccount> accounts) {
+    public void setAccounts(Set<SpaceUser> accounts) {
         this.accounts = accounts;
     }
 

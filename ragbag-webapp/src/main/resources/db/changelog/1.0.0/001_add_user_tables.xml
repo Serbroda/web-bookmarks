@@ -5,16 +5,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2024-04-21: create table account" author="drottstegge">
+    <changeSet id="2024-04-21: create table users" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="account"/>
+                <tableExists tableName="users"/>
             </not>
         </preConditions>
 
-        <createTable tableName="account">
+        <createTable tableName="users">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="pk_account_id"/>
+                <constraints primaryKey="true" primaryKeyName="pk_user_id"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -23,7 +23,7 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="username" type="varchar(150)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="UC_ACCOUNT_USERNAME"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="UC_users_USERNAME"/>
             </column>
             <column name="password" type="varchar(60)">
                 <constraints nullable="false"/>
@@ -34,16 +34,16 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="2024-04-21: create table accountrole" author="drottstegge">
+    <changeSet id="2024-04-21: create table usersrole" author="drottstegge">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="accountrole"/>
+                <tableExists tableName="usersrole"/>
             </not>
         </preConditions>
 
-        <createTable tableName="accountrole">
+        <createTable tableName="usersrole">
             <column name="id" type="bigint" autoIncrement="true" incrementBy="1" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="pk_accountrole_id"/>
+                <constraints primaryKey="true" primaryKeyName="pk_usersrole_id"/>
             </column>
             <column name="version" type="int" defaultValueNumeric="0">
                 <constraints nullable="false"/>
@@ -52,31 +52,31 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="name" type="varchar(150)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="uc_accountrole_name"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="uc_usersrole_name"/>
             </column>
         </createTable>
     </changeSet>
 
-  <changeSet id="2024-04-21: create table account_accountrole" author="drottstegge">
+  <changeSet id="2024-04-21: create table users_role" author="drottstegge">
     <preConditions onFail="MARK_RAN">
       <not>
-        <tableExists tableName="account_accountrole"/>
+        <tableExists tableName="users_role"/>
       </not>
     </preConditions>
 
-    <createTable tableName="account_accountrole">
-      <column name="account_id" type="bigint">
-        <constraints nullable="false" referencedTableName="account" referencedColumnNames="id"
-          foreignKeyName="fk_account_accountrole_account_id"/>
+    <createTable tableName="users_role">
+      <column name="user_id" type="bigint">
+        <constraints nullable="false" referencedTableName="users" referencedColumnNames="id"
+          foreignKeyName="fk_users_role_user_id"/>
       </column>
       <column name="role_id" type="bigint">
-        <constraints nullable="false" referencedTableName="accountrole" referencedColumnNames="id"
-          foreignKeyName="fk_account_accountrole_rols_id"/>
+        <constraints nullable="false" referencedTableName="usersrole" referencedColumnNames="id"
+          foreignKeyName="fk_users_role_rols_id"/>
       </column>
     </createTable>
 
-    <addUniqueConstraint tableName="account_accountrole" columnNames="account_id,role_id"
-      constraintName="uc_account_accountrole_account_id_role_id"/>
+    <addUniqueConstraint tableName="users_role" columnNames="user_id,role_id"
+      constraintName="uc_users_role_user_id_role_id"/>
   </changeSet>
 
 </databaseChangeLog>

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "page")
+@Table(name = "pages")
 public class Page extends AbstractBaseEntity {
 
     private String name;
@@ -17,7 +17,7 @@ public class Page extends AbstractBaseEntity {
     private PageVisibility visibility = PageVisibility.PUBLIC;
     private Set<Page> subPages = new HashSet<>();
     private Set<Bookmark> bookmarks = new HashSet<>();
-    private Set<PageAccount> accounts = new HashSet<>();
+    private Set<PageUser> accounts = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,11 +80,11 @@ public class Page extends AbstractBaseEntity {
     }
 
     @OneToMany(mappedBy = "page")
-    public Set<PageAccount> getAccounts() {
+    public Set<PageUser> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(Set<PageAccount> accounts) {
+    public void setAccounts(Set<PageUser> accounts) {
         this.accounts = accounts;
     }
 

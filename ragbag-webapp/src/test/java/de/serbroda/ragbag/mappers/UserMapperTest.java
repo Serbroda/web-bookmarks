@@ -1,15 +1,15 @@
 package de.serbroda.ragbag.mappers;
 
 import de.serbroda.ragbag.dtos.UserDto;
-import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.models.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class AccountMapperTest {
+public class UserMapperTest {
 
     @Test
     public void itShouldMapUser() {
-        Account from = new Account();
+        User from = new User();
         from.setUsername("Max");
 
         UserDto to = UserMapper.INSTANCE.map(from);

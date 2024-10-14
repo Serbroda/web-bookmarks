@@ -1,6 +1,6 @@
 package de.serbroda.ragbag.services;
 
-import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.repositories.AccountRepository;
 import jakarta.persistence.EntityExistsException;
@@ -24,26 +24,26 @@ public class UserService {
         this.spaceService = spaceService;
     }
 
-    public Optional<Account> getUserByUsername(String username) {
+    public Optional<User> getUserByUsername(String username) {
         return accountRepository.findByUsernameIgnoreCase(username);
     }
 
-    public Optional<Account> getUserById(long userId) {
+    public Optional<User> getUserById(long userId) {
         return accountRepository.findById(userId);
     }
 
     @Transactional
-    public Account createAccount(Account account) {
-        if (getUserByUsername(account.getUsername()).isPresent()) {
-            throw new EntityExistsException("User " + account.getUsername() + " already exists");
+    public User createAccount(User user) {
+        if (getUserByUsername(user.getUsername()).isPresent()) {
+            throw new EntityExistsException("User " + user.getUsername() + " already exists");
         }
 
-        Account entity = accountRepository.save(account);
+        User entity = accountRepository.save(user);
 
         Space defaultSpace = new Space();
         defaultSpace.setName(
                 StringUtils.capitalize(entity.getUsername().toLowerCase()) + "'s Space");
-        spaceService.createSpace(defaultSpace, account);
+        spaceService.createSpace(defaultSpace, user);
         return entity;
     }
 

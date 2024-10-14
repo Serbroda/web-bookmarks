@@ -7,19 +7,19 @@ import jakarta.validation.constraints.NotNull;
 public class AddAccountToSpaceDto {
 
     @NotNull
-    @JsonProperty("accountId")
-    private long accountId;
+    @JsonProperty("userId")
+    private long userId;
 
     @NotNull
     @JsonProperty("role")
     private SpaceRole role;
 
-    public long getAccountId() {
-        return accountId;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setAccountId(long accountId) {
-        this.accountId = accountId;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public SpaceRole getRole() {

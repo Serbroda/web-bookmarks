@@ -1,24 +1,24 @@
 package de.serbroda.ragbag.models;
 
-import de.serbroda.ragbag.models.keys.PageAccountKey;
+import de.serbroda.ragbag.models.keys.PageUserKey;
 import de.serbroda.ragbag.models.shared.PageRole;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "page_account")
-public class PageAccount {
+@Table(name = "pages_users")
+public class PageUser {
 
-    private PageAccountKey id = new PageAccountKey();
+    private PageUserKey id = new PageUserKey();
     private Page page;
-    private Account account;
+    private User user;
     private PageRole role;
 
     @EmbeddedId
-    public PageAccountKey getId() {
+    public PageUserKey getId() {
         return id;
     }
 
-    public void setId(PageAccountKey id) {
+    public void setId(PageUserKey id) {
         this.id = id;
     }
 
@@ -34,14 +34,14 @@ public class PageAccount {
     }
 
     @ManyToOne
-    @MapsId("accountId")
-    @JoinColumn(name = "account_id")
-    public Account getAccount() {
-        return account;
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
+    public User getAccount() {
+        return user;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccount(User user) {
+        this.user = user;
     }
 
     @Enumerated(EnumType.STRING)
@@ -55,7 +55,7 @@ public class PageAccount {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PageAccount) {
+        if (obj instanceof PageUser) {
             return super.equals(obj);
         }
         return false;

@@ -1,24 +1,24 @@
 package de.serbroda.ragbag.models;
 
-import de.serbroda.ragbag.models.keys.SpaceAccountKey;
+import de.serbroda.ragbag.models.keys.SpaceUserKey;
 import de.serbroda.ragbag.models.shared.SpaceRole;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "space_account")
-public class SpaceAccount {
+@Table(name = "spaces_users")
+public class SpaceUser {
 
-    private SpaceAccountKey id = new SpaceAccountKey();
+    private SpaceUserKey id = new SpaceUserKey();
     private Space space;
-    private Account account;
+    private User user;
     private SpaceRole role;
 
     @EmbeddedId
-    public SpaceAccountKey getId() {
+    public SpaceUserKey getId() {
         return id;
     }
 
-    public void setId(SpaceAccountKey id) {
+    public void setId(SpaceUserKey id) {
         this.id = id;
     }
 
@@ -34,14 +34,14 @@ public class SpaceAccount {
     }
 
     @ManyToOne
-    @MapsId("accountId")
-    @JoinColumn(name = "account_id")
-    public Account getAccount() {
-        return account;
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
+    public User getAccount() {
+        return user;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccount(User user) {
+        this.user = user;
     }
 
     @Enumerated(EnumType.STRING)
@@ -55,7 +55,7 @@ public class SpaceAccount {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SpaceAccount) {
+        if (obj instanceof SpaceUser) {
             return super.equals(obj);
         }
         return false;

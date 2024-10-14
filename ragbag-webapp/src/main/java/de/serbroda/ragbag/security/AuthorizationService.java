@@ -1,7 +1,7 @@
 package de.serbroda.ragbag.security;
 
 import de.serbroda.ragbag.exceptions.UnauthorizedException;
-import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.models.shared.PageRole;
@@ -19,12 +19,12 @@ public class AuthorizationService {
 
     }
 
-    public static Optional<Account> getAuthenticatedAccount() {
+    public static Optional<User> getAuthenticatedAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return Optional.ofNullable((Account) authentication.getPrincipal());
+        return Optional.ofNullable((User) authentication.getPrincipal());
     }
 
-    public static Account getAuthenticatedAccountRequired() {
+    public static User getAuthenticatedAccountRequired() {
         return getAuthenticatedAccount().orElseThrow(() -> new UnauthorizedException("User is not authenticated"));
     }
 
@@ -36,27 +36,27 @@ public class AuthorizationService {
         checkAccessAllowed(getAuthenticatedAccountRequired(), page, roles);
     }
 
-    public static void checkAccessAllowed(Account account, Space space, SpaceRole... roles) throws AccessDeniedException {
-        if (!isAccessAllowed(account, space, roles)) {
+    public static void checkAccessAllowed(User user, Space space, SpaceRole... roles) throws AccessDeniedException {
+        if (!isAccessAllowed(user, space, roles)) {
             throw new AccessDeniedException("Not allowed to access space " + space.getId());
         }
     }
 
-    public static void checkAccessAllowed(Account account, Page page, PageRole... roles) throws AccessDeniedException {
-        if (!isAccessAllowed(account, page, roles)) {
+    public static void checkAccessAllowed(User user, Page page, PageRole... roles) throws AccessDeniedException {
+        if (!isAccessAllowed(user, page, roles)) {
             throw new AccessDeniedException("Not allowed to access page " + page.getId());
         }
     }
 
-    public static boolean isAccessAllowed(Account account, Space space, SpaceRole... roles) {
-        return account.getSpaces().stream()
+    public static boolean isAccessAllowed(User user, Space space, SpaceRole... roles) {
+        return user.getSpaces().stream()
                 .filter(sa -> roles.length < 1 || Arrays.asList(roles).contains(sa.getRole()))
                 .map(sa -> sa.getSpace())
                 .anyMatch(a -> a.equals(space));
     }
 
-    public static boolean isAccessAllowed(Account account, Page page, PageRole... roles) {
-        return account.getPages().stream()
+    public static boolean isAccessAllowed(User user, Page page, PageRole... roles) {
+        return user.getPages().stream()
                 .filter(pa -> roles.length < 1 || Arrays.asList(roles).contains(pa.getRole()))
                 .map(sa -> sa.getPage())
                 .anyMatch(a -> a.equals(page));

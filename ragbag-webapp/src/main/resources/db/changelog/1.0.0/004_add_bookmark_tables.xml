@@ -23,7 +23,7 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="page_id" type="bigint">
-                <constraints nullable="false" referencedTableName="PAGE" referencedColumnNames="id"
+                <constraints nullable="false" referencedTableName="pages" referencedColumnNames="id"
                   foreignKeyName="fk_bookmark_page_id"/>
             </column>
             <column name="name" type="varchar(255)">

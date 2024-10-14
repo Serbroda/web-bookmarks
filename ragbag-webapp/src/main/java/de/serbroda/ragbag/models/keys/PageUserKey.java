@@ -4,10 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public class PageAccountKey {
+public class PageUserKey {
 
     private Long pageId;
-    private Long accountId;
+    private Long userId;
 
     @Column(name = "page_id")
     public Long getPageId() {
@@ -18,12 +18,12 @@ public class PageAccountKey {
         this.pageId = pageId;
     }
 
-    @Column(name = "account_id")
-    public Long getAccountId() {
-        return accountId;
+    @Column(name = "user_id")
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setUserId(Long accountId) {
+        this.userId = accountId;
     }
 }

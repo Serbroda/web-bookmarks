@@ -2,7 +2,7 @@ package de.serbroda.ragbag.controller.v1;
 
 import de.serbroda.ragbag.dtos.UserDto;
 import de.serbroda.ragbag.mappers.UserMapper;
-import de.serbroda.ragbag.models.Account;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.repositories.AccountRepository;
 import de.serbroda.ragbag.security.AuthorizationService;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
-        List<Account> accounts = accountRepository.findAll();
-        return ResponseEntity.ok(UserMapper.INSTANCE.mapAll(accounts));
+        List<User> users = accountRepository.findAll();
+        return ResponseEntity.ok(UserMapper.INSTANCE.mapAll(users));
     }
 
     @GetMapping("/me")
