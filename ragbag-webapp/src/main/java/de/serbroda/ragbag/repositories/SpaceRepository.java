@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface SpaceRepository extends JpaRepository<Space, Long> {
 
-    @Query("select s from Space s left join s.users accs where accs.account in ?1")
-    List<Space> findAllByAccount(User user);
+    @Query("select s from Space s left join s.users u where u.user in ?1")
+    List<Space> finaAllByUser(User user);
 }

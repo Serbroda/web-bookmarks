@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public class UserRepositoryTest extends AbstractRepositoryTest<User> {
 
     @Autowired
-    private AccountRepository repository;
+    private UserRepository repository;
 
     @Override
     protected JpaRepository<User, Long> getRepository() {

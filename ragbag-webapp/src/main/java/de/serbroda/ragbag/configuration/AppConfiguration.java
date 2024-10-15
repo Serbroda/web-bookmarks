@@ -1,6 +1,6 @@
 package de.serbroda.ragbag.configuration;
 
-import de.serbroda.ragbag.repositories.AccountRepository;
+import de.serbroda.ragbag.repositories.UserRepository;
 import de.serbroda.ragbag.services.DataInitializer;
 import de.serbroda.ragbag.services.DataInitializerTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class AppConfiguration {
 
-    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
-    public AppConfiguration(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public AppConfiguration(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Profile({"prod"})
@@ -52,7 +52,7 @@ public class AppConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> accountRepository.findByUsernameIgnoreCase(username)
+        return username -> userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 

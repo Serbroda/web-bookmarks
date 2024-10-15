@@ -25,13 +25,13 @@ public class SpaceController {
 
     @PostMapping
     public ResponseEntity createSpace(@RequestBody CreateSpaceDto dto) {
-        Space space = spaceService.createSpace(dto, AuthorizationService.getAuthenticatedAccountRequired());
+        Space space = spaceService.createSpace(dto, AuthorizationService.getAuthenticatedUserRequired());
         return ResponseEntity.ok(SpaceMapper.INSTANCE.map(space));
     }
 
     @GetMapping
     public ResponseEntity getSpaces() {
-        return ResponseEntity.ok(SpaceMapper.INSTANCE.mapAll(spaceService.getSpaces(AuthorizationService.getAuthenticatedAccountRequired())));
+        return ResponseEntity.ok(SpaceMapper.INSTANCE.mapAll(spaceService.getSpaces(AuthorizationService.getAuthenticatedUserRequired())));
     }
 
     @PreAuthorize("@authorizationService.hasAccessToSpace(authentication, #spaceId)")

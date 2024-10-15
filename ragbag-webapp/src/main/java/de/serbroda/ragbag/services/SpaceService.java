@@ -8,7 +8,7 @@ import de.serbroda.ragbag.models.SpaceUser;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.shared.PageVisibility;
 import de.serbroda.ragbag.models.shared.SpaceRole;
-import de.serbroda.ragbag.repositories.SpaceAccountRepository;
+import de.serbroda.ragbag.repositories.SpaceUserRepository;
 import de.serbroda.ragbag.repositories.SpaceRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +19,13 @@ import java.util.Optional;
 public class SpaceService {
 
     private final SpaceRepository spaceRepository;
-    private final SpaceAccountRepository spaceAccountRepository;
+    private final SpaceUserRepository spaceUserRepository;
     private final PageService pageService;
 
     public SpaceService(SpaceRepository spaceRepository,
-                        SpaceAccountRepository spaceAccountRepository, PageService pageService) {
+                        SpaceUserRepository spaceUserRepository, PageService pageService) {
         this.spaceRepository = spaceRepository;
-        this.spaceAccountRepository = spaceAccountRepository;
+        this.spaceUserRepository = spaceUserRepository;
         this.pageService = pageService;
     }
 
@@ -36,7 +36,7 @@ public class SpaceService {
 
     public Space createSpace(Space space, User user) {
         space = spaceRepository.save(space);
-        addAccountToSpace(space, user, SpaceRole.OWNER);
+        addUserToSpace(space, user, SpaceRole.OWNER);
 
         Page defaultPage = new Page();
         defaultPage.setSpace(space);
@@ -47,23 +47,23 @@ public class SpaceService {
     }
 
     public List<Space> getSpaces(User user) {
-        return spaceRepository.findAllByAccount(user);
+        return spaceRepository.finaAllByUser(user);
     }
 
     public Optional<Space> getSpaceById(long id) {
         return spaceRepository.findById(id);
     }
 
-    public SpaceUser addAccountToSpace(Space space, User user, SpaceRole role) {
+    public SpaceUser addUserToSpace(Space space, User user, SpaceRole role) {
         SpaceUser spaceUser = new SpaceUser();
         spaceUser.setSpace(space);
-        spaceUser.setAccount(user);
+        spaceUser.setUser(user);
         spaceUser.setRole(role);
-        return spaceAccountRepository.save(spaceUser);
+        return spaceUserRepository.save(spaceUser);
     }
 
-    public void removeAccountFromSpace(Space space, User user) {
-        Optional<SpaceUser> spaceAccount = spaceAccountRepository.findBySpaceAndAccount(space, user);
-        spaceAccount.ifPresent(value -> spaceAccountRepository.delete(value));
+    public void removeUserFromSpace(Space space, User user) {
+        Optional<SpaceUser> spaceUser = spaceUserRepository.findBySpaceAndUser(space, user);
+        spaceUser.ifPresent(value -> spaceUserRepository.delete(value));
     }
 }

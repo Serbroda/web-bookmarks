@@ -22,13 +22,13 @@ public class AuthorizationService {
         this.spaceRepository = spaceRepository;
     }
 
-    public static Optional<User> getAuthenticatedAccount() {
+    public static Optional<User> getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return Optional.ofNullable((User) authentication.getPrincipal());
     }
 
-    public static User getAuthenticatedAccountRequired() {
-        return getAuthenticatedAccount().orElseThrow(() -> new UnauthorizedException("User is not authenticated"));
+    public static User getAuthenticatedUserRequired() {
+        return getAuthenticatedUser().orElseThrow(() -> new UnauthorizedException("User is not authenticated"));
     }
 
     public boolean hasAccessToSpace(Authentication authentication, long spaceId, SpaceRole... roles) {
@@ -44,7 +44,7 @@ public class AuthorizationService {
     public static boolean isAccessAllowed(User user, Space space, SpaceRole... roles) {
         return space.getUsers().stream()
                 .filter(s -> roles.length < 1 || Arrays.asList(roles).contains(s.getRole()))
-                .map(s -> s.getAccount())
+                .map(s -> s.getUser())
                 .anyMatch(a -> a.equals(user));
     }
 }

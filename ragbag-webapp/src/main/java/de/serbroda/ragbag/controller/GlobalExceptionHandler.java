@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
         return createProblemDetails(
                 exception,
                 HttpStatus.FORBIDDEN,
-                "The account is locked"
+                "The user is locked"
         );
     }
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SpaceAccountRepository extends JpaRepository<SpaceUser, Long> {
+public interface SpaceUserRepository extends JpaRepository<SpaceUser, Long> {
 
-    Optional<SpaceUser> findBySpaceAndAccount(Space space, User user);
+    Optional<SpaceUser> findBySpaceAndUser(Space space, User user);
 }

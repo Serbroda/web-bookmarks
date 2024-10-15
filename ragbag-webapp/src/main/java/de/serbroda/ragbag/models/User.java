@@ -57,11 +57,11 @@ public class User extends AbstractBaseEntity implements UserDetails {
             @JoinColumn(name = "role_id", referencedColumnName = "id")
     })
     @ManyToMany(fetch = FetchType.EAGER)
-    public Set<UserRole> getAccountRoles() {
+    public Set<UserRole> getUserRoles() {
         return userRoles;
     }
 
-    public void setAccountRoles(Set<UserRole> userRoles) {
+    public void setUserRoles(Set<UserRole> userRoles) {
         this.userRoles = userRoles;
     }
 
@@ -74,7 +74,7 @@ public class User extends AbstractBaseEntity implements UserDetails {
 //        return spaces;
 //    }
 
-    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     public Set<SpaceUser> getSpaces() {
         return spaces;
     }
@@ -83,7 +83,7 @@ public class User extends AbstractBaseEntity implements UserDetails {
         this.spaces = spaces;
     }
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "user")
     public Set<PageUser> getPages() {
         return pages;
     }

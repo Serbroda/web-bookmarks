@@ -3,7 +3,7 @@ package de.serbroda.ragbag.services;
 import de.serbroda.ragbag.dtos.auth.LoginUserDto;
 import de.serbroda.ragbag.dtos.auth.RegisterUserDto;
 import de.serbroda.ragbag.models.User;
-import de.serbroda.ragbag.repositories.AccountRepository;
+import de.serbroda.ragbag.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
-    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationService(PasswordEncoder passwordEncoder,
-                                 AccountRepository accountRepository,
+                                 UserRepository userRepository,
                                  AuthenticationManager authenticationManager) {
         this.passwordEncoder = passwordEncoder;
-        this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
     }
 
@@ -28,7 +28,7 @@ public class AuthenticationService {
         User user = new User();
         user.setUsername(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
-        return accountRepository.save(user);
+        return userRepository.save(user);
     }
 
     public User authenticate(LoginUserDto input) {
@@ -39,7 +39,7 @@ public class AuthenticationService {
                 )
         );
 
-        return accountRepository.findByUsernameIgnoreCase(input.getEmail())
+        return userRepository.findByUsernameIgnoreCase(input.getEmail())
                 .orElseThrow();
     }
 }

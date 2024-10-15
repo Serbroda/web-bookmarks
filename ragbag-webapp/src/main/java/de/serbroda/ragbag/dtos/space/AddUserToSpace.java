@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.serbroda.ragbag.models.shared.SpaceRole;
 import jakarta.validation.constraints.NotNull;
 
-public class AddAccountToSpaceDto {
+public class AddUserToSpace {
 
     @NotNull
     @JsonProperty("userId")

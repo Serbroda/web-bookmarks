@@ -23,7 +23,7 @@ public class PageUserKey {
         return userId;
     }
 
-    public void setUserId(Long accountId) {
-        this.userId = accountId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

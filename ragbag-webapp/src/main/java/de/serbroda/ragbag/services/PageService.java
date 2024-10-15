@@ -8,7 +8,7 @@ import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.shared.PageRole;
 import de.serbroda.ragbag.models.shared.PageVisibility;
-import de.serbroda.ragbag.repositories.PageAccountRepository;
+import de.serbroda.ragbag.repositories.PageUserRepository;
 import de.serbroda.ragbag.repositories.PageRepository;
 import de.serbroda.ragbag.repositories.SpaceRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,15 +24,15 @@ public class PageService {
 
     private final SpaceRepository spaceRepository;
     private final PageRepository pageRepository;
-    private final PageAccountRepository pageAccountRepository;
+    private final PageUserRepository pageUserRepository;
 
     public PageService(
             SpaceRepository spaceRepository,
             PageRepository pageRepository,
-            PageAccountRepository pageAccountRepository) {
+            PageUserRepository pageUserRepository) {
         this.spaceRepository = spaceRepository;
         this.pageRepository = pageRepository;
-        this.pageAccountRepository = pageAccountRepository;
+        this.pageUserRepository = pageUserRepository;
     }
 
     public Page createPage(CreatePageDto createPageDto, User user) throws AccessDeniedException {
@@ -55,16 +55,16 @@ public class PageService {
             throw new IllegalArgumentException("Space must be set");
         }
         page = pageRepository.save(page);
-        addAccountToPage(page, user, PageRole.OWNER);
+        addUserToPage(page, user, PageRole.OWNER);
         return page;
     }
 
-    public PageUser addAccountToPage(Page page, User user, PageRole pageRole) {
+    public PageUser addUserToPage(Page page, User user, PageRole pageRole) {
         PageUser pageUser = new PageUser();
         pageUser.setPage(page);
-        pageUser.setAccount(user);
+        pageUser.setUser(user);
         pageUser.setRole(pageRole);
-        return pageAccountRepository.save(pageUser);
+        return pageUserRepository.save(pageUser);
     }
 
     public Optional<Page> getPageById(long id) {

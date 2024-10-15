@@ -22,7 +22,7 @@ public class SpaceUser {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("spaceId")
     @JoinColumn(name = "space_id")
     public Space getSpace() {
@@ -33,14 +33,14 @@ public class SpaceUser {
         this.space = space;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
-    public User getAccount() {
+    public User getUser() {
         return user;
     }
 
-    public void setAccount(User user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

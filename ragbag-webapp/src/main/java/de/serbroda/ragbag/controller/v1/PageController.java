@@ -26,7 +26,7 @@ public class PageController {
 
     @PostMapping
     public ResponseEntity<PageDto> createPage(@RequestBody CreatePageDto dto) throws AccessDeniedException {
-        Page entity = pageService.createPage(dto, AuthorizationService.getAuthenticatedAccountRequired());
+        Page entity = pageService.createPage(dto, AuthorizationService.getAuthenticatedUserRequired());
         return ResponseEntity.ok(PageMapper.INSTANCE.map(entity));
     }
 

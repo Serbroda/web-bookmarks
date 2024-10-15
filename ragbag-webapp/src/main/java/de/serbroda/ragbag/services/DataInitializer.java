@@ -3,7 +3,7 @@ package de.serbroda.ragbag.services;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.UserRole;
 import de.serbroda.ragbag.models.shared.UserRoles;
-import de.serbroda.ragbag.repositories.AccountRoleRepository;
+import de.serbroda.ragbag.repositories.UserRoleRepository;
 import de.serbroda.ragbag.utils.RandomUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,13 +17,13 @@ public class DataInitializer {
 
     private static final String ADMIN_USERNAME = "admin";
 
-    private final AccountRoleRepository accountRoleRepository;
+    private final UserRoleRepository userRoleRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(AccountRoleRepository accountRoleRepository, UserService userService,
+    public DataInitializer(UserRoleRepository userRoleRepository, UserService userService,
                            PasswordEncoder passwordEncoder) {
-        this.accountRoleRepository = accountRoleRepository;
+        this.userRoleRepository = userRoleRepository;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -42,10 +42,10 @@ public class DataInitializer {
         User admin = new User();
         admin.setUsername(username);
         admin.setPassword(passwordEncoder.encode(password));
-        admin.setAccountRoles(Stream.of(roles)
-                .map((r) -> accountRoleRepository.findByNameIgnoreCase(r.name()))
+        admin.setUserRoles(Stream.of(roles)
+                .map((r) -> userRoleRepository.findByNameIgnoreCase(r.name()))
                 .collect(Collectors.toSet()));
-        User user = userService.createAccount(admin);
+        User user = userService.createUser(admin);
 
         System.out.println("Initialized '" + ADMIN_USERNAME + "' user with password: " + password);
         return user;
@@ -59,11 +59,11 @@ public class DataInitializer {
 
     private void initializeRole(UserRoles roleEnum) {
         final String name = roleEnum.name();
-        UserRole role = accountRoleRepository.findByNameIgnoreCase(roleEnum.name());
+        UserRole role = userRoleRepository.findByNameIgnoreCase(roleEnum.name());
         if (role == null) {
             role = new UserRole();
             role.setName(name);
-            accountRoleRepository.save(role);
+            userRoleRepository.save(role);
         }
     }
 }

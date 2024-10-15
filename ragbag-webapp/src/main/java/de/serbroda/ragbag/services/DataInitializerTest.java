@@ -3,7 +3,7 @@ package de.serbroda.ragbag.services;
 import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.shared.UserRoles;
-import de.serbroda.ragbag.repositories.AccountRoleRepository;
+import de.serbroda.ragbag.repositories.UserRoleRepository;
 import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,10 +15,10 @@ public class DataInitializerTest extends DataInitializer {
     private final PageService pageService;
 
     public DataInitializerTest(
-            AccountRoleRepository accountRoleRepository,
+            UserRoleRepository userRoleRepository,
             UserService userService,
             PasswordEncoder passwordEncoder, PageService pageService) {
-        super(accountRoleRepository, userService, passwordEncoder);
+        super(userRoleRepository, userService, passwordEncoder);
         this.pageService = pageService;
     }
 

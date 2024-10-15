@@ -3,7 +3,7 @@ package de.serbroda.ragbag.controller.v1;
 import de.serbroda.ragbag.dtos.UserDto;
 import de.serbroda.ragbag.mappers.UserMapper;
 import de.serbroda.ragbag.models.User;
-import de.serbroda.ragbag.repositories.AccountRepository;
+import de.serbroda.ragbag.repositories.UserRepository;
 import de.serbroda.ragbag.services.AuthorizationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +18,22 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
-    public UserController(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
-        List<User> users = accountRepository.findAll();
+        List<User> users = userRepository.findAll();
         return ResponseEntity.ok(UserMapper.INSTANCE.mapAll(users));
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> authenticatedUser() {
-        return AuthorizationService.getAuthenticatedAccount()
+        return AuthorizationService.getAuthenticatedUser()
                 .map(UserMapper.INSTANCE::map)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
