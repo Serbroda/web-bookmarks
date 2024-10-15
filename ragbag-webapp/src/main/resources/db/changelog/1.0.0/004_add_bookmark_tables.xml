@@ -24,13 +24,13 @@
 
             <column name="page_id" type="bigint">
                 <constraints nullable="false" referencedTableName="pages" referencedColumnNames="id"
-                  foreignKeyName="fk_bookmark_page_id"/>
+                             foreignKeyName="fk_bookmark_page_id"/>
             </column>
             <column name="name" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="url" type="varchar(max)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>

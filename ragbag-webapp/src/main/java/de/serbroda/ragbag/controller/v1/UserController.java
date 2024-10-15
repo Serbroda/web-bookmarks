@@ -4,7 +4,7 @@ import de.serbroda.ragbag.dtos.UserDto;
 import de.serbroda.ragbag.mappers.UserMapper;
 import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.repositories.AccountRepository;
-import de.serbroda.ragbag.security.AuthorizationService;
+import de.serbroda.ragbag.services.AuthorizationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -2,10 +2,10 @@ package de.serbroda.ragbag.services;
 
 import de.serbroda.ragbag.dtos.space.CreateSpaceDto;
 import de.serbroda.ragbag.mappers.SpaceMapper;
-import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.models.SpaceUser;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.shared.PageVisibility;
 import de.serbroda.ragbag.models.shared.SpaceRole;
 import de.serbroda.ragbag.repositories.SpaceAccountRepository;

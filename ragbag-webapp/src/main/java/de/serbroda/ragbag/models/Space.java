@@ -14,7 +14,7 @@ public class Space extends AbstractBaseEntity {
     private String name;
     private SpaceVisibility visibility = SpaceVisibility.PRIVATE;
     private Set<Page> pages = new HashSet<>();
-    private Set<SpaceUser> accounts = new HashSet<>();
+    private Set<SpaceUser> users = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,12 +50,12 @@ public class Space extends AbstractBaseEntity {
     }
 
     @OneToMany(mappedBy = "space")
-    public Set<SpaceUser> getAccounts() {
-        return accounts;
+    public Set<SpaceUser> getUsers() {
+        return users;
     }
 
-    public void setAccounts(Set<SpaceUser> accounts) {
-        this.accounts = accounts;
+    public void setUsers(Set<SpaceUser> users) {
+        this.users = users;
     }
 
     @Override

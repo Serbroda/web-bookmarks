@@ -17,7 +17,7 @@ public class Page extends AbstractBaseEntity {
     private PageVisibility visibility = PageVisibility.PUBLIC;
     private Set<Page> subPages = new HashSet<>();
     private Set<Bookmark> bookmarks = new HashSet<>();
-    private Set<PageUser> accounts = new HashSet<>();
+    private Set<PageUser> users = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,12 +80,12 @@ public class Page extends AbstractBaseEntity {
     }
 
     @OneToMany(mappedBy = "page")
-    public Set<PageUser> getAccounts() {
-        return accounts;
+    public Set<PageUser> getUsers() {
+        return users;
     }
 
-    public void setAccounts(Set<PageUser> accounts) {
-        this.accounts = accounts;
+    public void setUsers(Set<PageUser> users) {
+        this.users = users;
     }
 
     @Override

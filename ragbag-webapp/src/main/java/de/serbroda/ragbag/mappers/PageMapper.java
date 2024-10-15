@@ -2,10 +2,7 @@ package de.serbroda.ragbag.mappers;
 
 import de.serbroda.ragbag.dtos.page.CreatePageDto;
 import de.serbroda.ragbag.dtos.page.PageDto;
-import de.serbroda.ragbag.dtos.space.CreateSpaceDto;
-import de.serbroda.ragbag.dtos.space.SpaceDto;
 import de.serbroda.ragbag.models.Page;
-import de.serbroda.ragbag.models.Space;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -21,4 +18,5 @@ public interface PageMapper {
     PageDto map(Page source);
 
     List<PageDto> mapAll(List<Page> sources);
+
 }

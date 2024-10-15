@@ -57,26 +57,26 @@
         </createTable>
     </changeSet>
 
-  <changeSet id="2024-04-21: create table users_role" author="drottstegge">
-    <preConditions onFail="MARK_RAN">
-      <not>
-        <tableExists tableName="users_role"/>
-      </not>
-    </preConditions>
+    <changeSet id="2024-04-21: create table users_role" author="drottstegge">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users_role"/>
+            </not>
+        </preConditions>
 
-    <createTable tableName="users_role">
-      <column name="user_id" type="bigint">
-        <constraints nullable="false" referencedTableName="users" referencedColumnNames="id"
-          foreignKeyName="fk_users_role_user_id"/>
-      </column>
-      <column name="role_id" type="bigint">
-        <constraints nullable="false" referencedTableName="usersrole" referencedColumnNames="id"
-          foreignKeyName="fk_users_role_rols_id"/>
-      </column>
-    </createTable>
+        <createTable tableName="users_role">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" referencedTableName="users" referencedColumnNames="id"
+                             foreignKeyName="fk_users_role_user_id"/>
+            </column>
+            <column name="role_id" type="bigint">
+                <constraints nullable="false" referencedTableName="usersrole" referencedColumnNames="id"
+                             foreignKeyName="fk_users_role_rols_id"/>
+            </column>
+        </createTable>
 
-    <addUniqueConstraint tableName="users_role" columnNames="user_id,role_id"
-      constraintName="uc_users_role_user_id_role_id"/>
-  </changeSet>
+        <addUniqueConstraint tableName="users_role" columnNames="user_id,role_id"
+                             constraintName="uc_users_role_user_id_role_id"/>
+    </changeSet>
 
 </databaseChangeLog>

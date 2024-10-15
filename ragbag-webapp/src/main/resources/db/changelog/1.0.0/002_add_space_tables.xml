@@ -23,10 +23,10 @@
             <column name="last_modified" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP"/>
 
             <column name="name" type="varchar(150)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
             <column name="visibility" type="varchar(80)" defaultValue="PRIVATE">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
@@ -41,19 +41,19 @@
         <createTable tableName="spaces_users">
             <column name="space_id" type="bigint">
                 <constraints nullable="false" referencedTableName="spaces" referencedColumnNames="id"
-                  foreignKeyName="fk_spaces_users_space_id"/>
+                             foreignKeyName="fk_spaces_users_space_id"/>
             </column>
             <column name="user_id" type="bigint">
                 <constraints nullable="false" referencedTableName="users" referencedColumnNames="id"
-                  foreignKeyName="fk_spaces_users_user_id"/>
+                             foreignKeyName="fk_spaces_users_user_id"/>
             </column>
             <column name="role" type="varchar(40)">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
         </createTable>
 
         <addUniqueConstraint tableName="spaces_users" columnNames="space_id,user_id"
-          constraintName="uc_spaces_users_space_id_user_id"/>
+                             constraintName="uc_spaces_users_space_id_user_id"/>
     </changeSet>
 
 </databaseChangeLog>

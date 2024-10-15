@@ -1,7 +1,7 @@
 package de.serbroda.ragbag.services;
 
-import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.Page;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.shared.UserRoles;
 import de.serbroda.ragbag.repositories.AccountRoleRepository;
 import org.hibernate.Hibernate;

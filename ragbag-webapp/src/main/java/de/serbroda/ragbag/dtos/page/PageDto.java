@@ -10,6 +10,9 @@ public class PageDto {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("role")
+    private String role;
+
     public long getId() {
         return id;
     }
@@ -24,5 +27,13 @@ public class PageDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

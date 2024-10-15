@@ -1,7 +1,7 @@
 package de.serbroda.ragbag.repositories;
 
-import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.Bookmark;
+import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.Space;
 import de.serbroda.ragbag.models.shared.PageVisibility;
 import de.serbroda.ragbag.repositories.base.AbstractRepositoryTest;

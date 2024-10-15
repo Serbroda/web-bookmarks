@@ -2,13 +2,12 @@ package de.serbroda.ragbag.services;
 
 import de.serbroda.ragbag.dtos.page.CreatePageDto;
 import de.serbroda.ragbag.mappers.PageMapper;
-import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.Page;
 import de.serbroda.ragbag.models.PageUser;
 import de.serbroda.ragbag.models.Space;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.shared.PageRole;
 import de.serbroda.ragbag.models.shared.PageVisibility;
-import de.serbroda.ragbag.models.shared.SpaceRole;
 import de.serbroda.ragbag.repositories.PageAccountRepository;
 import de.serbroda.ragbag.repositories.PageRepository;
 import de.serbroda.ragbag.repositories.SpaceRepository;
@@ -19,8 +18,6 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import static de.serbroda.ragbag.security.AuthorizationService.checkAccessAllowed;
 
 @Service
 public class PageService {
@@ -41,7 +38,6 @@ public class PageService {
     public Page createPage(CreatePageDto createPageDto, User user) throws AccessDeniedException {
         Space space = spaceRepository.findById(createPageDto.getSpaceId())
                 .orElseThrow(() -> new EntityNotFoundException("Space with id " + createPageDto.getSpaceId() + " not found"));
-        checkAccessAllowed(user, space, SpaceRole.OWNER, SpaceRole.CONTRIBUTOR);
 
         Page page = PageMapper.INSTANCE.map(createPageDto);
         page.setSpace(space);

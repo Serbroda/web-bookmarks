@@ -1,7 +1,7 @@
 package de.serbroda.ragbag.services;
 
-import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.models.Space;
+import de.serbroda.ragbag.models.User;
 import de.serbroda.ragbag.repositories.AccountRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
