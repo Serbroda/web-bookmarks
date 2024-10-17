@@ -54,7 +54,7 @@ RETURNING id, email, username, password, display_name, created_at, updated_at
 type CreateUserParams struct {
 	Email       string  `db:"email" json:"email"`
 	Username    string  `db:"username" json:"username"`
-	Password    string  `db:"password" json:"password"`
+	Password    string  `db:"password" json:"-"`
 	DisplayName *string `db:"display_name" json:"display_name"`
 }
 
@@ -135,7 +135,7 @@ WHERE id = ?
 `
 
 type UpdatePasswordParams struct {
-	Password string `db:"password" json:"password"`
+	Password string `db:"password" json:"-"`
 	ID       int64  `db:"id" json:"id"`
 }
 

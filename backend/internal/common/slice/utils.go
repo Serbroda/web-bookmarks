@@ -16,3 +16,11 @@ func ConvertToPointerSlice[T any](items []T) []*T {
 	}
 	return pointer
 }
+
+func MapSlice[T any, U any](input []T, mapper func(item T) U) []U {
+	output := make([]U, len(input))
+	for i, v := range input {
+		output[i] = mapper(v)
+	}
+	return output
+}
