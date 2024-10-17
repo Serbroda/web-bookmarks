@@ -1,7 +1,7 @@
 package security
 
 import (
-	"backend/internal/sqlc"
+	"backend/internal/db/sqlc"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"time"

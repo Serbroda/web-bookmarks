@@ -1,10 +1,10 @@
 package http
 
 import (
-	"backend/internal/dto"
+	"backend/internal/db/sqlc"
+	"backend/internal/dtos"
 	"backend/internal/security"
 	"backend/internal/services"
-	"backend/internal/sqlc"
 	"database/sql"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
@@ -63,7 +63,7 @@ func (si *AuthHandler) Register(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, dto.UserDtoFromUser(user))
+	return ctx.JSON(http.StatusOK, dtos.UserDtoFromUser(user))
 }
 
 func (si *AuthHandler) Login(ctx echo.Context) error {

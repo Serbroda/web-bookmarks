@@ -1,10 +1,10 @@
 package http
 
 import (
-	"backend/internal/dto"
+	"backend/internal/db/sqlc"
+	"backend/internal/dtos"
 	"backend/internal/security"
 	"backend/internal/services"
-	"backend/internal/sqlc"
 	"database/sql"
 	"errors"
 	"github.com/labstack/echo/v4"
@@ -53,7 +53,7 @@ func (h *SpaceHandler) CreateSpace(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, dto.SpaceDtoFromSpace(space))
+	return ctx.JSON(http.StatusCreated, dtos.SpaceDtoFromSpace(space))
 }
 
 func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
@@ -66,7 +66,7 @@ func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, dto.SpaceDtoFromFindSpacesByUserIdRow(spaces))
+	return ctx.JSON(http.StatusOK, dtos.SpaceDtoFromFindSpacesByUserIdRow(spaces))
 }
 
 func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
@@ -93,7 +93,7 @@ func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, dto.SpaceDtoFromFindSpaceByIdAndUserIdRow(space))
+	return ctx.JSON(http.StatusOK, dtos.SpaceDtoFromFindSpaceByIdAndUserIdRow(space))
 }
 
 /*func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {

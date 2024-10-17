@@ -1,7 +1,7 @@
-package dto
+package dtos
 
 import (
-	"backend/internal/sqlc"
+	"backend/internal/db/sqlc"
 )
 
 type UserDto struct {

@@ -1,7 +1,7 @@
 package http
 
 import (
-	"backend/internal/dto"
+	"backend/internal/dtos"
 	"backend/internal/security"
 	"backend/internal/services"
 	"database/sql"
@@ -32,5 +32,5 @@ func (h *UsersHandler) GetMe(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, dto.UserDtoFromUser(user))
+	return ctx.JSON(http.StatusOK, dtos.UserDtoFromUser(user))
 }

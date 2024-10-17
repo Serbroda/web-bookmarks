@@ -1,7 +1,7 @@
-package dto
+package dtos
 
 import (
-	"backend/internal/sqlc"
+	sqlc2 "backend/internal/db/sqlc"
 )
 
 type SpaceDto struct {
@@ -11,7 +11,7 @@ type SpaceDto struct {
 	Role        *string `json:"role"`
 }
 
-func SpaceDtoFromSpace(space sqlc.Space) SpaceDto {
+func SpaceDtoFromSpace(space sqlc2.Space) SpaceDto {
 	return SpaceDto{
 		ID:          space.ID,
 		Name:        space.Name,
@@ -19,7 +19,7 @@ func SpaceDtoFromSpace(space sqlc.Space) SpaceDto {
 	}
 }
 
-func SpaceDtosFromSpaces(spaces []sqlc.Space) []SpaceDto {
+func SpaceDtosFromSpaces(spaces []sqlc2.Space) []SpaceDto {
 	dtos := make([]SpaceDto, len(spaces))
 	for i, space := range spaces {
 		dtos[i] = SpaceDtoFromSpace(space)
@@ -27,7 +27,7 @@ func SpaceDtosFromSpaces(spaces []sqlc.Space) []SpaceDto {
 	return dtos
 }
 
-func SpaceDtoFromFindSpaceByIdAndUserIdRow(space sqlc.FindSpaceByIdAndUserIdRow) SpaceDto {
+func SpaceDtoFromFindSpaceByIdAndUserIdRow(space sqlc2.FindSpaceByIdAndUserIdRow) SpaceDto {
 	return SpaceDto{
 		ID:          space.ID,
 		Name:        space.Name,
@@ -36,7 +36,7 @@ func SpaceDtoFromFindSpaceByIdAndUserIdRow(space sqlc.FindSpaceByIdAndUserIdRow)
 	}
 }
 
-func SpaceDtoFromFindSpacesByUserIdRow(spaces []sqlc.FindSpacesByUserIdRow) []SpaceDto {
+func SpaceDtoFromFindSpacesByUserIdRow(spaces []sqlc2.FindSpacesByUserIdRow) []SpaceDto {
 	dtos := make([]SpaceDto, len(spaces))
 	for i, space := range spaces {
 		dtos[i] = SpaceDto{

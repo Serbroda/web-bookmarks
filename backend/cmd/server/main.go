@@ -3,10 +3,10 @@ package main
 import (
 	"backend/internal/db"
 	"backend/internal/db/migrations"
+	"backend/internal/db/sqlc"
 	"backend/internal/http"
 	"backend/internal/security"
 	"backend/internal/services"
-	"backend/internal/sqlc"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	echojwt "github.com/labstack/echo-jwt/v4"
