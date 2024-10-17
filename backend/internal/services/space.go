@@ -48,10 +48,13 @@ func (s *SpaceService) CreateSpace(auth security.Authentication, space sqlc.Crea
 	return entity, nil
 }
 
-func (s *SpaceService) GetSpaceById(auth security.Authentication, spaceId int64) (sqlc.Space, error) {
-	space, err := s.queries.FindSpaceById(context.TODO(), spaceId)
+func (s *SpaceService) GetSpaceById(auth security.Authentication, spaceId int64) (sqlc.FindSpaceByIdAndUserIdRow, error) {
+	space, err := s.queries.FindSpaceByIdAndUserId(context.TODO(), sqlc.FindSpaceByIdAndUserIdParams{
+		UserID: auth.UserId,
+		ID:     spaceId,
+	})
 	if err != nil {
-		return sqlc.Space{}, err
+		return sqlc.FindSpaceByIdAndUserIdRow{}, err
 	}
 
 	count, err := s.queries.CountSpacesUsers(context.TODO(), sqlc.CountSpacesUsersParams{
@@ -59,14 +62,14 @@ func (s *SpaceService) GetSpaceById(auth security.Authentication, spaceId int64)
 		UserID:  auth.UserId,
 	})
 	if err != nil {
-		return sqlc.Space{}, err
+		return sqlc.FindSpaceByIdAndUserIdRow{}, err
 	} else if count == 0 {
-		return sqlc.Space{}, ErrNoPermission
+		return sqlc.FindSpaceByIdAndUserIdRow{}, ErrNoPermission
 	}
 
 	return space, nil
 }
 
-func (s *SpaceService) GetSpacesByUser(auth security.Authentication) ([]sqlc.Space, error) {
+func (s *SpaceService) GetSpacesByUser(auth security.Authentication) ([]sqlc.FindSpacesByUserIdRow, error) {
 	return s.queries.FindSpacesByUserId(context.TODO(), auth.UserId)
 }

@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"time"
 )
 
 const countSpacesUsers = `-- name: CountSpacesUsers :one
@@ -116,23 +117,74 @@ func (q *Queries) FindSpaceById(ctx context.Context, id int64) (Space, error) {
 	return i, err
 }
 
+const findSpaceByIdAndUserId = `-- name: FindSpaceByIdAndUserId :one
+;
+
+SELECT s.id, s.name, s.description, s.visibility, s.created_at, s.updated_at, su.role
+FROM spaces s
+         INNER JOIN spaces_users su on
+    su.space_id = s.id AND
+    su.user_id = ?
+WHERE s.id = ? LIMIT 1
+`
+
+type FindSpaceByIdAndUserIdParams struct {
+	UserID int64 `db:"user_id" json:"user_id"`
+	ID     int64 `db:"id" json:"id"`
+}
+
+type FindSpaceByIdAndUserIdRow struct {
+	ID          int64      `db:"id" json:"id"`
+	Name        string     `db:"name" json:"name"`
+	Description *string    `db:"description" json:"description"`
+	Visibility  string     `db:"visibility" json:"visibility"`
+	CreatedAt   *time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
+	Role        string     `db:"role" json:"role"`
+}
+
+func (q *Queries) FindSpaceByIdAndUserId(ctx context.Context, arg FindSpaceByIdAndUserIdParams) (FindSpaceByIdAndUserIdRow, error) {
+	row := q.db.QueryRowContext(ctx, findSpaceByIdAndUserId, arg.UserID, arg.ID)
+	var i FindSpaceByIdAndUserIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Visibility,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Role,
+	)
+	return i, err
+}
+
 const findSpacesByUserId = `-- name: FindSpacesByUserId :many
-SELECT s.id, s.name, s.description, s.visibility, s.created_at, s.updated_at--, su.user_id, su.role, su.created_at as assigned_at
+SELECT s.id, s.name, s.description, s.visibility, s.created_at, s.updated_at, su.role
 FROM spaces s
          INNER JOIN spaces_users su on
     su.space_id = s.id AND
     su.user_id = ?
 `
 
-func (q *Queries) FindSpacesByUserId(ctx context.Context, userID int64) ([]Space, error) {
+type FindSpacesByUserIdRow struct {
+	ID          int64      `db:"id" json:"id"`
+	Name        string     `db:"name" json:"name"`
+	Description *string    `db:"description" json:"description"`
+	Visibility  string     `db:"visibility" json:"visibility"`
+	CreatedAt   *time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
+	Role        string     `db:"role" json:"role"`
+}
+
+func (q *Queries) FindSpacesByUserId(ctx context.Context, userID int64) ([]FindSpacesByUserIdRow, error) {
 	rows, err := q.db.QueryContext(ctx, findSpacesByUserId, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Space
+	var items []FindSpacesByUserIdRow
 	for rows.Next() {
-		var i Space
+		var i FindSpacesByUserIdRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -140,6 +192,7 @@ func (q *Queries) FindSpacesByUserId(ctx context.Context, userID int64) ([]Space
 			&i.Visibility,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Role,
 		); err != nil {
 			return nil, err
 		}

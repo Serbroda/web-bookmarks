@@ -66,7 +66,7 @@ func (h *SpaceHandler) GetSpaces(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	return ctx.JSON(http.StatusOK, dto.SpaceDtosFromSpaces(spaces))
+	return ctx.JSON(http.StatusOK, dto.SpaceDtoFromFindSpacesByUserIdRow(spaces))
 }
 
 func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
@@ -93,7 +93,7 @@ func (h *SpaceHandler) GetSpaceById(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, dto.SpaceDtoFromSpace(space))
+	return ctx.JSON(http.StatusOK, dto.SpaceDtoFromFindSpaceByIdAndUserIdRow(space))
 }
 
 /*func (h *SpaceHandler) DeleteSpace(ctx echo.Context) error {

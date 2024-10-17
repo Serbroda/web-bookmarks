@@ -28,11 +28,20 @@ FROM spaces s
 WHERE id = ? LIMIT 1;
 
 -- name: FindSpacesByUserId :many
-SELECT s.*--, su.user_id, su.role, su.created_at as assigned_at
+SELECT s.*, su.role
 FROM spaces s
          INNER JOIN spaces_users su on
     su.space_id = s.id AND
     su.user_id = ?
+;
+
+-- name: FindSpaceByIdAndUserId :one
+SELECT s.*, su.role
+FROM spaces s
+         INNER JOIN spaces_users su on
+    su.space_id = s.id AND
+    su.user_id = ?
+WHERE s.id = ? LIMIT 1
 ;
 
 -- name: CountSpacesUsers :one
