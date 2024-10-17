@@ -12,7 +12,7 @@ build-go-server:
 	GOOS=linux GOARCH=arm GOARM=7 go build -ldflags "-X main.version=$(VERSION)" -o build/${BINARY_NAME}-linux-arm ${SERVER_MAIN}
 
 generate-sqlc:
-	rm -rf ./internal/sqlc
+	find ./internal/sqlc -type f ! -name "mappings.go" -delete
 	cd ./internal/db && sqlc generate && cd ../..
 
 build-angular:
