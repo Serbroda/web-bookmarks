@@ -11,7 +11,7 @@ func main() {
 }
 
 func run() {
-	db.Connect("mongodb://localhost:27017")
+	_, database := db.Connect("mongodb://localhost:27017")
 	defer db.CloseConnection()
 
 	port := os.Getenv("PORT")
@@ -19,6 +19,6 @@ func run() {
 		port = "8080"
 	}
 
-	e := server.NewServer()
+	e := server.NewServer(database)
 	e.Logger.Fatal(e.Start(":" + port))
 }

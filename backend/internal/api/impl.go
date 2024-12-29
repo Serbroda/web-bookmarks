@@ -1,14 +1,19 @@
 package api
 
 import (
+	"github.com/Serbroda/bookmark-manager/internal/repository"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
-type Server struct{}
+type Server struct {
+	repository *repository.Repository
+}
 
-func NewServer() Server {
-	return Server{}
+func NewServer(repository *repository.Repository) Server {
+	return Server{
+		repository: repository,
+	}
 }
 
 func (Server) ListBookmarks(ctx echo.Context) error {
