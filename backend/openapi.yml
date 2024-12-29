@@ -2,6 +2,8 @@ openapi: 3.0.3
 info:
   title: Bookmark WebApp API
   version: 1.0.0
+servers:
+  - url: /api/v1
 
 paths:
   /bookmarks:

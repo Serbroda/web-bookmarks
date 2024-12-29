@@ -8,7 +8,7 @@ BINARY_NAME      := server
 
 # Pfade und Dateien
 OPENAPI_FILE     := openapi.yml
-GEN_OUTPUT_DIR   := internal/gen
+GEN_OUTPUT_DIR   := internal/api
 
 # Docker-Image für OpenAPI Generator
 OPENAPI_DOCKER_IMAGE := openapitools/openapi-generator-cli
@@ -27,16 +27,14 @@ clean:
 	rm -rf bin/$(BINARY_NAME)
 	rm -rf $(GEN_OUTPUT_DIR)
 
-## Erzeugt Code aus OpenAPI-Spezifikation (via Docker)
+## Erzeugt Code aus OpenAPI-Spezifikation
+# https://github.com/oapi-codegen/oapi-codegen
 generate:
-	@echo "==> Generating Go server stubs from OpenAPI (via Docker)..."
-	docker run --rm \
-		-v $(PWD):/local \
-		$(OPENAPI_DOCKER_IMAGE) generate \
-		-i /local/$(OPENAPI_FILE) \
-		-g go-server \
-		-o /local/$(GEN_OUTPUT_DIR) \
-		--additional-properties=onlyInterfaces=true,outputAsLibrary=true
+	@echo "==> Generating Go code via oapi-codegen..."
+	mkdir -p $(GEN_OUTPUT_DIR)
+	go run github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest \
+ 		--config=oapi-codegen.yml \
+ 		$(OPENAPI_FILE)
 	@echo "==> OpenAPI generation done. Check '$(GEN_OUTPUT_DIR)' folder."
 
 ## Baut das Go-Binary
