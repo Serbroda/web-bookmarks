@@ -27,6 +27,10 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func main() {
+	run()
+}
+
+func run() {
 	database := db.OpenConnection(dialect, "ragbag.db")
 	migrations.Migrate(database, dialect, migrations.Migrations, "sqlite")
 	defer database.Close()
@@ -37,6 +41,7 @@ func main() {
 
 	userService := services.NewUserService(queries)
 	spaceService := services.NewSpaceService(queries)
+	pageService := services.NewPageService(queries)
 
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
@@ -53,7 +58,10 @@ func main() {
 	http.RegisterUsersHandlers(api, http.UsersHandler{
 		UserService: userService,
 	}, "/v1")
-	http.RegisterSpaceHandlers(api, http.SpaceHandler{SpaceService: spaceService}, "/v1")
+	http.RegisterSpaceHandlers(api, http.SpaceHandler{
+		SpaceService: spaceService,
+		PageService:  pageService,
+	}, "/v1")
 
 	printRoutes(e)
 	e.Logger.Fatal(e.Start(":8080"))

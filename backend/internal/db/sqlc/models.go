@@ -8,6 +8,27 @@ import (
 	"time"
 )
 
+type Bookmark struct {
+	ID          int64       `db:"id" json:"id"`
+	PageID      int64       `db:"page_id" json:"page_id"`
+	Name        string      `db:"name" json:"name"`
+	Description *string     `db:"description" json:"description"`
+	Url         interface{} `db:"url" json:"url"`
+	CreatedAt   *time.Time  `db:"created_at" json:"created_at"`
+	UpdatedAt   *time.Time  `db:"updated_at" json:"updated_at"`
+}
+
+type Page struct {
+	ID          int64      `db:"id" json:"id"`
+	SpaceID     int64      `db:"space_id" json:"space_id"`
+	Name        string     `db:"name" json:"name"`
+	Description *string    `db:"description" json:"description"`
+	Visibility  string     `db:"visibility" json:"visibility"`
+	ParentID    *int64     `db:"parent_id" json:"parent_id"`
+	CreatedAt   *time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt   *time.Time `db:"updated_at" json:"updated_at"`
+}
+
 type Space struct {
 	ID          int64      `db:"id" json:"id"`
 	Name        string     `db:"name" json:"name"`
