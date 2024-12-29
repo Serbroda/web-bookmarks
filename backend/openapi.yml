@@ -1,0 +1,99 @@
+openapi: 3.0.3
+info:
+  title: Bookmark WebApp API
+  version: 1.0.0
+
+paths:
+  /bookmarks:
+    get:
+      summary: List all bookmarks
+      operationId: listBookmarks
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookmarkList'
+    post:
+      summary: Create a new bookmark
+      operationId: createBookmark
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bookmark'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmark'
+
+  /spaces:
+    get:
+      summary: List all spaces
+      operationId: listSpaces
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceList'
+    post:
+      summary: Create a new space
+      operationId: createSpace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Space'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Space'
+
+components:
+  schemas:
+    Bookmark:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - url
+
+    BookmarkList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Bookmark'
+
+    Space:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+
+    SpaceList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Space'

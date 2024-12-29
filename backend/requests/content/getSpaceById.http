@@ -1,9 +1,0 @@
-@ID = 66f6c4850a9e788a978ea5c8
-
-### GET request to example server
-GET {{host}}/api/v1/spaces/{{ID}}
-Content-Type: application/json
-Authorization: Bearer {{accessToken}}
-
-
-###

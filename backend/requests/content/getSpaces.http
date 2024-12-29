@@ -1,7 +1,0 @@
-### GET request to example server
-GET {{host}}/api/v1/spaces
-Content-Type: application/json
-Authorization: Bearer {{accessToken}}
-
-
-###

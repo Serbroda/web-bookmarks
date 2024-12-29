@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    container_name: bookmark_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      - PORT=8080
+      - MONGO_URI=mongodb://mongo:27017
+    # volumes: falls du externe Config mounten willst
+  mongo:
+    image: mongo:6.0
+    container_name: bookmark_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

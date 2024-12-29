@@ -1,9 +1,0 @@
-### GET request to example server
-POST {{host}}/auth/signup
-Content-Type: application/json
-
-{
-  "email": "{{email}}",
-  "password": "{{password}}",
-  "username": "{{username}}"
-}
