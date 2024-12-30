@@ -27,6 +27,9 @@ type Bookmark struct {
 // BookmarkList defines model for BookmarkList.
 type BookmarkList = []Bookmark
 
+// Error defines model for Error.
+type Error = map[string]interface{}
+
 // Space defines model for Space.
 type Space struct {
 	Description *string `json:"description,omitempty"`
@@ -36,6 +39,9 @@ type Space struct {
 
 // SpaceList defines model for SpaceList.
 type SpaceList = []Space
+
+// BadRequest defines model for BadRequest.
+type BadRequest = Error
 
 // CreateBookmarkJSONRequestBody defines body for CreateBookmark for application/json ContentType.
 type CreateBookmarkJSONRequestBody = Bookmark
@@ -138,14 +144,15 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7yUQW+cMBCF/wqa9ogw29y4JT1FrdRKOfQQ5eCFSeIE7OnYpEIr/nvlMYGmi7pdaTcn",
-	"sBnb73vzzA5q15GzaIOHage+fsROy+uVc8+d5uf4TuwIORiULw36mg0F42wchoEQKvCBjX2AMQfTrE4H",
-	"E1pc/dJzuzI/5sD4szeMDVS3UnSXvxa57RPWIS5+1fnV+BB3MQE7kfmR8R4q+KAWRDXxqRlunHfUzHqI",
-	"4xvSNZ6M2uoOD8NJ1RqdiDkKLcnf44onGnvvREvqxGxd9gO3l0TZ5fdryOEF2QskbIqyKONWjtBqMlDB",
-	"RVEWF5AD6fAoUtR22kRGDyhCo286OnXdQAVR/tVcFcE9OeuTrZ/KMj5qZwNaWayJWlPLcvXkk9sJ7n+7",
-	"Kn4J8ZumwbcvYrzvu07zMCnLdNtmC8SYAzm/QvGZUQecg5P6h5GsGU5OkNQvCQnc47jn3OZM5751LYE3",
-	"f1mXZjOdWfw12yc1yscE/jsON6nkjFlYLs5RQZi0H0hBumPnicB0f9+3/38cenTz/bLWI8e/B1S3u/RT",
-	"B6XJqJcNjHfj7wAAAP//AgGutWwGAAA=",
+	"H4sIAAAAAAAC/9xVTW/TQBD9K9bA0Yodwsm3FoFUgQSiQhyqHjb2tNnW3t3OrotCtP8dza5jx4rBQkoA",
+	"cduP8cx7b+atd1DqxmiFylkodkBojVYWw+ZSVJ/xqUXreFdq5VCFpTCmlqVwUqvswWrFZ7bcYCN49ZLw",
+	"Dgp4kQ2ps3hrs7dEmsB7n0KFtiRpOAkUXCvZF/MpvNO0llWFIfU4crjyKXxRonUbTfI7Vseho1uu2cEI",
+	"5LR+bAQ98tqQNkhORtqjHDtwW4NQgHUk1T3XlNXksZOuxsmbluqJc58C4VMriZHfhKDbdB+k1w9YBiX2",
+	"OD/I2AbpsLFzMvfkfJ9REIkt72MLBjxDqWsjSjyZHko0OE87RE3xDmB+i3SEf8SYK0p1pwOW2KNe1OQr",
+	"ri+MSS4+XUEKz0g2Ds5ykS9yTqUNKmEkFLBa5IsVpGCE2wQo2bpLEnb3GICybsEXVxUUwPAv+6h07K5X",
+	"eX4yW42GZMJdH98zmdf58meJemTZ2DP80Wr+owNPssvaphG07QRIRF0ng1Y+BaPthFhvCIXDfnLjmCAL",
+	"WG1PLlQUaRhERy36owYtz1R33JxIvBM7nxf74Fn+K02NeBORKPzWNzbEZJYt+Gs/XMeQM5pheDn+RSd0",
+	"Es3YIL5l5/FA907+WQMcFP2Ppt8OrCwS/z+guNnFHz5kwsjseQn+1v8IAAD//3UeQmZnCQAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
