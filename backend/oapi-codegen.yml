@@ -3,3 +3,5 @@ output: internal/api/gen.go
 generate:
   echo-server: true
   models: true
+  embedded-spec: true
+  #strict-server: true
