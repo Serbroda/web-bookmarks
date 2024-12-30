@@ -2,24 +2,46 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"github.com/Serbroda/bookmark-manager/internal/models"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
+	"time"
 )
 
 type MongoRepository struct {
-	client             *mongo.Client
-	db                 *mongo.Database
-	bookmarkCollection *mongo.Collection
+	client    *mongo.Client
+	db        *mongo.Database
+	collBmk   *mongo.Collection
+	collSpace *mongo.Collection
 }
 
-func NewMongoRepository(database *mongo.Database) (Repository, error) {
+func NewMongoRepository(uri string, dbName string) (Repository, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	client, err := mongo.Connect(options.Client().ApplyURI(uri))
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		panic(fmt.Sprintf("Mongo DB ping issue %s", err))
+	}
+
+	db := client.Database(dbName)
+
 	return &MongoRepository{
-		bookmarkCollection: database.Collection("bookmarks"),
+		client:    client,
+		db:        db,
+		collBmk:   db.Collection("bookmarks"),
+		collSpace: db.Collection("spaces"),
 	}, nil
 }
 
-// Implementation
 func (m *MongoRepository) CreateBookmark(ctx context.Context, bookmark models.Bookmark) (models.Bookmark, error) {
 	if bookmark.ID == "" {
 		bookmark.ID = bson.NewObjectID().Hex()
@@ -32,12 +54,12 @@ func (m *MongoRepository) CreateBookmark(ctx context.Context, bookmark models.Bo
 		"description": bookmark.Description,
 	}
 
-	_, err := m.bookmarkCollection.InsertOne(ctx, doc)
+	_, err := m.collBmk.InsertOne(ctx, doc)
 	return bookmark, err
 }
 
 func (m *MongoRepository) GetAllBookmarks(ctx context.Context) ([]models.Bookmark, error) {
-	cursor, err := m.bookmarkCollection.Find(ctx, bson.M{})
+	cursor, err := m.collBmk.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +92,7 @@ func (m *MongoRepository) GetBookmarkByID(ctx context.Context, id string) (model
 		Title       string `bson:"title"`
 		Description string `bson:"description"`
 	}
-	err := m.bookmarkCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&doc)
+	err := m.collBmk.FindOne(ctx, bson.M{"_id": id}).Decode(&doc)
 	if err != nil {
 		return models.Bookmark{}, err
 	}
