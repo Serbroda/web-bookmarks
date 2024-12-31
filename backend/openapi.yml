@@ -10,13 +10,15 @@ paths:
     get:
       summary: List all spaces
       operationId: listSpaces
+      tags:
+        - space
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SpaceList'
+                $ref: '#/components/schemas/SpaceDtoList'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -24,37 +26,189 @@ paths:
     post:
       summary: Create a new space
       operationId: createSpace
+      tags:
+        - space
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Space'
+              $ref: '#/components/schemas/CreateSpaceDto'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Space'
+                $ref: '#/components/schemas/SpaceDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /spaces/{spaceId}:
+    put:
+      summary: Update an existing space
+      operationId: updateSpace
+      tags:
+        - space
+      parameters:
+        - in: path
+          name: spaceId
+          schema:
+            $ref: '#/components/schemas/Id'
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSpaceDto'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpaceDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete an existing space
+      operationId: deleteSpace
+      tags:
+        - space
+      parameters:
+        - in: path
+          name: spaceId
+          schema:
+            $ref: '#/components/schemas/Id'
+          required: true
+      responses:
+        '200':
+          description: Success
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  /bookmarks:
+  /collections:
     get:
-      summary: List all bookmarks
-      operationId: listBookmarks
+      summary: List all collections
+      operationId: listCollections
+      tags:
+        - collection
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookmarkList'
+                $ref: '#/components/schemas/CollectionDtoList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      summary: Create a new collection
+      operationId: createCollection
+      tags:
+        - collection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCollectionDto'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /collections/{collectionId}:
+    put:
+      summary: Update an existing collection
+      operationId: updateCollection
+      tags:
+        - collection
+      parameters:
+        - in: path
+          name: collectionId
+          schema:
+            $ref: '#/components/schemas/Id'
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCollectionDto'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollectionDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete an existing collection
+      operationId: deleteCollection
+      tags:
+        - collection
+      parameters:
+        - in: path
+          name: collectionId
+          schema:
+            $ref: '#/components/schemas/Id'
+          required: true
+      responses:
+        '200':
+          description: Success
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /bookmarks:
+    get:
+      summary: List all bookmarks
+      operationId: listBookmarks
+      tags:
+        - bookmark
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookmarkDtoList'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -62,19 +216,21 @@ paths:
     post:
       summary: Create a new bookmark
       operationId: createBookmark
+      tags:
+        - bookmark
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Bookmark'
+              $ref: '#/components/schemas/CreateBookmarkDto'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bookmark'
+                $ref: '#/components/schemas/BookmarkDto'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -82,32 +238,83 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 
+  /bookmarks/{bookmarkId}:
+    put:
+      summary: Updates an existing bookmark
+      operationId: updateBookmark
+      tags:
+        - bookmark
+      parameters:
+        - in: path
+          name: bookmarkId
+          schema:
+            $ref: '#/components/schemas/Id'
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookmarkDto'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookmarkDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Deletes an existing bookmark
+      operationId: deleteBookmark
+      tags:
+        - bookmark
+      parameters:
+        - in: path
+          name: bookmarkId
+          schema:
+            $ref: '#/components/schemas/Id'
+          required: true
+      responses:
+        '200':
+          description: Success
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   schemas:
-    Bookmark:
+    SpaceDto:
       type: object
       properties:
         id:
-          type: string
-        url:
-          type: string
-        title:
+          $ref: '#/components/schemas/Id'
+        name:
           type: string
         description:
           type: string
       required:
-        - url
+        - id
+        - name
 
-    BookmarkList:
+    SpaceDtoList:
       type: array
       items:
-        $ref: '#/components/schemas/Bookmark'
+        $ref: '#/components/schemas/SpaceDto'
 
-    Space:
+    CreateSpaceDto:
       type: object
       properties:
-        id:
-          type: string
         name:
           type: string
         description:
@@ -115,12 +322,130 @@ components:
       required:
         - name
 
-    SpaceList:
+    UpdateSpaceDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+
+    CollectionDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        spaceId:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        description:
+          type: string
+        parentId:
+          $ref: '#/components/schemas/Id'
+      required:
+        - id
+        - spaceId
+        - name
+
+    CollectionDtoList:
       type: array
       items:
-        $ref: '#/components/schemas/Space'
+        $ref: '#/components/schemas/CollectionDto'
+
+    CreateCollectionDto:
+      type: object
+      properties:
+        spaceId:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        description:
+          type: string
+        parentId:
+          $ref: '#/components/schemas/Id'
+      required:
+        - spaceId
+        - name
+
+    UpdateCollectionDto:
+      type: object
+      properties:
+        spaceId:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        description:
+          type: string
+        parentId:
+          $ref: '#/components/schemas/Id'
+      required:
+        - spaceId
+        - name
+
+    BookmarkDto:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        collectionId:
+          $ref: '#/components/schemas/Id'
+        url:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - id
+        - collectionId
+        - url
+
+    BookmarkDtoList:
+      type: array
+      items:
+        $ref: '#/components/schemas/BookmarkDto'
+
+    CreateBookmarkDto:
+      type: object
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/Id'
+        url:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - collectionId
+        - url
+
+    UpdateBookmarkDto:
+      type: object
+      properties:
+        collectionId:
+          $ref: '#/components/schemas/Id'
+        url:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - collectionId
+        - url
+
+    Id:
+      type: string
+
     Error:
       type: object
+      properties:
+        message:
+          type: string
 
   responses:
     BadRequest:

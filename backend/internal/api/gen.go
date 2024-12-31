@@ -8,46 +8,125 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"net/url"
 	"path"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
+	"github.com/oapi-codegen/runtime"
 )
 
-// Bookmark defines model for Bookmark.
-type Bookmark struct {
-	Description *string `json:"description,omitempty"`
-	Id          *string `json:"id,omitempty"`
-	Title       *string `json:"title,omitempty"`
-	Url         string  `json:"url"`
+// BookmarkDto defines model for BookmarkDto.
+type BookmarkDto struct {
+	CollectionId Id      `json:"collectionId"`
+	Description  *string `json:"description,omitempty"`
+	Id           Id      `json:"id"`
+	Title        *string `json:"title,omitempty"`
+	Url          string  `json:"url"`
 }
 
-// BookmarkList defines model for BookmarkList.
-type BookmarkList = []Bookmark
+// BookmarkDtoList defines model for BookmarkDtoList.
+type BookmarkDtoList = []BookmarkDto
 
-// Error defines model for Error.
-type Error = map[string]interface{}
-
-// Space defines model for Space.
-type Space struct {
+// CollectionDto defines model for CollectionDto.
+type CollectionDto struct {
 	Description *string `json:"description,omitempty"`
-	Id          *string `json:"id,omitempty"`
+	Id          Id      `json:"id"`
+	Name        string  `json:"name"`
+	ParentId    *Id     `json:"parentId,omitempty"`
+	SpaceId     Id      `json:"spaceId"`
+}
+
+// CollectionDtoList defines model for CollectionDtoList.
+type CollectionDtoList = []CollectionDto
+
+// CreateBookmarkDto defines model for CreateBookmarkDto.
+type CreateBookmarkDto struct {
+	CollectionId Id      `json:"collectionId"`
+	Description  *string `json:"description,omitempty"`
+	Title        *string `json:"title,omitempty"`
+	Url          string  `json:"url"`
+}
+
+// CreateCollectionDto defines model for CreateCollectionDto.
+type CreateCollectionDto struct {
+	Description *string `json:"description,omitempty"`
+	Name        string  `json:"name"`
+	ParentId    *Id     `json:"parentId,omitempty"`
+	SpaceId     Id      `json:"spaceId"`
+}
+
+// CreateSpaceDto defines model for CreateSpaceDto.
+type CreateSpaceDto struct {
+	Description *string `json:"description,omitempty"`
 	Name        string  `json:"name"`
 }
 
-// SpaceList defines model for SpaceList.
-type SpaceList = []Space
+// Error defines model for Error.
+type Error struct {
+	Message *string `json:"message,omitempty"`
+}
+
+// Id defines model for Id.
+type Id = string
+
+// SpaceDto defines model for SpaceDto.
+type SpaceDto struct {
+	Description *string `json:"description,omitempty"`
+	Id          Id      `json:"id"`
+	Name        string  `json:"name"`
+}
+
+// SpaceDtoList defines model for SpaceDtoList.
+type SpaceDtoList = []SpaceDto
+
+// UpdateBookmarkDto defines model for UpdateBookmarkDto.
+type UpdateBookmarkDto struct {
+	CollectionId Id      `json:"collectionId"`
+	Description  *string `json:"description,omitempty"`
+	Title        *string `json:"title,omitempty"`
+	Url          string  `json:"url"`
+}
+
+// UpdateCollectionDto defines model for UpdateCollectionDto.
+type UpdateCollectionDto struct {
+	Description *string `json:"description,omitempty"`
+	Name        string  `json:"name"`
+	ParentId    *Id     `json:"parentId,omitempty"`
+	SpaceId     Id      `json:"spaceId"`
+}
+
+// UpdateSpaceDto defines model for UpdateSpaceDto.
+type UpdateSpaceDto struct {
+	Description *string `json:"description,omitempty"`
+	Name        string  `json:"name"`
+}
 
 // BadRequest defines model for BadRequest.
 type BadRequest = Error
 
+// NotFound defines model for NotFound.
+type NotFound = Error
+
 // CreateBookmarkJSONRequestBody defines body for CreateBookmark for application/json ContentType.
-type CreateBookmarkJSONRequestBody = Bookmark
+type CreateBookmarkJSONRequestBody = CreateBookmarkDto
+
+// UpdateBookmarkJSONRequestBody defines body for UpdateBookmark for application/json ContentType.
+type UpdateBookmarkJSONRequestBody = UpdateBookmarkDto
+
+// CreateCollectionJSONRequestBody defines body for CreateCollection for application/json ContentType.
+type CreateCollectionJSONRequestBody = CreateCollectionDto
+
+// UpdateCollectionJSONRequestBody defines body for UpdateCollection for application/json ContentType.
+type UpdateCollectionJSONRequestBody = UpdateCollectionDto
 
 // CreateSpaceJSONRequestBody defines body for CreateSpace for application/json ContentType.
-type CreateSpaceJSONRequestBody = Space
+type CreateSpaceJSONRequestBody = CreateSpaceDto
+
+// UpdateSpaceJSONRequestBody defines body for UpdateSpace for application/json ContentType.
+type UpdateSpaceJSONRequestBody = UpdateSpaceDto
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -57,12 +136,36 @@ type ServerInterface interface {
 	// Create a new bookmark
 	// (POST /bookmarks)
 	CreateBookmark(ctx echo.Context) error
+	// Deletes an existing bookmark
+	// (DELETE /bookmarks/{bookmarkId})
+	DeleteBookmark(ctx echo.Context, bookmarkId Id) error
+	// Updates an existing bookmark
+	// (PUT /bookmarks/{bookmarkId})
+	UpdateBookmark(ctx echo.Context, bookmarkId Id) error
+	// List all collections
+	// (GET /collections)
+	ListCollections(ctx echo.Context) error
+	// Create a new collection
+	// (POST /collections)
+	CreateCollection(ctx echo.Context) error
+	// Delete an existing collection
+	// (DELETE /collections/{collectionId})
+	DeleteCollection(ctx echo.Context, collectionId Id) error
+	// Update an existing collection
+	// (PUT /collections/{collectionId})
+	UpdateCollection(ctx echo.Context, collectionId Id) error
 	// List all spaces
 	// (GET /spaces)
 	ListSpaces(ctx echo.Context) error
 	// Create a new space
 	// (POST /spaces)
 	CreateSpace(ctx echo.Context) error
+	// Delete an existing space
+	// (DELETE /spaces/{spaceId})
+	DeleteSpace(ctx echo.Context, spaceId Id) error
+	// Update an existing space
+	// (PUT /spaces/{spaceId})
+	UpdateSpace(ctx echo.Context, spaceId Id) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -88,6 +191,88 @@ func (w *ServerInterfaceWrapper) CreateBookmark(ctx echo.Context) error {
 	return err
 }
 
+// DeleteBookmark converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteBookmark(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "bookmarkId" -------------
+	var bookmarkId Id
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "bookmarkId", runtime.ParamLocationPath, ctx.Param("bookmarkId"), &bookmarkId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter bookmarkId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteBookmark(ctx, bookmarkId)
+	return err
+}
+
+// UpdateBookmark converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateBookmark(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "bookmarkId" -------------
+	var bookmarkId Id
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "bookmarkId", runtime.ParamLocationPath, ctx.Param("bookmarkId"), &bookmarkId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter bookmarkId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateBookmark(ctx, bookmarkId)
+	return err
+}
+
+// ListCollections converts echo context to params.
+func (w *ServerInterfaceWrapper) ListCollections(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ListCollections(ctx)
+	return err
+}
+
+// CreateCollection converts echo context to params.
+func (w *ServerInterfaceWrapper) CreateCollection(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.CreateCollection(ctx)
+	return err
+}
+
+// DeleteCollection converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteCollection(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId Id
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionId", runtime.ParamLocationPath, ctx.Param("collectionId"), &collectionId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteCollection(ctx, collectionId)
+	return err
+}
+
+// UpdateCollection converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateCollection(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "collectionId" -------------
+	var collectionId Id
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "collectionId", runtime.ParamLocationPath, ctx.Param("collectionId"), &collectionId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter collectionId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateCollection(ctx, collectionId)
+	return err
+}
+
 // ListSpaces converts echo context to params.
 func (w *ServerInterfaceWrapper) ListSpaces(ctx echo.Context) error {
 	var err error
@@ -103,6 +288,38 @@ func (w *ServerInterfaceWrapper) CreateSpace(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.CreateSpace(ctx)
+	return err
+}
+
+// DeleteSpace converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteSpace(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId Id
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "spaceId", runtime.ParamLocationPath, ctx.Param("spaceId"), &spaceId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter spaceId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeleteSpace(ctx, spaceId)
+	return err
+}
+
+// UpdateSpace converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateSpace(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "spaceId" -------------
+	var spaceId Id
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "spaceId", runtime.ParamLocationPath, ctx.Param("spaceId"), &spaceId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter spaceId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateSpace(ctx, spaceId)
 	return err
 }
 
@@ -136,23 +353,39 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.GET(baseURL+"/bookmarks", wrapper.ListBookmarks)
 	router.POST(baseURL+"/bookmarks", wrapper.CreateBookmark)
+	router.DELETE(baseURL+"/bookmarks/:bookmarkId", wrapper.DeleteBookmark)
+	router.PUT(baseURL+"/bookmarks/:bookmarkId", wrapper.UpdateBookmark)
+	router.GET(baseURL+"/collections", wrapper.ListCollections)
+	router.POST(baseURL+"/collections", wrapper.CreateCollection)
+	router.DELETE(baseURL+"/collections/:collectionId", wrapper.DeleteCollection)
+	router.PUT(baseURL+"/collections/:collectionId", wrapper.UpdateCollection)
 	router.GET(baseURL+"/spaces", wrapper.ListSpaces)
 	router.POST(baseURL+"/spaces", wrapper.CreateSpace)
+	router.DELETE(baseURL+"/spaces/:spaceId", wrapper.DeleteSpace)
+	router.PUT(baseURL+"/spaces/:spaceId", wrapper.UpdateSpace)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"6PEalffl/wEAAP//wEvRhVchAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
