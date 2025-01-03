@@ -23,16 +23,16 @@ func (s Server) ListSpaces(ctx echo.Context) error {
 	return ctx.String(http.StatusNotImplemented, "Not Implemented")
 }
 func (s Server) CreateSpace(ctx echo.Context) error {
-	var dto CreateSpaceDto
-	if err := ctx.Bind(&dto); err != nil {
+	var payload CreateSpaceDto
+	if err := ctx.Bind(&payload); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Invalid request format",
 		})
 	}
 
 	entity, err := s.spaceService.CreateSpace(context.TODO(), "", models.Space{
-		Name:        dto.Name,
-		Description: dto.Description,
+		Name:        payload.Name,
+		Description: payload.Description,
 		Visibility:  models.SpaceVisibilityPrivate,
 		OwnerID:     bson.ObjectID{},
 	})

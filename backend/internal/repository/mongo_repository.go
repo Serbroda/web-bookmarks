@@ -42,16 +42,25 @@ func NewMongoRepository(uri string, dbName string) (Repository, error) {
 	}, nil
 }
 
-func (m *MongoRepository) CreateSpace(ctx context.Context, space models.Space) (models.Space, error) {
-	if space.ID == "" {
-		space.ID = bson.NewObjectID().Hex()
-		space.CreatedAt = time.Now()
+func (m *MongoRepository) CreateUser(ctx context.Context, user models.User) (models.User, error) {
+	err := save[*models.User](ctx, m.collSpace, &user)
+	if err != nil {
+		return models.User{}, err
 	}
+	return user, nil
+}
 
-	space.UpdatedAt = time.Now()
+func (m *MongoRepository) GetUserByUsername(ctx context.Context, username string) (models.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
 
-	_, err := m.collBmk.InsertOne(ctx, space)
-	return space, err
+func (m *MongoRepository) CreateSpace(ctx context.Context, space models.Space) (models.Space, error) {
+	err := save[*models.Space](ctx, m.collSpace, &space)
+	if err != nil {
+		return models.Space{}, err
+	}
+	return space, nil
 }
 
 func (m *MongoRepository) CreateBookmark(ctx context.Context, bookmark models.Bookmark) (models.Bookmark, error) {
@@ -114,4 +123,21 @@ func (m *MongoRepository) GetBookmarkByID(ctx context.Context, id string) (model
 		Title:       doc.Title,
 		Description: doc.Description,
 	}, nil
+}
+
+func save[T models.BaseEntityInterface](ctx context.Context, collection *mongo.Collection, entity T) error {
+	now := time.Now()
+	entity.SetUpdatedAt(now)
+
+	if entity.GetID() != "" {
+		entity.SetCreatedAt(now)
+		entity.SetID(bson.NewObjectID().Hex()) // Setze eine neue ID
+	}
+
+	filter := bson.M{"_id": entity.GetID()}
+	update := bson.M{"$set": entity}
+	opts := options.UpdateOne().SetUpsert(true)
+
+	_, err := collection.UpdateOne(ctx, filter, update, opts)
+	return err
 }
