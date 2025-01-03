@@ -42,6 +42,18 @@ func NewMongoRepository(uri string, dbName string) (Repository, error) {
 	}, nil
 }
 
+func (m *MongoRepository) CreateSpace(ctx context.Context, space models.Space) (models.Space, error) {
+	if space.ID == "" {
+		space.ID = bson.NewObjectID().Hex()
+		space.CreatedAt = time.Now()
+	}
+
+	space.UpdatedAt = time.Now()
+
+	_, err := m.collBmk.InsertOne(ctx, space)
+	return space, err
+}
+
 func (m *MongoRepository) CreateBookmark(ctx context.Context, bookmark models.Bookmark) (models.Bookmark, error) {
 	if bookmark.ID == "" {
 		bookmark.ID = bson.NewObjectID().Hex()

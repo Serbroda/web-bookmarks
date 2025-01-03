@@ -3,8 +3,8 @@ package server
 import (
 	"github.com/Serbroda/bookmark-manager/internal/api"
 	"github.com/Serbroda/bookmark-manager/internal/repository"
+	"github.com/Serbroda/bookmark-manager/internal/services"
 	"github.com/labstack/echo/v4"
-	oapimiddleware "github.com/oapi-codegen/echo-middleware"
 	"log"
 )
 
@@ -20,12 +20,14 @@ func NewServer() *echo.Echo {
 		log.Fatalf("connection failed")
 	}
 
+	spaceService := services.NewSpaceService(repo)
+
 	e := echo.New()
 
-	server := api.NewServer(repo)
+	server := api.NewServer(spaceService)
 	apiGroup := e.Group("/api/v1")
-	swagger, _ := api.GetSwagger()
-	apiGroup.Use(oapimiddleware.OapiRequestValidator(swagger))
+	//swagger, _ := api.GetSwagger()
+	//apiGroup.Use(oapimiddleware.OapiRequestValidator(swagger))
 	api.RegisterHandlers(apiGroup, server)
 
 	return e

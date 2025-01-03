@@ -1,0 +1,83 @@
+@spaceId=
+@collectionId=
+@bookmarkId=
+
+###
+GET {{baseUrl}}/api/v1/spaces
+
+###
+POST {{baseUrl}}/api/v1/spaces
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "description": "Test Space"
+}
+
+###
+PUT {{baseUrl}}/api/v1/spaces/{{spaceId}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": ""
+}
+
+###
+DELETE {{baseUrl}}/api/v1/spaces/{{spaceId}}
+
+###
+GET {{baseUrl}}/api/v1/collections
+
+###
+POST {{baseUrl}}/api/v1/collections
+Content-Type: application/json
+
+{
+  "spaceId": "",
+  "name": "",
+  "description": "",
+  "parentId": ""
+}
+
+###
+PUT {{baseUrl}}/api/v1/collections/{{collectionId}}
+Content-Type: application/json
+
+{
+  "spaceId": "",
+  "name": "",
+  "description": "",
+  "parentId": ""
+}
+
+###
+DELETE {{baseUrl}}/api/v1/collections/{{collectionId}}
+
+###
+GET {{baseUrl}}/api/v1/bookmarks
+
+###
+POST {{baseUrl}}/api/v1/bookmarks
+Content-Type: application/json
+
+{
+  "collectionId": "",
+  "url": "",
+  "title": "",
+  "description": ""
+}
+
+###
+PUT {{baseUrl}}/api/v1/bookmarks/{{bookmarkId}}
+Content-Type: application/json
+
+{
+  "collectionId": "",
+  "url": "",
+  "title": "",
+  "description": ""
+}
+
+###
+DELETE {{baseUrl}}/api/v1/bookmarks/{{bookmarkId}}
